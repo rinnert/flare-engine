@@ -2,6 +2,7 @@
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Igor Paliychuk
 Copyright © 2012 Stefan Beller
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -103,6 +104,9 @@ extern bool CHANGE_GAMMA;
 extern float GAMMA;
 extern bool TEXTURE_QUALITY;
 extern bool ANIMATED_TILES;
+#ifdef WITH_OPENGL
+extern bool OPENGL;
+#endif // WITH_OPENGL
 
 // Input Settings
 extern bool MOUSE_MOVE;

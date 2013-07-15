@@ -2,6 +2,7 @@
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Igor Paliychuk
 Copyright © 2012 Stefan Beller
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -69,7 +70,11 @@ ConfigEntry config[] = {
 	{ "mouse_aim",        &typeid(MOUSE_AIM),       "1",   &MOUSE_AIM,       "use mouse to aim. 1 enable, 0 disable."},
 	{ "no_mouse",         &typeid(NO_MOUSE),        "0",   &NO_MOUSE,        "make using mouse secondary, give full control to keyboard. 1 enable, 0 disable."},
 	{ "show_fps",         &typeid(SHOW_FPS),        "0",   &SHOW_FPS,        "show frames per second. 1 enable, 0 disable."},
-	{ "colorblind",       &typeid(COLORBLIND),      "0",   &COLORBLIND,      "enable colorblind tooltips. 1 enable, 0 disable"}
+	{ "colorblind",       &typeid(COLORBLIND),      "0",   &COLORBLIND,      "enable colorblind tooltips. 1 enable, 0 disable"},
+#ifdef WITH_OPENGL
+  { "opengl",           &typeid(OPENGL),          "0",   &OPENGL,          "OpenGL rendering (experimental), allows for vsync. 1 enable, 0 disable."}
+#endif // WITH_OPENGL
+
 };
 const int config_size = sizeof(config) / sizeof(ConfigEntry);
 
@@ -122,6 +127,9 @@ bool CHANGE_GAMMA;
 float GAMMA;
 bool TEXTURE_QUALITY;
 bool ANIMATED_TILES;
+#ifdef WITH_OPENGL
+bool OPENGL;
+#endif // WITH_OPENGL
 
 // Audio Settings
 bool AUDIO;
