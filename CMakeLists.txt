@@ -76,6 +76,21 @@ Else (NOT SDLTTF_FOUND)
   Include_Directories (${SDLTTF_INCLUDE_DIR})
 EndIf (NOT SDLTTF_FOUND)
 
+if ("$ENV{WITH_OPENGL}" STREQUAL "yes")
+	Find_Package (OpenGL)
+	Find_Package(GLUT)
+	If (OPENGL_FOUND AND GLUT_FOUND)
+	  Include_Directories (${OpenGL_INCLUDE_DIR})
+		Link_Directories(${OpenGL_LIBRARY_DIRS})
+		Add_Definitions(${OpenGL_DEFINITIONS})
+		Include_Directories(${GLUT_INCLUDE_DIRS})
+		Link_Directories(${GLUT_LIBRARY_DIRS})
+		Add_Definitions(${GLUT_DEFINITIONS})
+		Set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWITH_OPENGL")
+	Else (OPENGL_FOUND AND GLUT_FOUND)
+		Message (WARNING "Couldn't find OpenGL development files. OpenGL rendering will not be supported.")
+	EndIf (OPENGL_FOUND AND GLUT_FOUND)
+endif ("$ENV{WITH_OPENGL}" STREQUAL "yes")
 
 # Sources
 
@@ -189,6 +204,11 @@ EndIf (NOT SDLMAIN_LIBRARY)
 
 Target_Link_Libraries (flare ${CMAKE_LD_FLAGS} ${SDL_LIBRARY} ${SDLMIXER_LIBRARY} ${SDLIMAGE_LIBRARY} ${SDLTTF_LIBRARY} ${SDLMAIN_LIBRARY})
 
+if ("$ENV{WITH_OPENGL}" STREQUAL "yes")
+	If (OPENGL_FOUND AND GLUT_FOUND)
+		Target_Link_Libraries (flare ${GLUT_LIBRARY} ${OPENGL_LIBRARY})
+	EndIf (OPENGL_FOUND AND GLUT_FOUND)
+endif ("$ENV{WITH_OPENGL}" STREQUAL "yes")
 
 # installing to the proper places
 install(PROGRAMS
