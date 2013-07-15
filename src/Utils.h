@@ -2,6 +2,7 @@
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Stefan Beller
 Copyright © 2013 Henrik Andersson
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -27,8 +28,13 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "CommonIncludes.h"
 #include <stdint.h>
+
+#ifdef WITH_OPENGL
+#include <SDL_opengl.h>
+#endif // WITH_OPENGL
+
+#include "CommonIncludes.h"
 
 class Point {
 public:
@@ -46,7 +52,11 @@ public:
 class Renderable {
 public:
 	SDL_Surface *sprite; // image to be used
-	SDL_Rect src; // location on the sprite in pixel coordinates.
+	SDL_Rect src; // location on the sprite in pixel coordinates. Not used in OpenGL.
+#ifdef WITH_OPENGL
+  GLuint gl_texture;
+#endif // WITH_OPENGL
+
 
 	Point map_pos;     // The map location on the floor between someone's feet
 	Point offset;      // offset from map_pos to topleft corner of sprite
@@ -54,10 +64,13 @@ public:
 	Renderable()
 		: sprite(0)
 		, src(SDL_Rect())
+#ifdef WITH_OPENGL
+    , gl_texture(0)
+#endif // WITH_OPENGL
 		, map_pos()
 		, offset()
 		, prio(0)
-	{}
+	{;}
 };
 
 class Event_Component {
