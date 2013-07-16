@@ -29,6 +29,7 @@ using namespace std;
 #include "GameSwitcher.h"
 #include "SharedResources.h"
 #include "UtilsFileSystem.h"
+#include "SDLBlitRenderDevice.h"
 
 GameSwitcher *gswitch;
 SDL_Surface *titlebar_icon;
@@ -86,8 +87,9 @@ static void init() {
 	titlebar_icon = IMG_Load(mods->locate("images/logo/icon.png").c_str());
 	SDL_WM_SetIcon(titlebar_icon, NULL);
 
-	// Create window
-	setupSDLVideoMode(VIEW_W, VIEW_H);
+	// Create render Device and Rendering Context.
+  render_device = new SDLBlitRenderDevice();
+  screen = render_device->create_context(VIEW_W, VIEW_H, FULLSCREEN);
 
 	if (screen == NULL) {
 
@@ -149,7 +151,7 @@ static void mainLoop (bool debug_event) {
 		gswitch->logic();
 
 		// black out
-		SDL_FillRect(screen, NULL, 0);
+    render_device->blank_screen();
 
 		gswitch->render();
 
@@ -162,7 +164,7 @@ static void mainLoop (bool debug_event) {
 		gswitch->showFPS(1000 / (SDL_GetTicks() - prevTicks));
 		prevTicks = SDL_GetTicks();
 
-		SDL_Flip(screen);
+    render_device->commit_frame();
 	}
 }
 
@@ -181,6 +183,10 @@ static void cleanup() {
 	SDL_FreeSurface(titlebar_icon);
 
 	Mix_CloseAudio();
+  
+  render_device->destroy_context();
+  delete render_device;
+
 	SDL_Quit();
 }
 

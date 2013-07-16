@@ -159,6 +159,7 @@ Set (FLARE_SOURCES
 	./src/PowerManager.cpp
 	./src/QuestLog.cpp
 	./src/SaveLoad.cpp
+	./src/SDLBlitRenderDevice.cpp
 	./src/SDL_gfxBlitFunc.c
 	./src/Settings.cpp
 	./src/SharedGameResources.cpp

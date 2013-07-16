@@ -37,3 +37,4 @@ FontEngine *font;
 CombatText *comb;
 SoundManager *snd;
 SDL_Joystick *joy;
+RenderDevice *render_device;

@@ -38,6 +38,7 @@ Created and destroyed by main.cpp
 #include "MessageEngine.h"
 #include "ModManager.h"
 #include "SoundManager.h"
+#include "RenderDevice.h"
 
 extern SDL_Surface *screen;
 extern SDL_Joystick *joy;
@@ -50,5 +51,7 @@ extern InputState *inpt;
 extern MessageEngine *msg;
 extern ModManager *mods;
 extern SoundManager *snd;
+
+extern RenderDevice *render_device;
 
 #endif
