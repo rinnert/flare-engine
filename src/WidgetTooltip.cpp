@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Stefan Beller
+Copyright © 2012 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -96,23 +97,31 @@ Point WidgetTooltip::calcPosition(STYLE style, Point pos, Point size) {
 void WidgetTooltip::render(TooltipData &tip, Point pos, STYLE style, SDL_Surface *target) {
 	if (target == NULL) {
 		target = screen;
-	}
+	} else {
+    printf("WidgetTooltip::render(): target != screen.\n");
+  }
 
-	if (tip.tip_buffer == NULL) {
+	if (tip.renderable.sprite == NULL) {
 		createBuffer(tip);
 	}
 
 	Point size;
-	size.x = tip.tip_buffer->w;
-	size.y = tip.tip_buffer->h;
+	size.x = tip.renderable.sprite->w;
+	size.y = tip.renderable.sprite->h;
 
 	Point tip_pos = calcPosition(style, pos, size);
 
-	SDL_Rect dest;
-	dest.x = tip_pos.x;
-	dest.y = tip_pos.y;
+  tip.renderable.map_pos.x = tip_pos.x; 
+  tip.renderable.map_pos.y = tip_pos.y; 
 
-	SDL_BlitSurface(tip.tip_buffer, NULL, target, &dest);
+  if (screen == target) {
+	  render_device->render(tip.renderable);
+  } else {
+    SDL_Rect dest;
+    dest.x = tip_pos.x;
+    dest.y = tip_pos.y;
+    SDL_BlitSurface(tip.renderable.sprite,NULL,target,&dest);
+  }
 }
 
 /**
@@ -139,19 +148,32 @@ void WidgetTooltip::createBuffer(TooltipData &tip) {
 	Point size = font->calc_size(fulltext, width);
 
 	// WARNING: dynamic memory allocation. Be careful of memory leaks.
-	tip.tip_buffer = createAlphaSurface(size.x + margin+margin, size.y + margin+margin);
+  if (NULL != tip.renderable.sprite) { SDL_FreeSurface(tip.renderable.sprite); }
+	tip.renderable.sprite = createAlphaSurface(size.x + margin+margin, size.y + margin+margin);
+  tip.renderable.src.x = 0;
+  tip.renderable.src.y = 0;
+  tip.renderable.src.w = tip.renderable.sprite->w;
+  tip.renderable.src.h = tip.renderable.sprite->h;
+
+#ifdef WITH_OPENGL
+  if (OPENGL) { gl_resources->create_texture(tip.renderable); }
+#endif // WITH_OPENGL
 
 	// Currently tooltips are always opaque
-	SDL_SetAlpha(tip.tip_buffer, 0, 0);
+  SDL_SetAlpha(tip.renderable.sprite, 0, SDL_ALPHA_OPAQUE);
 
-	// style the tooltip background
-	// currently this is plain black
-	SDL_FillRect(tip.tip_buffer, NULL, 0);
-
+  // style the tooltip background
+  // currently this is plain black
+  SDL_FillRect(
+      tip.renderable.sprite
+      , NULL
+      , SDL_MapRGB(tip.renderable.sprite->format,0,0,0));
+    
+    
 	int cursor_y = margin;
 
 	for (unsigned int i=0; i<tip.lines.size(); i++) {
-		font->render(tip.lines[i], margin, cursor_y, JUSTIFY_LEFT, tip.tip_buffer, size.x, tip.colors[i]);
+		font->render(tip.lines[i], margin, cursor_y, JUSTIFY_LEFT, tip.renderable.sprite, size.x, tip.colors[i]);
 		cursor_y = font->cursor_y;
 	}
 

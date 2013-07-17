@@ -139,7 +139,10 @@ int OpenGLRenderDevice::render(Renderable& r) {
 
   // If the Renderable has no texture, create a temporary one.
   // NOTE: this is *very* costly.  Ideally this should never happen.
-  if (0 == texture) { texture = gl_resources->create_texture(r.sprite,&(r.src)); }
+  if (0 == texture) { 
+    cerr << "OpenGLRenderDevice: creating temporary texture. This is bad." << endl;
+    texture = gl_resources->create_texture(r.sprite,&(r.src)); 
+  }
 
   // Because switching texture context can be expensive, only bind the texture
   // if it's not currently bound.

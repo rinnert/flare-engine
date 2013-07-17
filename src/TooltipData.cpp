@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Stefan Beller
+Copyright © 2012 Kuer Rinnert
 
 This file is part of FLARE.
 
@@ -18,21 +19,22 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 
 #include "TooltipData.h"
 
-TooltipData::TooltipData() {
-	tip_buffer = NULL;
-	default_color = font->getColor("widget_normal");
+TooltipData::TooltipData() 
+  : default_color(font->getColor("widget_normal")) {
+    ;
 }
 
 TooltipData::~TooltipData() {
-	SDL_FreeSurface(tip_buffer);
+  clear();
 }
+
 
 TooltipData::TooltipData(const TooltipData &tdSource) {
 
 	// DO NOT copy the buffered text render
 	// Allow the new copy to create its own buffer
 	// Otherwise the same buffer will be deleted twice, causing a mem error
-	tip_buffer = NULL;
+  renderable = Renderable();
 
 	lines.clear();
 	colors.clear();
@@ -58,8 +60,12 @@ TooltipData& TooltipData::operator= (const TooltipData &tdSource) {
 void TooltipData::clear() {
 	lines.clear();
 	colors.clear();
-	SDL_FreeSurface(tip_buffer);
-	tip_buffer = NULL;
+	SDL_FreeSurface(renderable.sprite);
+  renderable.sprite = NULL;
+#ifdef WITH_OPENGL
+  if (0 != renderable.texture) glDeleteTextures(1, &(renderable.texture));
+  renderable.texture = 0;
+#endif // WITH_OPENGL  
 }
 
 void TooltipData::addText(const std::string &text, SDL_Color color) {
