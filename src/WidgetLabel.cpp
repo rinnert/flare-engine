@@ -252,7 +252,7 @@ void WidgetLabel::refresh() {
   renderable.src.w = renderable.sprite->w;
   renderable.src.h = renderable.sprite->h;
 #ifdef WITH_OPENGL
-  if (OPENGL) { gl_resources->create_texture(renderable); }
+  if (OPENGL) { gl_resources->update_texture(renderable); }
 #endif // WITH_OPENGL
 }
 

@@ -156,7 +156,7 @@ void WidgetTooltip::createBuffer(TooltipData &tip) {
   tip.renderable.src.h = tip.renderable.sprite->h;
 
 #ifdef WITH_OPENGL
-  if (OPENGL) { gl_resources->create_texture(tip.renderable); }
+  if (OPENGL) { gl_resources->update_texture(tip.renderable); }
 #endif // WITH_OPENGL
 
 	// Currently tooltips are always opaque

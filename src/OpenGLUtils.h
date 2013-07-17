@@ -63,14 +63,14 @@ class OpenGLResourceManager {
         SDL_Rect *clip=0
         ); 
 
-    /** Create a texture from a Renderable.
+    /** Update a texture of a Renderable.
      *
      *  Create a texture from the SDL_Surface and clipping rectangle
      *  stored in the Renderable. Store the result in the Rendarable's
      *  texture field. If the texture field was not 0, free the old
      *  texture before storing the new one.
      */
-    void create_texture(Renderable& r);
+    void update_texture(Renderable& r);
 
     /** Free the texture in a Renderable.
      *

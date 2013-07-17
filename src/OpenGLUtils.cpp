@@ -136,7 +136,7 @@ GLuint OpenGLResourceManager::create_texture(
   return texture;
 }
 
-void OpenGLResourceManager::create_texture(Renderable& r) {
+void OpenGLResourceManager::update_texture(Renderable& r) {
   if (0 != r.texture) glDeleteTextures(1, &(r.texture));
   r.texture = create_texture(r.sprite,&(r.src));
   return;
