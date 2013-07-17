@@ -30,7 +30,8 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 
 using namespace std;
 
-OpenGLRenderDevice::OpenGLRenderDevice() {
+OpenGLRenderDevice::OpenGLRenderDevice() 
+  : bound_texture(0) {
   cout << "Using Render Device: OpenGLRenderDevice" << endl;
   printf("GL_RENDERER   = %s\n", (char*)glGetString(GL_RENDERER));
   printf("GL_VERSION    = %s\n", (char*)glGetString(GL_VERSION));
@@ -126,31 +127,62 @@ SDL_Surface *OpenGLRenderDevice::create_context(
 
   screen = view;
   is_initialized = true;
+  bound_texture = 0;
 
   return view;
 }
 
 int OpenGLRenderDevice::render(Renderable& r) {
+  if (NULL == r.sprite) return -1;
+
   GLuint texture = r.texture;
+
   // If the Renderable has no texture, create a temporary one.
-  // NOTE: this is *very* costly. Ideally this should never happen.
+  // NOTE: this is *very* costly.  Ideally this should never happen.
   if (0 == texture) { texture = gl_resources->create_texture(r.sprite,&(r.src)); }
-  else { glBindTexture(GL_TEXTURE_2D, texture); }
 
-  float x0 = (float)(r.map_pos.x+r.offset.x);
-  float y0 = (float)(r.map_pos.x+r.offset.y);
-  float x1 = x0 + r.src.w;
-  float y1 = y0 + r.src.h;
+  // Because switching texture context can be expensive, only bind the texture
+  // if it's not currently bound.
+  // TODO: Can this responsibility be moved to client (front-end) code?  If so,
+  // it could help performance.
+  if (bound_texture != texture) { 
+    glBindTexture(GL_TEXTURE_2D, texture); 
+    bound_texture = texture;
+  }
 
+  tx0 = ty0 = 0.0f;
+  tx1 = ty1 = 1.0f;
+
+  // The following texture coordinate computations assume the sprite and
+  // texture dimensions are identical.  The front-end code is responsible for
+  // ensuring that condition.
+  if (r.src.w != r.sprite->w) {
+    tx0 = (float)r.src.x/r.sprite->w;
+    tx1 = tx0 + (float)r.src.w/r.sprite->w;
+  }
+  if (r.src.h != r.sprite->h) {
+    ty0 = (float)r.src.y/r.sprite->h;
+    ty1 = ty0 + (float)r.src.h/r.sprite->h;
+  }
+
+  x0 = (float)(r.map_pos.x+r.offset.x);
+  y0 = (float)(r.map_pos.x+r.offset.y);
+  x1 = x0 + r.src.w;
+  y1 = y0 + r.src.h;
+
+  // All coordinate are determined; render now.
   glBegin(GL_QUADS);
-  glTexCoord2f(0.0f, 0.0f); glVertex2f(x0, y0);
-  glTexCoord2f(1.0f, 0.0f); glVertex2f(x1, y0);
-  glTexCoord2f(1.0f, 1.0f); glVertex2f(x1, y1);
-  glTexCoord2f(0.0f, 1.0f); glVertex2f(x0, y1);
+  glTexCoord2f(tx0, ty0); glVertex2f(x0, y0);
+  glTexCoord2f(tx1, ty0); glVertex2f(x1, y0);
+  glTexCoord2f(tx1, ty1); glVertex2f(x1, y1);
+  glTexCoord2f(tx0, ty1); glVertex2f(x0, y1);
   glEnd();
 
   // If the texture is temporary, get rid of it.
-  if (0 == r.texture) { glDeleteTextures(1, &texture); }
+  if (0 == r.texture) { 
+    glDeleteTextures(1, &texture); 
+    bound_texture = 0;
+  }
 
   return 0;
 }

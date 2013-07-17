@@ -65,7 +65,6 @@ class OpenGLRenderDevice : public RenderDevice {
         int y,
         Uint32 color
         );
-
     
     /** Blank the screen.
      */
@@ -79,6 +78,15 @@ class OpenGLRenderDevice : public RenderDevice {
      */
     virtual void destroy_context(); 
 
+  private:
+
+    // Keep track of the bound texture w/o calling into the
+    // OpenGL state engine.
+    GLuint bound_texture;
+
+    // These are for keeping the render stack frame small.
+    float tx0,ty0,tx1,ty1;
+    float x0,y0,x1,y1;
 };
 
 #endif // OPENGLRENDERDEVICE_H
