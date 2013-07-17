@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2013 Henrik Andersson
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -39,6 +40,9 @@ Created and destroyed by main.cpp
 #include "ModManager.h"
 #include "SoundManager.h"
 #include "RenderDevice.h"
+#ifdef WITH_OPENGL
+#include "OpenGLUtils.h"
+#endif // WITH_OPENGL
 
 extern SDL_Surface *screen;
 extern SDL_Joystick *joy;
@@ -54,4 +58,7 @@ extern SoundManager *snd;
 
 extern RenderDevice *render_device;
 
+#ifdef WITH_OPENGL
+extern OpenGLResourceManager *gl_resources;
+#endif // WITH_OPENGL
 #endif

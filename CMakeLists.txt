@@ -156,6 +156,8 @@ Set (FLARE_SOURCES
 	./src/ModManager.cpp
 	./src/NPC.cpp
 	./src/NPCManager.cpp
+	./src/OpenGLRenderDevice.cpp
+	./src/OpenGLUtils.cpp
 	./src/PowerManager.cpp
 	./src/QuestLog.cpp
 	./src/SaveLoad.cpp

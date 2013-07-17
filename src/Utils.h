@@ -54,7 +54,7 @@ public:
 	SDL_Surface *sprite; // image to be used
 	SDL_Rect src; // location on the sprite in pixel coordinates. Not used in OpenGL.
 #ifdef WITH_OPENGL
-  GLuint gl_texture;
+  GLuint texture;
 #endif // WITH_OPENGL
 
 
@@ -65,7 +65,7 @@ public:
 		: sprite(0)
 		, src(SDL_Rect())
 #ifdef WITH_OPENGL
-    , gl_texture(0)
+    , texture(0)
 #endif // WITH_OPENGL
 		, map_pos()
 		, offset()

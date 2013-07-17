@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2013 Henrik Andersson
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -38,3 +39,6 @@ CombatText *comb;
 SoundManager *snd;
 SDL_Joystick *joy;
 RenderDevice *render_device;
+#ifdef WITH_OPENGL
+OpenGLResourceManager *gl_resources = NULL;
+#endif // WITH_OPENGL

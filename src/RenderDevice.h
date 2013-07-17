@@ -71,7 +71,7 @@ class RenderDevice {
 
     /** Draw pixel to screen. 
      */ 
-    virtual void draw_pixel_to_screen(
+    virtual void draw_pixel(
         int x,
         int y,
         Uint32 color

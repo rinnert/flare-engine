@@ -14,24 +14,31 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with
 FLARE.  If not, see http://www.gnu.org/licenses/
 */
+#ifdef WITH_OPENGL
 
 #include<iostream>
 
 #include<stdio.h>
-#include<stdlib.h>
+
+#include <SDL_opengl.h>
 
 #include "SharedResources.h"
+#include "SDL_gfxBlitFunc.h"
+#include "Utils.h"
 
-#include "SDLBlitRenderDevice.h"
+#include "OpenGLRenderDevice.h"
 
 using namespace std;
 
-SDLBlitRenderDevice::SDLBlitRenderDevice()
-{
-  cout << "Using Render Device: SDLBlitRenderDevice" << endl;
+OpenGLRenderDevice::OpenGLRenderDevice() {
+  cout << "Using Render Device: OpenGLRenderDevice" << endl;
+  printf("GL_RENDERER   = %s\n", (char*)glGetString(GL_RENDERER));
+  printf("GL_VERSION    = %s\n", (char*)glGetString(GL_VERSION));
+  printf("GL_VENDOR     = %s\n", (char*)glGetString(GL_VENDOR));
+  printf("GL_EXTENSIONS = %s\n", (char*)glGetString(GL_EXTENSIONS));
 }
 
-SDL_Surface *SDLBlitRenderDevice::create_context(
+SDL_Surface *OpenGLRenderDevice::create_context(
     int width, 
     int height,
     bool full_screen
@@ -66,9 +73,8 @@ SDL_Surface *SDLBlitRenderDevice::create_context(
 
   Uint32 flags = 0;
   if (full_screen) { flags |= SDL_FULLSCREEN; }
-  if (DOUBLEBUF) { flags |= SDL_DOUBLEBUF; }
-  if (HWSURFACE) { flags |= SDL_HWSURFACE | SDL_HWACCEL; }
-  else { flags |= SDL_SWSURFACE; }
+  flags |= SDL_HWSURFACE | SDL_HWACCEL;
+  flags |= SDL_GL_DOUBLEBUFFER | SDL_OPENGL;
 
   SDL_Surface *view = SDL_SetVideoMode (width, height, 0, flags);
   if (view == NULL) {
@@ -101,73 +107,94 @@ SDL_Surface *SDLBlitRenderDevice::create_context(
     FULLSCREEN = full_screen;
   }
 
+  // Configure OpenGL if all went well.
+  if (NULL != view) {
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glViewport(0, 0, width, height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0f, width, height, 0.0f, -1.0f, 1.0f);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
+  }
+
   screen = view;
   is_initialized = true;
 
   return view;
 }
 
-int SDLBlitRenderDevice::render(Renderable& r) {
-  SDL_Rect dest;
+int OpenGLRenderDevice::render(Renderable& r) {
+  GLuint texture = r.texture;
+  // If the Renderable has no texture, create a temporary one.
+  // NOTE: this is *very* costly. Ideally this should never happen.
+  if (0 == texture) { texture = gl_resources->create_texture(r.sprite,&(r.src)); }
+  else { glBindTexture(GL_TEXTURE_2D, texture); }
 
-  dest.x = r.map_pos.x + r.offset.x; 
-  dest.y = r.map_pos.y + r.offset.y;
+  float x0 = (float)(r.map_pos.x+r.offset.x);
+  float y0 = (float)(r.map_pos.x+r.offset.y);
+  float x1 = x0 + r.src.w;
+  float y1 = y0 + r.src.h;
 
-  return SDL_BlitSurface(r.sprite, &r.src, screen, &dest);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f, 0.0f); glVertex2f(x0, y0);
+  glTexCoord2f(1.0f, 0.0f); glVertex2f(x1, y0);
+  glTexCoord2f(1.0f, 1.0f); glVertex2f(x1, y1);
+  glTexCoord2f(0.0f, 1.0f); glVertex2f(x0, y1);
+  glEnd();
+
+  // If the texture is temporary, get rid of it.
+  if (0 == r.texture) { glDeleteTextures(1, &texture); }
+
+  return 0;
 }
 
-
-void SDLBlitRenderDevice::draw_pixel(
+void OpenGLRenderDevice::draw_pixel(
     int x,
     int y,
     Uint32 color
     ) {
-	int bpp = screen->format->BytesPerPixel;
-	/* Here p is the address to the pixel we want to set */
-	Uint8 *p = (Uint8 *)screen->pixels + y * screen->pitch + x * bpp;
+  Uint8 r,g,b;
+  float gl_r,gl_g,gl_b;
 
-	switch(bpp) {
-	case 1:
-		*p = color;
-		break;
+  SDL_GetRGB(color,screen->format,&r,&g,&b);
+  gl_r = (float)r/255.0f;
+  gl_g = (float)g/255.0f;
+  gl_b = (float)b/255.0f;
 
-	case 2:
-		*(Uint16 *)p = color;
-		break;
 
-	case 3:
-#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-			p[0] = (color >> 16) & 0xff;
-			p[1] = (color >> 8) & 0xff;
-			p[2] = color & 0xff;
-#else
-			p[0] = color & 0xff;
-			p[1] = (color >> 8) & 0xff;
-			p[2] = (color >> 16) & 0xff;
-#endif
-		break;
-
-	case 4:
-		*(Uint32 *)p = color;
-		break;
-	}
+  glDisable(GL_TEXTURE_2D);
+  glBegin(GL_POINTS);
+  glColor3f(gl_r,gl_g,gl_b);
+  glVertex2f(x,y);
+  glEnd();
+  glEnable(GL_TEXTURE_2D);
 
   return;
 }
 
-void SDLBlitRenderDevice::blank_screen() {
-  SDL_FillRect(screen, NULL, 0);
+void OpenGLRenderDevice::blank_screen() {
+  glClear(GL_COLOR_BUFFER_BIT);
+  glFinish();
   return;
 }
 
-void SDLBlitRenderDevice::commit_frame() {
-  SDL_Flip(screen);
+void OpenGLRenderDevice::commit_frame() {
+  glFinish();
+  SDL_GL_SwapBuffers();
   return;
 }
 
-void SDLBlitRenderDevice::destroy_context() {
+void OpenGLRenderDevice::destroy_context() {
   // Nothing to be done; SDL_Quit() will handle it all
   // for this render device.
   return;
 }
 
+#endif // WITH_OPENGL

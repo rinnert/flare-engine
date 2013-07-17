@@ -15,33 +15,36 @@ You should have received a copy of the GNU General Public License along with
 FLARE.  If not, see http://www.gnu.org/licenses/
 */
 
+#ifdef WITH_OPENGL
+
 #pragma once
-#ifndef SDLBLITRENDERDEVICE_H
-#define SDLBLITRENDERDEVICE_H
+#ifndef OPENGLRENDERDEVICE_H
+#define OPENGLRENDERDEVICE_H
 
 #include "RenderDevice.h"
 
-/** Provide rendering device using SDL_BlitSurface backend.
+/** Provide rendering device using OpenGL backend.
  *
- * Provide an SDL_BlitSurface implementation for renderning a Renderable to
- * the screen.  Simply dispatches rendering to SDL_BlitSurface().
+ * Provide an OpenGL implementation for renderning an SLD_surface to the
+ * screen. Create a texture from a SDL_Surface and render it using OpenGL
+ * quads.
  *
  * As this is for the FLARE engine, the implementation use the the engine's
  * global settings context, which is included by the interface.
  *
- * @class SDLBlitRenderDevice 
+ * @class OpenGLRenderDevice 
  * @see RenderDevice
  * @author Kurt Rinnert 
- * @date 2013-07-06
+ * @date 2013-07-07
  *
  */
-class SDLBlitRenderDevice : public RenderDevice {
+class OpenGLRenderDevice : public RenderDevice {
 
   public:
 
     /** Initialize base class and report rendering device in use.
      */
-    SDLBlitRenderDevice();
+    OpenGLRenderDevice();
 
     /** Create context on startup.
      */
@@ -53,7 +56,7 @@ class SDLBlitRenderDevice : public RenderDevice {
 
     /** Render surface to screen. 
      */ 
-    virtual int render(Renderable& r); 
+    virtual int render(Renderable& r);
 
     /** Draw pixel to screen. 
      */ 
@@ -63,6 +66,7 @@ class SDLBlitRenderDevice : public RenderDevice {
         Uint32 color
         );
 
+    
     /** Blank the screen.
      */
     virtual void blank_screen();
@@ -77,4 +81,5 @@ class SDLBlitRenderDevice : public RenderDevice {
 
 };
 
-#endif // SDLBLITRENDERDEVICE_H
+#endif // OPENGLRENDERDEVICE_H
+#endif // WITH_OPENGL

@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2013 Henrik Andersson
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -30,6 +31,7 @@ using namespace std;
 #include "SharedResources.h"
 #include "UtilsFileSystem.h"
 #include "SDLBlitRenderDevice.h"
+#include "OpenGLRenderDevice.h"
 
 GameSwitcher *gswitch;
 SDL_Surface *titlebar_icon;
@@ -76,6 +78,9 @@ static void init() {
 	comb = new CombatText();
 	imag = new ImageManager();
 	inpt = new InputState();
+#ifdef WITH_OPENGL
+  gl_resources = new OpenGLResourceManager();
+#endif // WITH_OPENGL
 
 	// Load tileset options (must be after ModManager is initialized)
 	loadTilesetSettings();
@@ -88,7 +93,14 @@ static void init() {
 	SDL_WM_SetIcon(titlebar_icon, NULL);
 
 	// Create render Device and Rendering Context.
+
+#ifdef WITH_OPENGL
+  if (OPENGL) { render_device = new OpenGLRenderDevice(); }
+  else { render_device = new SDLBlitRenderDevice(); }
+#else // WITH_OPENGL
   render_device = new SDLBlitRenderDevice();
+#endif // WITH_OPENGL
+
   screen = render_device->create_context(VIEW_W, VIEW_H, FULLSCREEN);
 
 	if (screen == NULL) {
