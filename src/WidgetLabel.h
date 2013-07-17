@@ -58,7 +58,7 @@ private:
 	int justify;
 	int valign;
 	std::string font_style;
-	SDL_Surface *text_buffer;
+  Renderable renderable;
 
 public:
 	WidgetLabel();

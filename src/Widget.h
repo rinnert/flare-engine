@@ -24,6 +24,10 @@ FLARE.  If not, see http://www.gnu.org/licenses/
  * Base interface all widget needs to implement
  */
 #include "CommonIncludes.h"
+#include "Utils.h"
+#ifdef WITH_OPENGL
+#include "OpenGLUtils.h"
+#endif // WITH_OPENGL
 
 enum ScrollType {VERTICAL, HORIZONTAL, TWO_DIRECTIONS};
 

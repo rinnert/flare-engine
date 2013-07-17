@@ -72,8 +72,6 @@ WidgetLabel::WidgetLabel()
 	, justify(JUSTIFY_LEFT)
 	, valign(VALIGN_TOP)
 	, font_style("font_regular")
-	, text_buffer(NULL)
-
 {
 	bounds.x = bounds.y = 0;
 	bounds.w = bounds.h = 0;
@@ -85,24 +83,23 @@ WidgetLabel::WidgetLabel()
  * Draw the buffered string surface to the screen
  */
 void WidgetLabel::render(SDL_Surface *target) {
-	if (target == NULL) {
-		target = screen;
-	}
+  if (NULL == target) { // Render to screen.
+    render_device->render(renderable);
+  } else { // Render to surface. Does this happen at all?
+    SDL_Rect dest;
+    dest.x = bounds.x;
+    dest.y = bounds.y;
+    dest.w = bounds.w;
+    dest.h = bounds.h;
 
-	SDL_Rect dest;
-	dest.x = bounds.x;
-	dest.y = bounds.y;
-	dest.w = bounds.w;
-	dest.h = bounds.h;
-
-	if (text_buffer != NULL) {
-		if (render_to_alpha)
-			SDL_gfxBlitRGBA(text_buffer, NULL, target, &dest);
-		else
-			SDL_BlitSurface(text_buffer, NULL, target, &dest);
-	}
+    if (renderable.sprite != NULL) {
+      if (render_to_alpha)
+        SDL_gfxBlitRGBA(renderable.sprite, NULL, target, &dest);
+      else
+        SDL_BlitSurface(renderable.sprite, NULL, target, &dest);
+    }
+  }
 }
-
 
 void WidgetLabel::set(int _x, int _y, int _justify, int _valign, const string& _text, SDL_Color _color) {
 	set(_x, _y, _justify, _valign, _text, _color, "font_regular");
@@ -225,7 +222,9 @@ void WidgetLabel::applyOffsets() {
 	else if (valign == VALIGN_CENTER) {
 		bounds.y = y_origin - bounds.h/2;
 	}
-
+  
+  renderable.map_pos.x = bounds.x;
+  renderable.map_pos.y = bounds.y;
 }
 
 /**
@@ -244,15 +243,23 @@ void WidgetLabel::set(const string& _text) {
  * This function refreshes the buffer.
  */
 void WidgetLabel::refresh() {
-
-	SDL_FreeSurface(text_buffer);
-	text_buffer = createAlphaSurface(bounds.w, bounds.h);
+	SDL_FreeSurface(renderable.sprite);
+	renderable.sprite = createAlphaSurface(bounds.w, bounds.h);
 	font->setFont(font_style);
-	font->renderShadowed(text, 0, 0, JUSTIFY_LEFT, text_buffer, color);
-
+	font->renderShadowed(text, 0, 0, JUSTIFY_LEFT, renderable.sprite, color);
+  renderable.src.x = 0;
+  renderable.src.y = 0;
+  renderable.src.w = renderable.sprite->w;
+  renderable.src.h = renderable.sprite->h;
+#ifdef WITH_OPENGL
+  if (OPENGL) { gl_resources->create_texture(renderable); }
+#endif // WITH_OPENGL
 }
 
 
 WidgetLabel::~WidgetLabel() {
-	SDL_FreeSurface(text_buffer);
+	SDL_FreeSurface(renderable.sprite);
+#ifdef WITH_OPENGL
+  if (OPENGL) { glDeleteTextures(1,&renderable.texture); }
+#endif // WITH_OPENGL
 }
