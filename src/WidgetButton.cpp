@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Stefan Beller
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -30,7 +31,7 @@ using namespace std;
 WidgetButton::WidgetButton(const std::string& _fileName)
 	: Widget()
 	, fileName(_fileName)
-	, buttons(NULL)
+	, buttons()
 	, wlabel()
 	, color_normal(font->getColor("widget_normal"))
 	, color_disabled(font->getColor("widget_disabled"))
@@ -45,8 +46,6 @@ WidgetButton::WidgetButton(const std::string& _fileName)
 	focusable = true;
 	pos.x = pos.y = pos.w = pos.h = 0;
 	loadArt();
-	pos.w = buttons->w;
-	pos.h = (buttons->h / 4); //height of one button
 }
 
 void WidgetButton::activate() {
@@ -54,14 +53,20 @@ void WidgetButton::activate() {
 }
 
 void WidgetButton::loadArt() {
-
 	// load button images
-	buttons = loadGraphicSurface(fileName);
-
-	if (!buttons) {
+	buttons.sprite = loadGraphicSurface(fileName);
+	if (!buttons.sprite) {
 		SDL_Quit();
 		exit(1); // or abort ??
 	}
+  buttons.src.x = 0;
+  buttons.src.y = 0;
+  buttons.src.w = pos.w = buttons.sprite->w;
+  buttons.src.h = pos.h = buttons.sprite->h/4; // height of one button
+
+#ifdef WITH_OPENGL
+  if (OPENGL) { buttons.texture = gl_resources->create_texture(buttons.sprite); }
+#endif // WITH_OPENGL
 }
 
 bool WidgetButton::checkClick() {
@@ -110,34 +115,32 @@ bool WidgetButton::checkClick(int x, int y) {
 }
 
 void WidgetButton::render(SDL_Surface *target) {
-	if (target == NULL) {
-		target = screen;
-	}
-	SDL_Rect src;
-	src.x = 0;
-	src.w = pos.w;
-	src.h = pos.h;
-
 	// the "button" surface contains button variations.
 	// choose which variation to display.
 	if (!enabled)
-		src.y = BUTTON_GFX_DISABLED * pos.h;
+		buttons.src.y = BUTTON_GFX_DISABLED * pos.h;
 	else if (pressed)
-		src.y = BUTTON_GFX_PRESSED * pos.h;
+		buttons.src.y = BUTTON_GFX_PRESSED * pos.h;
 	else if (hover)
-		src.y = BUTTON_GFX_HOVER * pos.h;
+		buttons.src.y = BUTTON_GFX_HOVER * pos.h;
 	else if(in_focus)
-		src.y = BUTTON_GFX_HOVER * pos.h;
+		buttons.src.y = BUTTON_GFX_HOVER * pos.h;
 	else
-		src.y = BUTTON_GFX_NORMAL * pos.h;
+		buttons.src.y = BUTTON_GFX_NORMAL * pos.h;
 
-	// create a temporary rect so we don't modify pos
-	SDL_Rect offset = pos;
+  if (NULL==target || screen==target) { // render to screen
+    buttons.map_pos.x = pos.x;
+    buttons.map_pos.y = pos.y;
+    render_device->render(buttons);
+  } else {
+    // create a temporary rect so we don't modify pos
+    SDL_Rect offset = pos;
 
-	if (render_to_alpha)
-		SDL_gfxBlitRGBA(buttons, &src, target, &offset);
-	else
-		SDL_BlitSurface(buttons, &src, target, &offset);
+    if (render_to_alpha)
+      SDL_gfxBlitRGBA(buttons.sprite, &buttons.src, target, &offset);
+    else
+      SDL_BlitSurface(buttons.sprite, &buttons.src, target, &offset);
+  }
 
 	wlabel.render(target);
 
@@ -184,7 +187,10 @@ TooltipData WidgetButton::checkTooltip(Point mouse) {
 }
 
 WidgetButton::~WidgetButton() {
-	SDL_FreeSurface(buttons);
+	SDL_FreeSurface(buttons.sprite);
+#ifdef WITH_OPENGL
+  if (OPENGL) { glDeleteTextures(1,&buttons.texture); }
+#endif // WITH_OPENGL
 	tip_buf.clear();
 	delete tip;
 }
