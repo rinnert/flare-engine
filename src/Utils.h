@@ -49,11 +49,11 @@ public:
 };
 
 // message passing struct for various sprites rendered map inline
-class Renderable {
-public:
+struct Renderable {
 	SDL_Surface *sprite; // image to be used
-	SDL_Rect src; // location on the sprite in pixel coordinates. Not used in OpenGL.
+	SDL_Rect src; // location on the sprite in pixel coordinates.  
 #ifdef WITH_OPENGL
+  float gl_src[4]; // location on the sprite in texture coordinates. 
   GLuint texture;
 #endif // WITH_OPENGL
 
@@ -61,6 +61,7 @@ public:
 	Point map_pos;     // The map location on the floor between someone's feet
 	Point offset;      // offset from map_pos to topleft corner of sprite
 	uint64_t prio;     // 64-32 bit for map position, 31-16 for intertile position, 15-0 user dependent, such as Avatar.
+
 	Renderable()
 		: sprite(0)
 		, src(SDL_Rect())
@@ -71,6 +72,20 @@ public:
 		, offset()
 		, prio(0)
 	{;}
+
+#ifdef WITH_OPENGL
+  void set_graphics(SDL_Surface *s, GLuint t=0);
+#else // WITH_OPENGL
+  void set_graphics(SDL_Surface *s);
+#endif // WITH_OPENGL
+  void clear_graphics();
+  void set_clip(const SDL_Rect& clip);
+  void set_clip(
+      const int x,
+      const int y,
+      const int w,
+      const int h
+      );
 };
 
 class Event_Component {

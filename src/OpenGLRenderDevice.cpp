@@ -149,21 +149,6 @@ int OpenGLRenderDevice::render(Renderable& r) {
     bound_texture = texture;
   }
 
-  tx0 = ty0 = 0.0f;
-  tx1 = ty1 = 1.0f;
-
-  // The following texture coordinate computations assume the sprite and
-  // texture dimensions are identical.  The front-end code is responsible for
-  // ensuring that condition.
-  if (r.src.w != r.sprite->w) {
-    tx0 = (float)r.src.x/r.sprite->w;
-    tx1 = tx0 + (float)r.src.w/r.sprite->w;
-  }
-  if (r.src.h != r.sprite->h) {
-    ty0 = (float)r.src.y/r.sprite->h;
-    ty1 = ty0 + (float)r.src.h/r.sprite->h;
-  }
-
   x0 = (float)(r.map_pos.x+r.offset.x);
   y0 = (float)(r.map_pos.y+r.offset.y);
   x1 = x0 + r.src.w;
@@ -171,10 +156,10 @@ int OpenGLRenderDevice::render(Renderable& r) {
 
   // All coordinate are determined; render now.
   glBegin(GL_QUADS);
-  glTexCoord2f(tx0, ty0); glVertex2f(x0, y0);
-  glTexCoord2f(tx1, ty0); glVertex2f(x1, y0);
-  glTexCoord2f(tx1, ty1); glVertex2f(x1, y1);
-  glTexCoord2f(tx0, ty1); glVertex2f(x0, y1);
+  glTexCoord2f(r.gl_src[0], r.gl_src[1]); glVertex2f(x0, y0);
+  glTexCoord2f(r.gl_src[2], r.gl_src[1]); glVertex2f(x1, y0);
+  glTexCoord2f(r.gl_src[2], r.gl_src[3]); glVertex2f(x1, y1);
+  glTexCoord2f(r.gl_src[0], r.gl_src[3]); glVertex2f(x0, y1);
   glEnd();
 
   // If the texture is temporary, get rid of it.

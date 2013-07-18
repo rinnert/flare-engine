@@ -2,6 +2,7 @@
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Stefan Beller
 Copyright © 2013 Henrik Andersson
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -20,11 +21,97 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 #include "Settings.h"
 #include "SharedResources.h"
 #include "Utils.h"
+#ifdef WITH_OPENGL
+#include "OpenGLUtils.h"
+#endif // WITH_OPENGL
 
 #include <cmath>
 
 using namespace std;
 
+#ifdef WITH_OPENGL
+void Renderable::set_graphics(SDL_Surface *s, GLuint t) {
+#else // WITH_OPENGL
+void Renderable::set_graphics(SDL_Surface *s) {
+#endif // WITH_OPENGL
+  // Set the graphics context of a Renderable.
+  //
+  // Initialize graphics resources. That is the SLD_surface buffer and the
+  // OpenGL texture (if applicable).
+  //
+  // It is important that, if the client owns the graphics resources,
+  // clear_graphics() method is called first in case this Renderable holds the
+  // last references to avoid resource leaks.
+  sprite = s;
+#ifdef WITH_OPENGL
+  if (OPENGL) {
+    if (0 == t) { 
+      texture = gl_resources->create_texture(sprite); 
+    } else {
+      texture = t;
+    }
+  } 
+#endif // WITH_OPENGL
+}
+
+void Renderable::clear_graphics() {
+  // Clear the graphics context of a Renderable.
+  //
+  // Release graphics resources. That is the SLD_surface buffer and the OpenGL
+  // texture (if applicable).
+  //
+  // It is important that this method is only called by clients who own the
+  // graphics resources.
+  if (NULL != sprite) { 
+    SDL_FreeSurface(sprite); 
+    sprite = NULL;
+  }
+#ifdef WITH_OPENGL
+  if (OPENGL && 0 != texture) {
+    glDeleteTextures(1,&texture);
+    texture = 0;
+  } 
+#endif // WITH_OPENGL
+}
+
+void Renderable::set_clip(const SDL_Rect& clip) {
+  // Set the clipping rectangle.
+  //
+  // Set the clipping rectangle for the sprite and the
+  // OpenGL texture (if applicable).
+  src = clip;
+#ifdef WITH_OPENGL
+  if (OPENGL) {
+    gl_src[0] = (float)clip.x/sprite->w;
+    gl_src[1] = (float)clip.y/sprite->h;
+    gl_src[2] = clip.x + (float)clip.w/sprite->w;
+    gl_src[3] = clip.y + (float)clip.h/sprite->h;
+  }
+#endif // WITH_OPENGL
+}
+
+void Renderable::set_clip(
+    const int x,
+    const int y,
+    const int w,
+    const int h) {
+  // Set the clipping rectangle.
+  //
+  // Set the clipping rectangle for the sprite and the
+  // OpenGL texture (if applicable).
+  src.x = x;
+  src.y = y;
+  src.w = w;
+  src.h = h;
+#ifdef WITH_OPENGL
+  if (OPENGL) {
+    gl_src[0] = (float)x/sprite->w;
+    gl_src[1] = (float)y/sprite->h;
+    gl_src[2] = gl_src[0] + (float)w/sprite->w;
+    gl_src[3] = gl_src[1] + (float)h/sprite->h;
+  }
+#endif // WITH_OPENGL
+}
 
 int round(float f) {
 	return (int)(f + 0.5);
