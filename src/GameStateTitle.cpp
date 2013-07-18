@@ -75,7 +75,11 @@ GameStateTitle::GameStateTitle() : GameState() {
 
 	// set up labels
 	label_version = new WidgetLabel();
+#ifdef WITH_OPENGL
+	label_version->set(VIEW_W, 0, JUSTIFY_RIGHT, VALIGN_TOP, msg->get("Flare Alpha v0.18 (OpenGL)"), font->getColor("menu_normal"));
+#else // WITH_OPENGL
 	label_version->set(VIEW_W, 0, JUSTIFY_RIGHT, VALIGN_TOP, msg->get("Flare Alpha v0.18"), font->getColor("menu_normal"));
+#endif // WITH_OPENGL
 
 	// Setup tab order
 	tablist.add(button_play);
