@@ -33,10 +33,6 @@ using namespace std;
 OpenGLRenderDevice::OpenGLRenderDevice() 
   : bound_texture(0) {
   cout << "Using Render Device: OpenGLRenderDevice" << endl;
-  printf("GL_RENDERER   = %s\n", (char*)glGetString(GL_RENDERER));
-  printf("GL_VERSION    = %s\n", (char*)glGetString(GL_VERSION));
-  printf("GL_VENDOR     = %s\n", (char*)glGetString(GL_VENDOR));
-  printf("GL_EXTENSIONS = %s\n", (char*)glGetString(GL_EXTENSIONS));
 }
 
 SDL_Surface *OpenGLRenderDevice::create_context(
@@ -169,7 +165,7 @@ int OpenGLRenderDevice::render(Renderable& r) {
   }
 
   x0 = (float)(r.map_pos.x+r.offset.x);
-  y0 = (float)(r.map_pos.x+r.offset.y);
+  y0 = (float)(r.map_pos.y+r.offset.y);
   x1 = x0 + r.src.w;
   y1 = y0 + r.src.h;
 
