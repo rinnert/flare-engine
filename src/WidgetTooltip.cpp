@@ -148,27 +148,27 @@ void WidgetTooltip::createBuffer(TooltipData &tip) {
 	Point size = font->calc_size(fulltext, width);
 
 	// WARNING: dynamic memory allocation. Be careful of memory leaks.
-  if (NULL != tip.renderable.sprite) { SDL_FreeSurface(tip.renderable.sprite); }
-	tip.renderable.sprite = createAlphaSurface(size.x + margin+margin, size.y + margin+margin);
-  tip.renderable.src.x = 0;
-  tip.renderable.src.y = 0;
-  tip.renderable.src.w = tip.renderable.sprite->w;
-  tip.renderable.src.h = tip.renderable.sprite->h;
-
-#ifdef WITH_OPENGL
-  if (OPENGL) { gl_resources->update_texture(tip.renderable); }
-#endif // WITH_OPENGL
+  tip.renderable.clear_graphics();
+  SDL_Surface *surface = 
+    createAlphaSurface(size.x + margin+margin, size.y + margin+margin);
 
 	// Currently tooltips are always opaque
-  SDL_SetAlpha(tip.renderable.sprite, 0, SDL_ALPHA_OPAQUE);
+  SDL_SetAlpha(surface, 0, SDL_ALPHA_OPAQUE);
 
   // style the tooltip background
   // currently this is plain black
   SDL_FillRect(
-      tip.renderable.sprite
+      surface
       , NULL
-      , SDL_MapRGB(tip.renderable.sprite->format,0,0,0));
-    
+      , SDL_MapRGB(surface->format,0,0,0));
+
+	tip.renderable.set_graphics(surface);
+  tip.renderable.set_clip(
+      0,
+      0,
+      tip.renderable.sprite->w,
+      tip.renderable.sprite->h
+      );
     
 	int cursor_y = margin;
 

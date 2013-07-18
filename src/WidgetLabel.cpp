@@ -243,23 +243,19 @@ void WidgetLabel::set(const string& _text) {
  * This function refreshes the buffer.
  */
 void WidgetLabel::refresh() {
-	SDL_FreeSurface(renderable.sprite);
-	renderable.sprite = createAlphaSurface(bounds.w, bounds.h);
+  renderable.clear_graphics();
+	SDL_Surface *surface = createAlphaSurface(bounds.w, bounds.h);
 	font->setFont(font_style);
-	font->renderShadowed(text, 0, 0, JUSTIFY_LEFT, renderable.sprite, color);
-  renderable.src.x = 0;
-  renderable.src.y = 0;
-  renderable.src.w = renderable.sprite->w;
-  renderable.src.h = renderable.sprite->h;
-#ifdef WITH_OPENGL
-  if (OPENGL) { gl_resources->update_texture(renderable); }
-#endif // WITH_OPENGL
+	font->renderShadowed(text, 0, 0, JUSTIFY_LEFT, surface, color);
+	renderable.set_graphics(surface);
+  renderable.set_clip(
+      0,
+      0,
+      renderable.sprite->w,
+      renderable.sprite->h
+      );
 }
 
-
 WidgetLabel::~WidgetLabel() {
-	SDL_FreeSurface(renderable.sprite);
-#ifdef WITH_OPENGL
-  if (OPENGL) { glDeleteTextures(1,&renderable.texture); }
-#endif // WITH_OPENGL
+  renderable.clear_graphics();
 }

@@ -30,20 +30,18 @@ GameStateTitle::GameStateTitle() : GameState() {
 	exit_game = false;
 	load_game = false;
 
-	logo.sprite = loadGraphicSurface("images/menus/logo.png");
+	logo.set_graphics(loadGraphicSurface("images/menus/logo.png"));
 	// display logo centered
 	if (logo.sprite) {
-		logo.src.x = 0;
-    logo.src.y = 0;
-		logo.src.w = logo.sprite->w;
-		logo.src.h = logo.sprite->h;
+    logo.set_clip(
+        0,
+        0,
+        logo.sprite->w,
+        logo.sprite->h
+        );
 		logo.map_pos.x = VIEW_W_HALF - (logo.sprite->w/2);
 	  logo.map_pos.y = VIEW_H_HALF - (logo.sprite->h/2);
-#ifdef WITH_OPENGL
-    if (OPENGL) { logo.texture = gl_resources->create_texture(logo.sprite); }
-#endif // WITH_OPENGL
 	}
-
 
 	// set up buttons
 	button_play = new WidgetButton("images/menus/buttons/button_default.png");
@@ -144,8 +142,5 @@ GameStateTitle::~GameStateTitle() {
 	delete button_credits;
 	delete button_exit;
 	delete label_version;
-	SDL_FreeSurface(logo.sprite);
-#ifdef WITH_OPENGL
-  if (OPENGL) { glDeleteTextures(1,&logo.texture); }
-#endif // WITH_OPENGL
+  logo.clear_graphics();
 }

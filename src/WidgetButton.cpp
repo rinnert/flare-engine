@@ -54,19 +54,21 @@ void WidgetButton::activate() {
 
 void WidgetButton::loadArt() {
 	// load button images
-	buttons.sprite = loadGraphicSurface(fileName);
-	if (!buttons.sprite) {
+	SDL_Surface *surface = loadGraphicSurface(fileName);
+	if (!surface) {
 		SDL_Quit();
 		exit(1); // or abort ??
 	}
-  buttons.src.x = 0;
-  buttons.src.y = 0;
-  buttons.src.w = pos.w = buttons.sprite->w;
-  buttons.src.h = pos.h = buttons.sprite->h/4; // height of one button
 
-#ifdef WITH_OPENGL
-  if (OPENGL) { buttons.texture = gl_resources->create_texture(buttons.sprite); }
-#endif // WITH_OPENGL
+  buttons.set_graphics(surface);
+  buttons.set_clip(
+      0,
+      0,
+      buttons.sprite->w,
+      buttons.sprite->h/4
+      );
+  pos.w = buttons.sprite->w;
+  pos.h = buttons.sprite->h/4; // height of one button
 }
 
 bool WidgetButton::checkClick() {
@@ -117,16 +119,24 @@ bool WidgetButton::checkClick(int x, int y) {
 void WidgetButton::render(SDL_Surface *target) {
 	// the "button" surface contains button variations.
 	// choose which variation to display.
+  int y;
 	if (!enabled)
-		buttons.src.y = BUTTON_GFX_DISABLED * pos.h;
+		y = BUTTON_GFX_DISABLED * pos.h;
 	else if (pressed)
-		buttons.src.y = BUTTON_GFX_PRESSED * pos.h;
+		y = BUTTON_GFX_PRESSED * pos.h;
 	else if (hover)
-		buttons.src.y = BUTTON_GFX_HOVER * pos.h;
+		y = BUTTON_GFX_HOVER * pos.h;
 	else if(in_focus)
-		buttons.src.y = BUTTON_GFX_HOVER * pos.h;
+		y = BUTTON_GFX_HOVER * pos.h;
 	else
-		buttons.src.y = BUTTON_GFX_NORMAL * pos.h;
+		y = BUTTON_GFX_NORMAL * pos.h;
+
+  buttons.set_clip(
+      buttons.src.x,
+      y,
+      buttons.src.w,
+      buttons.src.h
+      );
 
   if (NULL==target || screen==target) { // render to screen
     buttons.map_pos.x = pos.x;
@@ -187,10 +197,7 @@ TooltipData WidgetButton::checkTooltip(Point mouse) {
 }
 
 WidgetButton::~WidgetButton() {
-	SDL_FreeSurface(buttons.sprite);
-#ifdef WITH_OPENGL
-  if (OPENGL) { glDeleteTextures(1,&buttons.texture); }
-#endif // WITH_OPENGL
+  buttons.clear_graphics();
 	tip_buf.clear();
 	delete tip;
 }

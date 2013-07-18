@@ -1,7 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Stefan Beller
-Copyright © 2012 Kuer Rinnert
+Copyright © 2012 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -60,12 +60,7 @@ TooltipData& TooltipData::operator= (const TooltipData &tdSource) {
 void TooltipData::clear() {
 	lines.clear();
 	colors.clear();
-	SDL_FreeSurface(renderable.sprite);
-  renderable.sprite = NULL;
-#ifdef WITH_OPENGL
-  if (0 != renderable.texture) glDeleteTextures(1, &(renderable.texture));
-  renderable.texture = 0;
-#endif // WITH_OPENGL  
+  renderable.clear_graphics();
 }
 
 void TooltipData::addText(const std::string &text, SDL_Color color) {
