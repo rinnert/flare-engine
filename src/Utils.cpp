@@ -90,6 +90,12 @@ void Renderable::set_clip(const SDL_Rect& clip) {
 #endif // WITH_OPENGL
 }
 
+void Renderable::set_dest(const SDL_Rect& dest) {
+  // Set the target screen position.
+  map_pos.x = dest.x;
+  map_pos.y = dest.y;
+}
+
 void Renderable::set_clip(
     const int x,
     const int y,

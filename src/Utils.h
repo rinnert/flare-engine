@@ -86,6 +86,7 @@ struct Renderable {
       const int w,
       const int h
       );
+  void set_dest(const SDL_Rect& dest);
 };
 
 class Event_Component {
