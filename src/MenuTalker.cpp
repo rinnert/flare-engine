@@ -2,6 +2,7 @@
 Copyright © 2011-2012 Clint Bellanger and morris989
 Copyright © 2012 Stefan Beller
 Copyright © 2013 Henrik Andersson
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
