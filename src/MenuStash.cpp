@@ -41,7 +41,7 @@ MenuStash::MenuStash(StatBlock *_stats)
 	, updated(false)
 
 {
-	background = loadGraphicSurface("images/menus/stash.png");
+	background.set_graphics(loadGraphicSurface("images/menus/stash.png"));
 
 	// Load config settings
 	FileParser infile;
@@ -103,17 +103,9 @@ void MenuStash::logic() {
 
 void MenuStash::render() {
 	if (!visible) return;
-	SDL_Rect src;
-	SDL_Rect dest;
 
 	// background
-	src.x = 0;
-	src.y = 0;
-	dest.x = window_area.x;
-	dest.y = window_area.y;
-	src.w = dest.w = window_area.w;
-	src.h = dest.h = window_area.h;
-	SDL_BlitSurface(background, &src, screen, &dest);
+	render_device->render(background);
 
 	// close button
 	closeButton->render();
@@ -241,7 +233,7 @@ int MenuStash::getRowsCount() {
 }
 
 MenuStash::~MenuStash() {
-	SDL_FreeSurface(background);
+	background.clear_graphics();
 	delete closeButton;
 }
 

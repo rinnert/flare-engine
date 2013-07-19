@@ -26,8 +26,7 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 #include "Settings.h"
 
 Menu::Menu()
-	: background(NULL)
-	, visible(false)
+	: visible(false)
 	, sfx_open(0)
 	, sfx_close(0)
 {}
@@ -74,4 +73,12 @@ void Menu::align() {
 		window_area.x = (VIEW_W-temp.w)+temp.x;
 		window_area.y = (VIEW_H-temp.h)+temp.y;
 	}
+
+  background.set_clip(
+      0,
+      0,
+      window_area.w,
+      window_area.h
+      );
+  background.set_dest(window_area);
 }

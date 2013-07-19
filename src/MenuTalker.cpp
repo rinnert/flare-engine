@@ -51,7 +51,8 @@ MenuTalker::MenuTalker(MenuManager *_menu)
 	, vendor_visible(false)
 	, advanceButton(new WidgetButton("images/menus/buttons/right.png"))
 	, closeButton(new WidgetButton("images/menus/buttons/button_x.png")) {
-	background = loadGraphicSurface("images/menus/dialog_box.png");
+
+	background.set_graphics(loadGraphicSurface("images/menus/dialog_box.png"));
 
 	// Load config settings
 	FileParser infile;
@@ -72,6 +73,8 @@ MenuTalker::MenuTalker(MenuManager *_menu)
 				dialog_pos.y = eatFirstInt(infile.val,',');
 				dialog_pos.w = eatFirstInt(infile.val,',');
 				dialog_pos.h = eatFirstInt(infile.val,',');
+        background.offset.x = dialog_pos.x;
+        background.offset.y = dialog_pos.y;
 			}
 			else if (infile.key == "dialogtext") {
 				text_pos.x = eatFirstInt(infile.val,',');
@@ -248,7 +251,8 @@ void MenuTalker::render() {
 	dest.y = offset_y + dialog_pos.y;
 	src.w = dest.w = dialog_pos.w;
 	src.h = dest.h = dialog_pos.h;
-	SDL_BlitSurface(background, &src, screen, &dest);
+
+	render_device->render(background);
 
 	// show active portrait
 	string etype = npc->dialog[dialog_node][event_cursor].type;
@@ -297,7 +301,7 @@ void MenuTalker::setHero(const string& name, const string& portrait_filename) {
 }
 
 MenuTalker::~MenuTalker() {
-	SDL_FreeSurface(background);
+	background.clear_graphics();
 	SDL_FreeSurface(portrait);
 	delete label_name;
 	delete textbox;

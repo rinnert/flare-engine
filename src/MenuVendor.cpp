@@ -45,7 +45,7 @@ MenuVendor::MenuVendor(StatBlock *_stats)
 	, npc(NULL)
 	, buyback_stock()
 	, talker_visible(false) {
-	background = loadGraphicSurface("images/menus/vendor.png");
+	background.set_graphics(loadGraphicSurface("images/menus/vendor.png"));
 
 	tabControl->setTabTitle(VENDOR_BUY,msg->get("Inventory"));
 	tabControl->setTabTitle(VENDOR_SELL,msg->get("Buyback"));
@@ -150,17 +150,9 @@ void MenuVendor::setTab(int tab) {
 
 void MenuVendor::render() {
 	if (!visible) return;
-	SDL_Rect src;
-	SDL_Rect dest;
 
 	// background
-	src.x = 0;
-	src.y = 0;
-	dest.x = window_area.x;
-	dest.y = window_area.y;
-	src.w = dest.w = window_area.w;
-	src.h = dest.h = window_area.h;
-	SDL_BlitSurface(background, &src, screen, &dest);
+	render_device->render(background);
 
 	// close button
 	closeButton->render();
@@ -261,7 +253,7 @@ int MenuVendor::getRowsCount() {
 }
 
 MenuVendor::~MenuVendor() {
-	SDL_FreeSurface(background);
+	background.clear_graphics();
 	delete closeButton;
 	delete tabControl;
 }
