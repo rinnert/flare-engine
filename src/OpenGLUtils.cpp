@@ -23,7 +23,6 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 #include<string.h>
 
 #include "SharedResources.h"
-#include "SDL_gfxBlitFunc.h"
 #include "Utils.h"
 
 #include "OpenGLUtils.h"
