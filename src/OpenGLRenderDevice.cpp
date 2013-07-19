@@ -23,7 +23,6 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 #include <SDL_opengl.h>
 
 #include "SharedResources.h"
-#include "SDL_gfxBlitFunc.h"
 #include "Utils.h"
 
 #include "OpenGLRenderDevice.h"
@@ -31,8 +30,14 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 using namespace std;
 
 OpenGLRenderDevice::OpenGLRenderDevice() 
-  : bound_texture(0) {
+  : bound_texture(0) 
+{
   cout << "Using Render Device: OpenGLRenderDevice" << endl;
+
+  if (!ANIMATED_TILES) {
+    cout << "OpenGLRenderDevice: forcing animated tiles on." << endl;
+    ANIMATED_TILES = true;
+  }  
 }
 
 SDL_Surface *OpenGLRenderDevice::create_context(
@@ -119,6 +124,12 @@ SDL_Surface *OpenGLRenderDevice::create_context(
     glLoadIdentity();
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
+    if (!is_initialized) {
+      printf("GL_RENDERER   = %s\n", (char*)glGetString(GL_RENDERER));
+      printf("GL_VERSION    = %s\n", (char*)glGetString(GL_VERSION));
+      printf("GL_VENDOR     = %s\n", (char*)glGetString(GL_VENDOR));
+      //printf("GL_EXTENSIONS = %s\n", (char*)glGetString(GL_EXTENSIONS));
+    }
   }
 
   screen = view;
@@ -197,13 +208,13 @@ void OpenGLRenderDevice::draw_pixel(
 
 void OpenGLRenderDevice::blank_screen() {
   glClear(GL_COLOR_BUFFER_BIT);
-  glFinish();
   return;
 }
 
 void OpenGLRenderDevice::commit_frame() {
-  glFinish();
   SDL_GL_SwapBuffers();
+  //glFinish();
+  glFlush();
   return;
 }
 
