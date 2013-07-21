@@ -38,6 +38,10 @@ FontEngine *font;
 CombatText *comb;
 SoundManager *snd;
 SDL_Joystick *joy;
+SDL_Surface *icon_atlas = NULL;
+#ifdef WITH_OPENGL
+GLuint icon_texture_atlas = 0;
+#endif // WITH_OPENGL
 RenderDevice *render_device;
 #ifdef WITH_OPENGL
 OpenGLResourceManager *gl_resources = NULL;

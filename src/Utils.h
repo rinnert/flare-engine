@@ -86,7 +86,9 @@ struct Renderable {
       const int w,
       const int h
       );
-  void set_dest(const SDL_Rect& dest);
+  void set_dest(const SDL_Rect& dest) { map_pos.x = dest.x; map_pos.y = dest.y; }
+  void set_dest(const Point& dest) { map_pos.x = dest.x; map_pos.y = dest.y; }
+  void set_dest(int x, int y) { map_pos.x = x; map_pos.y = y; }
 };
 
 class Event_Component {
@@ -179,8 +181,7 @@ SDL_Surface* loadGraphicSurface(std::string filename,
 								bool IfNotFoundExit = false,
 								bool HavePinkColorKey = false);
 
-void setupSDLVideoMode(unsigned width, unsigned height);
-
 std::string abbreviateKilo(int amount);
 
+Renderable loadIcons();
 #endif

@@ -84,16 +84,10 @@ void Renderable::set_clip(const SDL_Rect& clip) {
   if (OPENGL) {
     gl_src[0] = (float)clip.x/sprite->w;
     gl_src[1] = (float)clip.y/sprite->h;
-    gl_src[2] = clip.x + (float)clip.w/sprite->w;
-    gl_src[3] = clip.y + (float)clip.h/sprite->h;
+    gl_src[2] = gl_src[0] + (float)clip.w/sprite->w;
+    gl_src[3] = gl_src[1] + (float)clip.h/sprite->h;
   }
 #endif // WITH_OPENGL
-}
-
-void Renderable::set_dest(const SDL_Rect& dest) {
-  // Set the target screen position.
-  map_pos.x = dest.x;
-  map_pos.y = dest.y;
 }
 
 void Renderable::set_clip(
@@ -616,19 +610,6 @@ float calcTheta(int x1, int y1, int x2, int y2) {
 	return theta;
 }
 
-void setupSDLVideoMode(unsigned width, unsigned height) {
-	Uint32 flags = 0;
-
-	if (FULLSCREEN) flags = flags | SDL_FULLSCREEN;
-	if (DOUBLEBUF) flags = flags | SDL_DOUBLEBUF;
-	if (HWSURFACE)
-		flags = flags | SDL_HWSURFACE | SDL_HWACCEL;
-	else
-		flags = flags | SDL_SWSURFACE;
-
-	screen = SDL_SetVideoMode (width, height, 0, flags);
-}
-
 std::string abbreviateKilo(int amount) {
 	stringstream ss;
 	if (amount < 1000)
@@ -637,4 +618,21 @@ std::string abbreviateKilo(int amount) {
 		ss << (amount/1000) << msg->get("k");
 
 	return ss.str();
+}
+
+Renderable loadIcons() {
+  if (NULL == icon_atlas) {
+    icon_atlas = loadGraphicSurface("images/icons/icons.png", "Couldn't load icons");
+#ifdef WITH_OPENGL
+    if (OPENGL) { icon_texture_atlas = gl_resources->create_texture(icon_atlas); }
+#endif // WITH_OPENGL
+  }
+
+  Renderable r;
+  r.sprite = icon_atlas;
+#ifdef WITH_OPENGL
+  r.texture = icon_texture_atlas;
+#endif // WITH_OPENGL
+  
+  return r;
 }

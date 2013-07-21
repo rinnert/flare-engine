@@ -56,6 +56,11 @@ extern MessageEngine *msg;
 extern ModManager *mods;
 extern SoundManager *snd;
 
+extern SDL_Surface *icon_atlas;
+#ifdef WITH_OPENGL
+extern GLuint icon_texture_atlas;
+#endif // WITH_OPENGL
+
 extern RenderDevice *render_device;
 
 #ifdef WITH_OPENGL
