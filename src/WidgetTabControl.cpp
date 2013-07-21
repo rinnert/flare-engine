@@ -47,8 +47,8 @@ WidgetTabControl::WidgetTabControl(int amount) {
  * Class destructor.
  */
 WidgetTabControl::~WidgetTabControl() {
-	SDL_FreeSurface(activeTabSurface);
-	SDL_FreeSurface(inactiveTabSurface);
+	activeTabSurface.clear_graphics();
+	inactiveTabSurface.clear_graphics();
 	delete[] titles;
 	delete[] tabs;
 }
@@ -86,7 +86,7 @@ void WidgetTabControl::setMainArea(int x, int y, int width, int height) {
 	tabsArea.x = x;
 	tabsArea.y = y;
 	tabsArea.w = width;
-	tabsArea.h = activeTabSurface->h;
+	tabsArea.h = activeTabSurface.sprite->h;
 
 	// Set content area.
 	contentArea.x = x + 8;
@@ -117,10 +117,10 @@ void WidgetTabControl::updateHeader() {
  * Load the graphics for the control.
  */
 void WidgetTabControl::loadGraphics() {
-	activeTabSurface = loadGraphicSurface("images/menus/tab_active.png");
-	inactiveTabSurface = loadGraphicSurface("images/menus/tab_inactive.png");
+	activeTabSurface.set_graphics(loadGraphicSurface("images/menus/tab_active.png"));
+	inactiveTabSurface.set_graphics(loadGraphicSurface("images/menus/tab_inactive.png"));
 
-	if (!activeTabSurface || !inactiveTabSurface) {
+	if (!activeTabSurface.sprite || !inactiveTabSurface.sprite) {
 		SDL_Quit();
 		exit(1);
 	}
@@ -178,20 +178,45 @@ void WidgetTabControl::renderTab(int number, SDL_Surface *target) {
 	src.w = tabs[i].w;
 	src.h = tabs[i].h;
 
-	if (i == activeTab)
-		SDL_BlitSurface(activeTabSurface, &src, target, &dest);
-	else
-		SDL_BlitSurface(inactiveTabSurface, &src, target, &dest);
+  if (screen==target) {
+    if (i == activeTab) {
+      activeTabSurface.set_clip(src);
+      activeTabSurface.set_dest(dest);
+      render_device->render(activeTabSurface);
+    } else {
+      inactiveTabSurface.set_clip(src);
+      inactiveTabSurface.set_dest(dest);
+      render_device->render(inactiveTabSurface);
+    }
+  } else {
+    if (i == activeTab)
+      SDL_BlitSurface(activeTabSurface.sprite, &src, target, &dest);
+    else
+      SDL_BlitSurface(inactiveTabSurface.sprite, &src, target, &dest);
+  }
 
 	// Draw tab’s right edge.
-	src.x = activeTabSurface->w - tabPadding.x;
+	src.x = activeTabSurface.sprite->w - tabPadding.x;
 	src.w = tabPadding.x;
 	dest.x = tabs[i].x + tabs[i].w - tabPadding.x;
 
-	if (i == activeTab)
-		SDL_BlitSurface(activeTabSurface, &src, target, &dest);
-	else
-		SDL_BlitSurface(inactiveTabSurface, &src, target, &dest);
+  if (screen==target) {
+    if (i == activeTab) {
+      activeTabSurface.set_clip(src);
+      activeTabSurface.set_dest(dest);
+      render_device->render(activeTabSurface);
+    } else {
+      inactiveTabSurface.set_clip(src);
+      inactiveTabSurface.set_dest(dest);
+      render_device->render(inactiveTabSurface);
+    }
+  } else {
+    if (i == activeTab)
+      SDL_BlitSurface(activeTabSurface.sprite, &src, target, &dest);
+    else
+      SDL_BlitSurface(inactiveTabSurface.sprite, &src, target, &dest);
+  }
+
 
 	// Set tab’s label font color.
 	SDL_Color fontColor;

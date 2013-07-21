@@ -35,8 +35,8 @@ WidgetInput::WidgetInput() {
 	loadGraphics("images/menus/input.png");
 
 	// position
-	pos.w = background->w;
-	pos.h = background->h/2;
+	pos.w = background.sprite->w;
+	pos.h = background.sprite->h/2;
 
 	cursor_frame = 0;
 
@@ -46,9 +46,8 @@ WidgetInput::WidgetInput() {
 }
 
 void WidgetInput::loadGraphics(const string& filename) {
-
 	// load input background image
-	background = loadGraphicSurface(filename, "Couldn't load image", true);
+	background.set_graphics(loadGraphicSurface(filename, "Couldn't load image", true));
 }
 
 void WidgetInput::logic() {
@@ -117,24 +116,28 @@ void WidgetInput::render(SDL_Surface *target) {
 	else
 		src.y = pos.h;
 
-	if (render_to_alpha)
-		SDL_gfxBlitRGBA(background, &src, target, &pos);
-	else
-		SDL_BlitSurface(background, &src, target, &pos);
+  if (screen == target) {
+    background.set_clip(src);
+    background.set_dest(pos);
+    render_device->render(background);
+  } else { 
+    if (render_to_alpha) { SDL_gfxBlitRGBA(background.sprite, &src, target, &pos); }
+    else { SDL_BlitSurface(background.sprite, &src, target, &pos); } 
+  }
 
-	font->setFont("font_regular");
+  font->setFont("font_regular");
 
-	if (!inFocus) {
-		font->render(text, font_pos.x, font_pos.y, JUSTIFY_LEFT, target, color_normal);
-	}
-	else {
-		if (cursor_frame < MAX_FRAMES_PER_SEC) {
-			font->renderShadowed(text + "|", font_pos.x, font_pos.y, JUSTIFY_LEFT, target, color_normal);
-		}
-		else {
-			font->renderShadowed(text, font_pos.x, font_pos.y, JUSTIFY_LEFT, target, color_normal);
-		}
-	}
+  if (!inFocus) {
+    font->render(text, font_pos.x, font_pos.y, JUSTIFY_LEFT, target, color_normal);
+  }
+  else {
+    if (cursor_frame < MAX_FRAMES_PER_SEC) {
+      font->renderShadowed(text + "|", font_pos.x, font_pos.y, JUSTIFY_LEFT, target, color_normal);
+    }
+    else {
+      font->renderShadowed(text, font_pos.x, font_pos.y, JUSTIFY_LEFT, target, color_normal);
+    }
+  }
 }
 
 void WidgetInput::setPosition(int x, int y) {
@@ -180,6 +183,6 @@ bool WidgetInput::checkClick() {
 }
 
 WidgetInput::~WidgetInput() {
-	SDL_FreeSurface(background);
+	background.clear_graphics();
 }
 

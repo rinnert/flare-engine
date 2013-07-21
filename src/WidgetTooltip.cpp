@@ -1,7 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Stefan Beller
-Copyright © 2012 Kurt Rinnert
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -95,12 +95,6 @@ Point WidgetTooltip::calcPosition(STYLE style, Point pos, Point size) {
  * Draw the buffered tooltip if it exists, else render the tooltip and buffer it
  */
 void WidgetTooltip::render(TooltipData &tip, Point pos, STYLE style, SDL_Surface *target) {
-	if (target == NULL) {
-		target = screen;
-	} else {
-    printf("WidgetTooltip::render(): target != screen.\n");
-  }
-
 	if (tip.renderable.sprite == NULL) {
 		createBuffer(tip);
 	}
@@ -111,12 +105,12 @@ void WidgetTooltip::render(TooltipData &tip, Point pos, STYLE style, SDL_Surface
 
 	Point tip_pos = calcPosition(style, pos, size);
 
-  tip.renderable.map_pos.x = tip_pos.x; 
-  tip.renderable.map_pos.y = tip_pos.y; 
-
-  if (screen == target) {
+  if (NULL == target || screen == target) {
+    tip.renderable.map_pos.x = tip_pos.x; 
+    tip.renderable.map_pos.y = tip_pos.y; 
 	  render_device->render(tip.renderable);
   } else {
+    printf("WidgetTooltip::render(): target != screen.\n");
     SDL_Rect dest;
     dest.x = tip_pos.x;
     dest.y = tip_pos.y;
@@ -162,6 +156,13 @@ void WidgetTooltip::createBuffer(TooltipData &tip) {
       , NULL
       , SDL_MapRGB(surface->format,0,0,0));
 
+	int cursor_y = margin;
+
+	for (unsigned int i=0; i<tip.lines.size(); i++) {
+		font->render(tip.lines[i], margin, cursor_y, JUSTIFY_LEFT, surface, size.x, tip.colors[i]);
+		cursor_y = font->cursor_y;
+	}
+
 	tip.renderable.set_graphics(surface);
   tip.renderable.set_clip(
       0,
@@ -169,13 +170,5 @@ void WidgetTooltip::createBuffer(TooltipData &tip) {
       tip.renderable.sprite->w,
       tip.renderable.sprite->h
       );
-    
-	int cursor_y = margin;
-
-	for (unsigned int i=0; i<tip.lines.size(); i++) {
-		font->render(tip.lines[i], margin, cursor_y, JUSTIFY_LEFT, tip.renderable.sprite, size.x, tip.colors[i]);
-		cursor_y = font->cursor_y;
-	}
-
 }
 

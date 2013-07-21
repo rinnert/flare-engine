@@ -36,7 +36,7 @@ protected:
 
 	void loadGraphics(const std::string& filename);
 
-	SDL_Surface *background;
+	Renderable background;
 
 	bool enabled;
 	bool pressed;

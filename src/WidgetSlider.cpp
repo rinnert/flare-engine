@@ -1,5 +1,6 @@
 /*
 Copyright © 2012 Justin Jacobs
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -32,28 +33,27 @@ using namespace std;
 
 WidgetSlider::WidgetSlider (const string  & fname)
 	: enabled(true)
-	, sl(NULL)
 	, pressed(false)
 	, minimum(0)
 	, maximum(0)
 	, value(0) {
-	sl = loadGraphicSurface(fname);
-	if (!sl) {
+	sl.set_graphics(loadGraphicSurface(fname));
+	if (!sl.sprite) {
 		SDL_Quit();
 		exit(1);
 	}
 
-	pos.w = sl->w;
-	pos.h = sl->h / 2;
+	pos.w = sl.sprite->w;
+	pos.h = sl.sprite->h / 2;
 
-	pos_knob.w = sl->w / 8;
-	pos_knob.h = sl->h / 2;
+	pos_knob.w = sl.sprite->w / 8;
+	pos_knob.h = sl.sprite->h / 2;
 
 	render_to_alpha = false;
 }
 
 WidgetSlider::~WidgetSlider () {
-	SDL_FreeSurface(sl);
+	sl.clear_graphics();
 }
 
 
@@ -149,14 +149,23 @@ void WidgetSlider::render (SDL_Surface *target) {
 	knob.h = pos_knob.h;
 	knob.w = pos_knob.w;
 
-	if (render_to_alpha) {
-		SDL_gfxBlitRGBA(sl, &base, target, &pos);
-		SDL_gfxBlitRGBA(sl, &knob, target, &pos_knob);
-	}
-	else {
-		SDL_BlitSurface(sl, &base, target, &pos);
-		SDL_BlitSurface(sl, &knob, target, &pos_knob);
-	}
+  if (NULL == target || screen == target) {
+    sl.set_clip(base);
+    sl.set_dest(pos);
+    render_device->render(sl);
+    sl.set_clip(knob);
+    sl.set_dest(pos_knob);
+    render_device->render(sl);
+  } else {
+    if (render_to_alpha) {
+      SDL_gfxBlitRGBA(sl.sprite, &base, target, &pos);
+      SDL_gfxBlitRGBA(sl.sprite, &knob, target, &pos_knob);
+    }
+    else {
+      SDL_BlitSurface(sl.sprite, &base, target, &pos);
+      SDL_BlitSurface(sl.sprite, &knob, target, &pos_knob);
+    }
+  }
 
 	if (in_focus) {
 		Point topLeft;
@@ -169,7 +178,11 @@ void WidgetSlider::render (SDL_Surface *target) {
 		bottomRight.y = pos.y + pos.h;
 		color = SDL_MapRGB(target->format, 255,248,220);
 
-		drawRectangle(target, topLeft, bottomRight, color);
+    if (NULL == target || screen == target) {
+      render_device->draw_rectangle(topLeft, bottomRight, color);
+    } else {
+      drawRectangle(target, topLeft, bottomRight, color);
+    }
 	}
 }
 

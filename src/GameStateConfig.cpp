@@ -3,6 +3,7 @@ Copyright © 2012 Clint Bellanger
 Copyright © 2012 davidriod
 Copyright © 2012 Igor Paliychuk
 Copyright © 2012 Stefan Beller
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -53,7 +54,13 @@ GameStateConfig::GameStateConfig ()
 	, tip_buf()
 	, input_key(0)
 	, check_resolution(true) {
-	background = loadGraphicSurface("images/menus/config.png");
+	background.set_graphics(loadGraphicSurface("images/menus/config.png"));
+  background.set_clip(
+      0,
+      0,
+      background.sprite->w,
+      background.sprite->h
+      );
 
 	init();
 	update();
@@ -1162,7 +1169,8 @@ void GameStateConfig::render () {
 	pos.x = (VIEW_W-FRAME_W)/2;
 	pos.y = (VIEW_H-FRAME_H)/2 + tabheight - tabheight/16;
 
-	SDL_BlitSurface(background,NULL,screen,&pos);
+  background.set_dest(pos);
+	render_device->render(background);
 
 	tabControl->render();
 
@@ -1178,7 +1186,7 @@ void GameStateConfig::render () {
 		if (input_scrollbox->update) {
 			input_scrollbox->refresh();
 			for (unsigned int i = 0; i < 29; i++) {
-				settings_lb[i]->render(input_scrollbox->contents);
+				settings_lb[i]->render(input_scrollbox->contents.sprite);
 			}
 		}
 		input_scrollbox->render();
@@ -1352,34 +1360,12 @@ void GameStateConfig::refreshFont() {
  * Tries to apply the selected video settings, reverting back to the old settings upon failure
  */
 bool GameStateConfig::applyVideoSettings(int width, int height) {
-	if (MIN_VIEW_W > width && MIN_VIEW_H > height) {
-		fprintf (stderr, "A mod is requiring a minimum resolution of %dx%d\n", MIN_VIEW_W, MIN_VIEW_H);
-		if (width < MIN_VIEW_W) width = MIN_VIEW_W;
-		if (height < MIN_VIEW_H) height = MIN_VIEW_H;
-	}
+  if (NULL == render_device->create_context(width, height, FULLSCREEN)) {
+    return false;
+  } 
 
-	// Attempt to apply the new settings
-	setupSDLVideoMode(width, height);
-
-	// If the new settings fail, revert to the old ones
-	if (!screen) {
-		fprintf (stderr, "Error during SDL_SetVideoMode: %s\n", SDL_GetError());
-		setupSDLVideoMode(VIEW_W, VIEW_H);
-		return false;
-
-	}
-	else {
-
-		// If the new settings succeed, adjust the view area
-		VIEW_W = width;
-		VIEW_W_HALF = width/2;
-		VIEW_H = height;
-		VIEW_H_HALF = height/2;
-
-		resolution_confirm->visible = true;
-
-		return true;
-	}
+  resolution_confirm->visible = true;
+  return true;
 }
 
 /**
@@ -1476,7 +1462,7 @@ GameStateConfig::~GameStateConfig() {
 	delete defaults_confirm;
 	delete resolution_confirm;
 
-	SDL_FreeSurface(background);
+	background.clear_graphics();
 
 	for (std::vector<Widget*>::iterator iter = child_widget.begin(); iter != child_widget.end(); ++iter) {
 		delete (*iter);

@@ -26,8 +26,8 @@ class WidgetTabControl {
 
 private:
 
-	SDL_Surface *activeTabSurface;
-	SDL_Surface *inactiveTabSurface;
+	Renderable activeTabSurface;
+	Renderable inactiveTabSurface;
 
 	std::string *titles;  /** Titles of the tabs. */
 	int activeTab;        /** Index of the currently active tab. */
@@ -56,7 +56,7 @@ public:
 	int getActiveTab();
 	void setActiveTab(int tab) { activeTab = tab; }
 	SDL_Rect getContentArea();
-	int getTabHeight() { return activeTabSurface->h; }
+	int getTabHeight() { return activeTabSurface.sprite->h; }
 
 	void updateHeader();
 

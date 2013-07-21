@@ -1,6 +1,7 @@
 /*
 Copyright © 2012 Clint Bellanger
 Copyright © 2012 davidriod
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -30,15 +31,20 @@ using namespace std;
 
 WidgetCheckBox::WidgetCheckBox (const string &fname)
 	: enabled(true),
-	  cb(NULL),
 	  checked(false),
 	  pressed(false) {
 	focusable = true;
-	cb = loadGraphicSurface(fname, "Couldn't load image", true, false);
+	cb.set_graphics(loadGraphicSurface(fname, "Couldn't load image", true, false));
 
-	pos.w = cb->w;
-	pos.h = cb->h / 2;
+	pos.w = cb.sprite->w;
+	pos.h = cb.sprite->h / 2;
 
+  cb.set_clip(
+      0,
+      0,
+      pos.w,
+      pos.h
+      );
 	render_to_alpha = false;
 }
 
@@ -47,15 +53,22 @@ void WidgetCheckBox::activate() {
 }
 
 WidgetCheckBox::~WidgetCheckBox () {
-	SDL_FreeSurface(cb);
+	cb.clear_graphics();
 }
 
 void WidgetCheckBox::Check () {
 	checked = true;
+  cb.set_clip(0,pos.h,pos.w,pos.h);
 }
 
 void WidgetCheckBox::unCheck () {
 	checked = false;
+  cb.set_clip(0,0,pos.w,pos.h);
+}
+
+void WidgetCheckBox::toggleCheck () {
+	checked = !checked;
+  cb.set_clip(0,(checked ? pos.h : 0),pos.w,pos.h);
 }
 
 bool WidgetCheckBox::checkClick() {
@@ -73,8 +86,7 @@ bool WidgetCheckBox::checkClick (int x, int y) {
 
 	if (pressed && !inpt->lock[MAIN1] && !inpt->lock[ACCEPT]) { // this is a button release
 		pressed = false;
-
-		checked = !checked;
+		toggleCheck();
 		return true;
 	}
 
@@ -87,40 +99,42 @@ bool WidgetCheckBox::checkClick (int x, int y) {
 	return false;
 }
 
-
 bool WidgetCheckBox::isChecked () const {
 	return checked;
 }
 
-
 void WidgetCheckBox::render (SDL_Surface *target) {
-	if (target == NULL) {
-		target = screen;
-	}
 
-	SDL_Rect    src;
-	src.x = 0;
-	src.y = checked ? pos.h : 0;
-	src.h = pos.h;
-	src.w = pos.w;
+  if (NULL == target || screen == target) {
+    cb.set_dest(pos);
+    render_device->render(cb);
+  } else {
+    printf("WidgetCheckBox::render(): rendering to buffer...\n");
 
-	if (render_to_alpha)
-		SDL_gfxBlitRGBA(cb, &src, target, &pos);
-	else
-		SDL_BlitSurface(cb, &src, target, &pos);
+    SDL_Rect    src;
+    src.x = 0;
+    src.y = checked ? pos.h : 0;
+    src.w = pos.w;
+    src.h = pos.h;
 
-	if (in_focus) {
-		Point topLeft;
-		Point bottomRight;
-		Uint32 color;
+    if (render_to_alpha)
+      SDL_gfxBlitRGBA(cb.sprite, &src, target, &pos);
+    else
+      SDL_BlitSurface(cb.sprite, &src, target, &pos);
 
-		topLeft.x = pos.x;
-		topLeft.y = pos.y;
-		bottomRight.x = pos.x + pos.w;
-		bottomRight.y = pos.y + pos.h;
-		color = SDL_MapRGB(target->format, 255,248,220);
+    if (in_focus) {
+      Point topLeft;
+      Point bottomRight;
+      Uint32 color;
 
-		drawRectangle(target, topLeft, bottomRight, color);
-	}
+      topLeft.x = pos.x;
+      topLeft.y = pos.y;
+      bottomRight.x = pos.x + pos.w;
+      bottomRight.y = pos.y + pos.h;
+      color = SDL_MapRGB(target->format, 255,248,220);
+
+      drawRectangle(target, topLeft, bottomRight, color);
+    }
+  }
 }
 

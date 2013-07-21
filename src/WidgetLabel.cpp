@@ -83,7 +83,7 @@ WidgetLabel::WidgetLabel()
  * Draw the buffered string surface to the screen
  */
 void WidgetLabel::render(SDL_Surface *target) {
-  if (NULL == target) { // Render to screen.
+  if (NULL == target || screen == target) { // Render to screen.
     render_device->render(renderable);
   } else { // Render to surface. Does this happen at all?
     SDL_Rect dest;

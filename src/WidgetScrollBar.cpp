@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Justin Jacobs
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -35,18 +36,16 @@ WidgetScrollBar::WidgetScrollBar(const std::string& _fileName)
 	, pressed_up(false)
 	, pressed_down(false)
 	, pressed_knob(false) {
-	scrollbars = NULL;
 	click = NULL;
 
 	loadArt();
 
-	pos_up.w = pos_down.w  = pos_knob.w = scrollbars->w;
-	pos_up.h = pos_down.h = pos_knob.h = (scrollbars->h / 5); //height of one button
+	pos_up.w = pos_down.w  = pos_knob.w = scrollbars.sprite->w;
+	pos_up.h = pos_down.h = pos_knob.h = (scrollbars.sprite->h / 5); //height of one button
 }
 
 void WidgetScrollBar::loadArt() {
-
-	scrollbars = loadGraphicSurface(fileName, "Couldn't load image", true);
+	scrollbars.set_graphics(loadGraphicSurface(fileName, "Couldn't load image", true));
 }
 
 int WidgetScrollBar::checkClick() {
@@ -128,10 +127,6 @@ int WidgetScrollBar::getValue() {
 }
 
 void WidgetScrollBar::render(SDL_Surface *target) {
-	if (target == NULL) {
-		target = screen;
-	}
-
 	SDL_Rect src_up, src_down, src_knob;
 
 	src_up.x = 0;
@@ -157,16 +152,28 @@ void WidgetScrollBar::render(SDL_Surface *target) {
 	else
 		src_down.y = pos_down.h*2;
 
-	if (render_to_alpha) {
-		SDL_gfxBlitRGBA(scrollbars, &src_up, target, &pos_up);
-		SDL_gfxBlitRGBA(scrollbars, &src_down, target, &pos_down);
-		SDL_gfxBlitRGBA(scrollbars, &src_knob, target, &pos_knob);
-	}
-	else {
-		SDL_BlitSurface(scrollbars, &src_up, target, &pos_up);
-		SDL_BlitSurface(scrollbars, &src_down, target, &pos_down);
-		SDL_BlitSurface(scrollbars, &src_knob, target, &pos_knob);
-	}
+    if (NULL == target || screen == target) {
+      scrollbars.set_clip(src_up);
+      scrollbars.set_dest(pos_up);
+      render_device->render(scrollbars);
+      scrollbars.set_clip(src_down);
+      scrollbars.set_dest(pos_down);
+      render_device->render(scrollbars);
+      scrollbars.set_clip(src_knob);
+      scrollbars.set_dest(pos_knob);
+      render_device->render(scrollbars);
+    } else {
+      if (render_to_alpha) {
+        SDL_gfxBlitRGBA(scrollbars.sprite, &src_up, target, &pos_up);
+        SDL_gfxBlitRGBA(scrollbars.sprite, &src_down, target, &pos_down);
+        SDL_gfxBlitRGBA(scrollbars.sprite, &src_knob, target, &pos_knob);
+      }
+      else {
+        SDL_BlitSurface(scrollbars.sprite, &src_up, target, &pos_up);
+        SDL_BlitSurface(scrollbars.sprite, &src_down, target, &pos_down);
+        SDL_BlitSurface(scrollbars.sprite, &src_knob, target, &pos_knob);
+      }
+    }
 }
 
 /**
@@ -183,6 +190,6 @@ void WidgetScrollBar::refresh(int x, int y, int h, int val, int max) {
 }
 
 WidgetScrollBar::~WidgetScrollBar() {
-	SDL_FreeSurface(scrollbars);
+	scrollbars.clear_graphics();
 }
 

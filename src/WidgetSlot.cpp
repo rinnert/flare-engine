@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Stefan Beller
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -28,9 +29,8 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 
 using namespace std;
 
-WidgetSlot::WidgetSlot(SDL_Surface *_icons, int _icon_id, int _ACTIVATE)
+WidgetSlot::WidgetSlot(int _icon_id, int _ACTIVATE)
 	: Widget()
-	, icons(_icons)
 	, icon_id(_icon_id)
 	, amount(1)
 	, max_amount(1)
@@ -45,8 +45,15 @@ WidgetSlot::WidgetSlot(SDL_Surface *_icons, int _icon_id, int _ACTIVATE)
 	pos.w = ICON_SIZE;
 	pos.h = ICON_SIZE;
 
-	slot_selected = loadGraphicSurface("images/menus/slot_selected.png");
-	slot_checked = loadGraphicSurface("images/menus/slot_checked.png");
+  icons = loadIcons();
+
+  SDL_Rect src;
+  src.x = src.y = 0;
+  src.w = src.h = ICON_SIZE;
+	slot_selected.set_graphics(loadGraphicSurface("images/menus/slot_selected.png"));
+  slot_selected.set_clip(src);
+	slot_checked.set_graphics(loadGraphicSurface("images/menus/slot_checked.png"));
+  slot_checked.set_clip(src);
 }
 
 void WidgetSlot::activate() {
@@ -138,23 +145,26 @@ void WidgetSlot::setAmount(int _amount, int _max_amount) {
 }
 
 void WidgetSlot::render(SDL_Surface *target) {
-	if (target == NULL) {
-		target = screen;
-	}
 	SDL_Rect src;
 
-	if (icon_id != -1 && icons != NULL) {
-		int columns = icons->w / ICON_SIZE;
+	if (icon_id != -1 && icons.sprite != NULL) {
+		int columns = icons.sprite->w / ICON_SIZE;
 		src.x = (icon_id % columns) * ICON_SIZE;
 		src.y = (icon_id / columns) * ICON_SIZE;
 
 		src.w = pos.w;
 		src.h = pos.h;
 
-		if (render_to_alpha)
-			SDL_gfxBlitRGBA(icons, &src, target, &pos);
-		else
-			SDL_BlitSurface(icons, &src, target, &pos);
+    if (NULL == target || screen == target) {
+      icons.set_clip(src);
+      icons.set_dest(pos);
+      render_device->render(icons);
+    } else {
+      if (render_to_alpha)
+        SDL_gfxBlitRGBA(icons.sprite, &src, target, &pos);
+      else
+        SDL_BlitSurface(icons.sprite, &src, target, &pos);
+    }
 
 		if (amount > 1 || max_amount > 1) {
 			stringstream ss;
@@ -172,31 +182,36 @@ void WidgetSlot::render(SDL_Surface *target) {
  * We can use this function if slot is grayed out to refresh selection frame
  */
 void WidgetSlot::renderSelection(SDL_Surface *target) {
-	if (target == NULL) {
-		target = screen;
-	}
-
 	if (in_focus) {
-		SDL_Rect src;
-		src.x = src.y = 0;
-		src.w = src.h = ICON_SIZE;
-
-		if (render_to_alpha) {
-			if (checked)
-				SDL_gfxBlitRGBA(slot_checked, &src, target, &pos);
-			else
-				SDL_gfxBlitRGBA(slot_selected, &src, target, &pos);
-		}
-		else {
-			if (checked)
-				SDL_BlitSurface(slot_checked, &src, target, &pos);
-			else
-				SDL_BlitSurface(slot_selected, &src, target, &pos);
-		}
+    if (NULL == target || screen == target) {
+      if (checked) { 
+        slot_checked.set_dest(pos);
+        render_device->render(slot_checked);
+      } else {
+        slot_selected.set_dest(pos);
+        render_device->render(slot_selected);
+      }
+    } else {
+      SDL_Rect src;
+      src.x = src.y = 0;
+      src.w = src.h = ICON_SIZE;
+      if (render_to_alpha) {
+        if (checked)
+          SDL_gfxBlitRGBA(slot_checked.sprite, &src, target, &pos);
+        else
+          SDL_gfxBlitRGBA(slot_selected.sprite, &src, target, &pos);
+      }
+      else {
+        if (checked)
+          SDL_BlitSurface(slot_checked.sprite, &src, target, &pos);
+        else
+          SDL_BlitSurface(slot_selected.sprite, &src, target, &pos);
+      }
+    }
 	}
 }
 
 WidgetSlot::~WidgetSlot() {
-	SDL_FreeSurface(slot_selected);
-	SDL_FreeSurface(slot_checked);
+	slot_selected.clear_graphics();
+	slot_checked.clear_graphics();
 }

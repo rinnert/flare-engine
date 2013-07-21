@@ -1,5 +1,6 @@
 /*
 Copyright © 2012 Justin Jacobs
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -43,7 +44,7 @@ public:
 	bool getPrev();
 
 private:
-	SDL_Surface * sl;
+	Renderable sl;
 	bool pressed;
 	int minimum;
 	int maximum;

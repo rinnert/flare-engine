@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Justin Jacobs
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -32,7 +33,6 @@ WidgetScrollBox::WidgetScrollBox(int width, int height) {
 	pos.h = height;
 	cursor = 0;
 	bg.r = bg.g = bg.b = 0;
-	contents = NULL;
 	currentChild = -1;
 	scrollbar = new WidgetScrollBar("images/menus/buttons/scrollbar_default.png");
 	update = true;
@@ -44,7 +44,7 @@ WidgetScrollBox::WidgetScrollBox(int width, int height) {
 }
 
 WidgetScrollBox::~WidgetScrollBox() {
-	if (contents != NULL) SDL_FreeSurface(contents);
+	contents.clear_graphics();
 	delete scrollbar;
 }
 
@@ -67,8 +67,8 @@ void WidgetScrollBox::scroll(int amount) {
 	if (cursor < 0) {
 		cursor = 0;
 	}
-	else if (cursor > contents->h-pos.h) {
-		cursor = contents->h-pos.h;
+	else if (cursor > contents.sprite->h-pos.h) {
+		cursor = contents.sprite->h-pos.h;
 	}
 	refresh();
 }
@@ -78,8 +78,8 @@ void WidgetScrollBox::scrollTo(int amount) {
 	if (cursor < 0) {
 		cursor = 0;
 	}
-	else if (cursor > contents->h-pos.h) {
-		cursor = contents->h-pos.h;
+	else if (cursor > contents.sprite->h-pos.h) {
+		cursor = contents.sprite->h-pos.h;
 	}
 	refresh();
 }
@@ -124,7 +124,7 @@ void WidgetScrollBox::logic(int x, int y) {
 	}
 
 	// check ScrollBar clicks
-	if (contents->h > pos.h) {
+	if (contents.sprite->h > pos.h) {
 		switch (scrollbar->checkClick(mouse.x,mouse.y)) {
 			case 1:
 				scrollUp();
@@ -142,13 +142,14 @@ void WidgetScrollBox::logic(int x, int y) {
 }
 
 void WidgetScrollBox::resize(int h) {
-	if (contents != NULL) SDL_FreeSurface(contents);
 
 	if (pos.h > h) h = pos.h;
-	contents = createAlphaSurface(pos.w,h);
+
+  if (NULL != contents.sprite) { SDL_FreeSurface(contents.sprite); }
+	contents.sprite = createAlphaSurface(pos.w,h);
 	if (!transparent) {
-		SDL_FillRect(contents,NULL,SDL_MapRGB(contents->format,bg.r,bg.g,bg.b));
-		SDL_SetAlpha(contents, 0, 0);
+		SDL_FillRect(contents.sprite,NULL,SDL_MapRGB(contents.sprite->format,bg.r,bg.g,bg.b));
+		SDL_SetAlpha(contents.sprite, 0, SDL_ALPHA_OPAQUE);
 	}
 
 	cursor = 0;
@@ -158,42 +159,49 @@ void WidgetScrollBox::resize(int h) {
 void WidgetScrollBox::refresh() {
 	if (update) {
 		int h = pos.h;
-		if (contents != NULL) {
-			h = contents->h;
-			SDL_FreeSurface(contents);
+		if (contents.sprite != NULL) {
+			h = contents.sprite->h;
 		}
 
-		contents = createAlphaSurface(pos.w,h);
-		if (!transparent) {
-			SDL_FillRect(contents,NULL,SDL_MapRGB(contents->format,bg.r,bg.g,bg.b));
-			SDL_SetAlpha(contents, 0, 0);
-		}
+    if (NULL != contents.sprite) { SDL_FreeSurface(contents.sprite); }
+    contents.sprite = createAlphaSurface(pos.w,h);
+    if (!transparent) {
+      SDL_FillRect(contents.sprite,NULL,SDL_MapRGB(contents.sprite->format,bg.r,bg.g,bg.b));
+      SDL_SetAlpha(contents.sprite, 0, SDL_ALPHA_OPAQUE);
+    }
 	}
 
-	scrollbar->refresh(pos.x+pos.w, pos.y, pos.h-scrollbar->pos_down.h, cursor, contents->h-pos.h-scrollbar->pos_knob.h);
+	scrollbar->refresh(
+      pos.x+pos.w, pos.y, 
+      pos.h-scrollbar->pos_down.h, 
+      cursor, contents.sprite->h-pos.h-scrollbar->pos_knob.h
+      );
 }
 
 void WidgetScrollBox::render(SDL_Surface *target) {
-	if (target == NULL) {
-		target = screen;
-	}
 
 	for (unsigned i = 0; i < children.size(); i++) {
-		children[i]->render(contents);
+		children[i]->render(contents.sprite);
 	}
-
 	SDL_Rect	src,dest;
 	dest = pos;
 	src.x = 0;
 	src.y = cursor;
-	src.w = contents->w;
+	src.w = contents.sprite->w;
 	src.h = pos.h;
 
-	if (render_to_alpha)
-		SDL_gfxBlitRGBA(contents, &src, target, &dest);
-	else
-		SDL_BlitSurface(contents, &src, target, &dest);
-	if (contents->h > pos.h) scrollbar->render(target);
+  if (NULL == target || screen == target) {
+    contents.set_clip(src);
+    contents.set_dest(dest);
+    render_device->render(contents); // implies throw-away texture!
+  } else {
+    if (render_to_alpha)
+      SDL_gfxBlitRGBA(contents.sprite, &src, target, &dest);
+    else
+      SDL_BlitSurface(contents.sprite, &src, target, &dest);
+  }
+
+	if (contents.sprite->h > pos.h) scrollbar->render(target);
 	update = false;
 
 	if (in_focus) {

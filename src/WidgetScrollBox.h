@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Justin Jacobs
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -43,7 +44,7 @@ public:
 	void refresh();
 	void render(SDL_Surface *target = NULL);
 
-	SDL_Surface * contents;
+	Renderable contents;
 	bool update;
 	SDL_Color bg;
 	bool transparent;

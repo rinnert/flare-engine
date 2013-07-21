@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Justin Jacobs
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -54,7 +55,7 @@ WidgetListBox::WidgetListBox(int amount, int height, const std::string& _fileNam
 	, can_select(true)
 	, scrollbar_offset(0) {
 	// load ListBox images
-	listboxs = loadGraphicSurface(fileName, "Couldn't load image", true);
+	listboxs.set_graphics(loadGraphicSurface(fileName, "Couldn't load image", true));
 	click = NULL;
 
 	for (int i=0; i<list_amount; i++) {
@@ -62,8 +63,8 @@ WidgetListBox::WidgetListBox(int amount, int height, const std::string& _fileNam
 		values[i] = "";
 	}
 
-	pos.w = listboxs->w;
-	pos.h = (listboxs->h / 3); // height of one item
+	pos.w = listboxs.sprite->w;
+	pos.h = (listboxs.sprite->h / 3); // height of one item
 }
 
 bool WidgetListBox::checkClick() {
@@ -163,7 +164,6 @@ bool WidgetListBox::checkClick(int x, int y) {
 		}
 	}
 	return false;
-
 }
 
 /**
@@ -353,31 +353,35 @@ void WidgetListBox::scrollDown() {
 }
 
 void WidgetListBox::render(SDL_Surface *target) {
-	if (target == NULL) {
-		target = screen;
-	}
 
 	SDL_Rect src;
 	src.x = 0;
 	src.w = pos.w;
 	src.h = pos.h;
 
-	for(int i=0; i<list_height; i++) {
-		if(i==0)
-			src.y = 0;
-		else if(i==list_height-1)
-			src.y = pos.h*2;
-		else
-			src.y = pos.h;
+  for(int i=0; i<list_height; i++) {
+    if(i==0)
+      src.y = 0;
+    else if(i==list_height-1)
+      src.y = pos.h*2;
+    else
+      src.y = pos.h;
 
-		if (render_to_alpha)
-			SDL_gfxBlitRGBA(listboxs, &src, target, &rows[i]);
-		else
-			SDL_BlitSurface(listboxs, &src, target, &rows[i]);
-		if (i<list_amount) {
-			vlabels[i].render(target);
-		}
-	}
+    if (NULL == target || screen == target) {
+      listboxs.set_clip(src);
+      listboxs.set_dest(rows[i]);
+      render_device->render(listboxs);
+    } else {
+      if (render_to_alpha)
+        SDL_gfxBlitRGBA(listboxs.sprite, &src, target, &rows[i]);
+      else
+        SDL_BlitSurface(listboxs.sprite, &src, target, &rows[i]);
+    }
+
+    if (i<list_amount) {
+      vlabels[i].render(target);
+    }
+  }
 
 	if (in_focus) {
 		Point topLeft;
@@ -390,11 +394,14 @@ void WidgetListBox::render(SDL_Surface *target) {
 		bottomRight.y = rows[list_height - 1].y + rows[0].h;
 		color = SDL_MapRGB(target->format, 255,248,220);
 
-		drawRectangle(target, topLeft, bottomRight, color);
+    if (NULL == target || screen == target) {
+      render_device->draw_rectangle(topLeft, bottomRight, color);
+    } else {
+      drawRectangle(target, topLeft, bottomRight, color);
+    }
 	}
 
-	if (has_scroll_bar)
-		scrollbar->render(target);
+	if (has_scroll_bar) { scrollbar->render(target); }
 }
 
 /**
@@ -500,7 +507,7 @@ bool WidgetListBox::getPrev() {
 }
 
 WidgetListBox::~WidgetListBox() {
-	SDL_FreeSurface(listboxs);
+	listboxs.clear_graphics();
 	delete[] values;
 	delete[] tooltips;
 	delete[] vlabels;
