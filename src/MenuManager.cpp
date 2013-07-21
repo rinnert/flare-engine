@@ -47,7 +47,7 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 #include "SharedGameResources.h"
 
 MenuManager::MenuManager(StatBlock *_stats)
-	: icons(NULL)
+	: icons(loadIcons())
 	, stats(_stats)
 	, tip_buf()
 	, keyb_tip_buf_vendor()
@@ -219,13 +219,6 @@ MenuManager::MenuManager(StatBlock *_stats)
 	closeAll(); // make sure all togglable menus start closed
 }
 
-/**
- * Icon set shared by all menus
- */
-void MenuManager::loadIcons() {
-	icons = loadGraphicSurface("images/icons/icons.png", "Couldn't load icons");
-}
-
 void MenuManager::renderIcon(int icon_id, int x, int y) {
 	SDL_Rect src;
 	SDL_Rect dest;
@@ -233,11 +226,13 @@ void MenuManager::renderIcon(int icon_id, int x, int y) {
 	dest.y = y;
 	src.w = src.h = dest.w = dest.h = ICON_SIZE;
 
-	int columns = icons->w / ICON_SIZE;
+	int columns = icons.sprite->w / ICON_SIZE;
 	src.x = (icon_id % columns) * ICON_SIZE;
 	src.y = (icon_id / columns) * ICON_SIZE;
 
-	SDL_BlitSurface(icons, &src, screen, &dest);
+  icons.set_clip(src);
+  icons.set_dest(dest);
+  render_device->render(icons);
 }
 
 void MenuManager::handleKeyboardNavigation() {
@@ -1388,5 +1383,5 @@ MenuManager::~MenuManager() {
 	delete stash;
 	delete npc;
 
-	SDL_FreeSurface(icons);
+	icons.clear_graphics();
 }
