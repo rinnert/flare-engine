@@ -68,7 +68,6 @@ GameStatePlay::GameStatePlay()
 	, enemy(NULL)
 	, loading(new WidgetLabel())
 	// Load the loading screen image (we currently use the confirm dialog background):
-	, loading_bg(loadGraphicSurface("images/menus/confirm_bg.png"))
 	, npc_id(-1)
 	, eventDialogOngoing(false)
 	, eventPendingDialog(false)
@@ -77,7 +76,9 @@ GameStatePlay::GameStatePlay()
 	hasMusic = true;
 	// GameEngine scope variables
 
-    powers = new PowerManager();
+	loading_bg.set_graphics(loadGraphicSurface("images/menus/confirm_bg.png"));
+  loading_bg.set_clip(0,0,loading_bg.sprite->w,loading_bg.sprite->h);
+  powers = new PowerManager();
 	items = new ItemManager();
 	camp = new CampaignManager();
 	mapr = new MapRenderer();
@@ -944,16 +945,17 @@ void GameStatePlay::render() {
 }
 
 void GameStatePlay::showLoading() {
-	if (!loading_bg) return;
+	if (!loading_bg.sprite) return;
 
 	SDL_Rect dest;
-	dest.x = VIEW_W_HALF - loading_bg->w/2;
-	dest.y = VIEW_H_HALF - loading_bg->h/2;
+	dest.x = VIEW_W_HALF - loading_bg.sprite->w/2;
+	dest.y = VIEW_H_HALF - loading_bg.sprite->h/2;
 
-	SDL_BlitSurface(loading_bg,NULL,screen,&dest);
+  loading_bg.set_dest(dest);
+  render_device->render(loading_bg);
 	loading->render();
 
-	SDL_Flip(screen);
+  render_device->commit_frame();
 }
 
 Avatar *GameStatePlay::getAvatar() const { return pc; }
@@ -975,6 +977,6 @@ GameStatePlay::~GameStatePlay() {
 
 	delete enemyg;
 
-	SDL_FreeSurface(loading_bg);
+	loading_bg.clear_graphics();
 }
 
