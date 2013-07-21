@@ -75,11 +75,13 @@ void Menu::align() {
 		window_area.y = (VIEW_H-temp.h)+temp.y;
 	}
 
-  background.set_clip(
-      0,
-      0,
-      window_area.w,
-      window_area.h
-      );
-  background.set_dest(window_area);
+  if (NULL != background.sprite) {
+    background.set_clip(
+        0,
+        0,
+        window_area.w,
+        window_area.h
+        );
+    background.set_dest(window_area);
+  }
 }
