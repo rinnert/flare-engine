@@ -126,6 +126,7 @@ void SDLBlitRenderDevice::draw_pixel(
 	/* Here p is the address to the pixel we want to set */
 	Uint8 *p = (Uint8 *)screen->pixels + y * screen->pitch + x * bpp;
 
+	if (SDL_MUSTLOCK(screen)) { SDL_LockSurface(screen); }
 	switch(bpp) {
 	case 1:
 		*p = color;
@@ -151,8 +152,64 @@ void SDLBlitRenderDevice::draw_pixel(
 		*(Uint32 *)p = color;
 		break;
 	}
+	if (SDL_MUSTLOCK(screen)) { SDL_UnlockSurface(screen); }
 
   return;
+}
+
+void SDLBlitRenderDevice::draw_line(
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    Uint32 color
+    ) {
+	const int dx = abs(x1-x0);
+	const int dy = abs(y1-y0);
+	const int sx = x0 < x1 ? 1 : -1;
+	const int sy = y0 < y1 ? 1 : -1;
+	int err = dx-dy;
+
+	do {
+		//skip draw if outside screen
+		if (x0 > 0 && y0 > 0 && x0 < VIEW_W && y0 < VIEW_H) {
+			this->draw_pixel(x0,y0,color);
+    }
+
+		int e2 = 2*err;
+		if (e2 > -dy) {
+			err = err - dy;
+			x0 = x0 + sx;
+		}
+		if (e2 <  dx) {
+			err = err + dx;
+			y0 = y0 + sy;
+		}
+	}
+	while(x0 != x1 || y0 != y1);
+}
+
+void SDLBlitRenderDevice::draw_line(
+    const Point& p0,
+    const Point& p1,
+    Uint32 color
+    ) {
+	if (SDL_MUSTLOCK(screen)) { SDL_LockSurface(screen); }
+	this->draw_line(p0.x, p0.y, p1.x, p1.y, color);
+	if (SDL_MUSTLOCK(screen)) { SDL_UnlockSurface(screen); }
+}
+
+void SDLBlitRenderDevice::draw_rectangle(
+    const Point& p0,
+    const Point& p1,
+    Uint32 color
+    ) {
+	if (SDL_MUSTLOCK(screen)) { SDL_LockSurface(screen); }
+	this->draw_line(p0.x, p0.y, p1.x, p0.y, color);
+	this->draw_line(p1.x, p0.y, p1.x, p1.y, color);
+	this->draw_line(p0.x, p0.y, p0.x, p1.y, color);
+	this->draw_line(p0.x, p1.y, p1.x, p1.y, color);
+	if (SDL_MUSTLOCK(screen)) { SDL_UnlockSurface(screen); }
 }
 
 void SDLBlitRenderDevice::blank_screen() {

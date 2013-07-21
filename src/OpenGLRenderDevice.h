@@ -66,6 +66,38 @@ class OpenGLRenderDevice : public RenderDevice {
         Uint32 color
         );
     
+    /** Draw line to screen. 
+     *
+     *  Draw line connecting (x0,y0) and (x1,y1) to screen.
+     */ 
+    virtual void draw_line(
+        int x0,
+        int y0,
+        int x1,
+        int y1,
+        Uint32 color
+        );
+
+    /** Draw line to screen. 
+     *
+     *  Draw line connecting p0 and p1 to screen.
+     */ 
+    virtual void draw_line(
+        const Point& p0,
+        const Point& p1,
+        Uint32 color
+        );
+
+    /** Draw rectangle to screen. 
+     *
+     *  Draw rectangle defined by p0 and p1 to screen.
+     */ 
+    virtual void draw_rectangle(
+        const Point& p0,
+        const Point& p1,
+        Uint32 color
+        );
+
     /** Blank the screen.
      */
     virtual void blank_screen();
@@ -85,7 +117,7 @@ class OpenGLRenderDevice : public RenderDevice {
     GLuint bound_texture;
 
     // These are for keeping the render stack frame small.
-    float x0,y0,x1,y1;
+    float m_x0,m_y0,m_x1,m_y1;
 };
 
 #endif // OPENGLRENDERDEVICE_H

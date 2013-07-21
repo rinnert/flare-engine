@@ -160,17 +160,17 @@ int OpenGLRenderDevice::render(Renderable& r) {
     bound_texture = texture;
   }
 
-  x0 = (float)(r.map_pos.x+r.offset.x);
-  y0 = (float)(r.map_pos.y+r.offset.y);
-  x1 = x0 + r.src.w;
-  y1 = y0 + r.src.h;
+  m_x0 = (float)(r.map_pos.x+r.offset.x);
+  m_y0 = (float)(r.map_pos.y+r.offset.y);
+  m_x1 = m_x0 + r.src.w;
+  m_y1 = m_y0 + r.src.h;
 
-  // All coordinate are determined; render now.
+  // All coordinates are determined; render now.
   glBegin(GL_QUADS);
-  glTexCoord2f(r.gl_src[0], r.gl_src[1]); glVertex2f(x0, y0);
-  glTexCoord2f(r.gl_src[2], r.gl_src[1]); glVertex2f(x1, y0);
-  glTexCoord2f(r.gl_src[2], r.gl_src[3]); glVertex2f(x1, y1);
-  glTexCoord2f(r.gl_src[0], r.gl_src[3]); glVertex2f(x0, y1);
+  glTexCoord2f(r.gl_src[0], r.gl_src[1]); glVertex2f(m_x0, m_y0);
+  glTexCoord2f(r.gl_src[2], r.gl_src[1]); glVertex2f(m_x1, m_y0);
+  glTexCoord2f(r.gl_src[2], r.gl_src[3]); glVertex2f(m_x1, m_y1);
+  glTexCoord2f(r.gl_src[0], r.gl_src[3]); glVertex2f(m_x0, m_y1);
   glEnd();
 
   // If the texture is temporary, get rid of it.
@@ -199,11 +199,79 @@ void OpenGLRenderDevice::draw_pixel(
   glDisable(GL_TEXTURE_2D);
   glBegin(GL_POINTS);
   glColor3f(gl_r,gl_g,gl_b);
-  glVertex2f(x,y);
+  glVertex2f((float)x,(float)y);
   glEnd();
   glEnable(GL_TEXTURE_2D);
 
   return;
+}
+
+void OpenGLRenderDevice::draw_line(
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    Uint32 color
+    ) {
+	const int dx = abs(x1-x0);
+	const int dy = abs(y1-y0);
+	const int sx = x0 < x1 ? 1 : -1;
+	const int sy = y0 < y1 ? 1 : -1;
+	int err = dx-dy;
+
+  Uint8 r,g,b;
+  float gl_r,gl_g,gl_b;
+
+  SDL_GetRGB(color,screen->format,&r,&g,&b);
+  gl_r = (float)r/255.0f;
+  gl_g = (float)g/255.0f;
+  gl_b = (float)b/255.0f;
+
+  glDisable(GL_TEXTURE_2D);
+  glColor3f(gl_r,gl_g,gl_b);
+  glBegin(GL_POINTS);
+	do {
+		//skip draw if outside screen
+		if (x0 > 0 && y0 > 0 && x0 < VIEW_W && y0 < VIEW_H) {
+      glVertex2f((float)x0,(float)y0);
+    }
+
+		int e2 = 2*err;
+		if (e2 > -dy) {
+			err = err - dy;
+			x0 = x0 + sx;
+		}
+		if (e2 <  dx) {
+			err = err + dx;
+			y0 = y0 + sy;
+		}
+	}
+	while(x0 != x1 || y0 != y1);
+  glEnd();
+  glEnable(GL_TEXTURE_2D);
+}
+
+void OpenGLRenderDevice::draw_line(
+    const Point& p0,
+    const Point& p1,
+    Uint32 color
+    ) {
+	if (SDL_MUSTLOCK(screen)) { SDL_LockSurface(screen); }
+	this->draw_line(p0.x, p0.y, p1.x, p1.y, color);
+	if (SDL_MUSTLOCK(screen)) { SDL_UnlockSurface(screen); }
+}
+
+void OpenGLRenderDevice::draw_rectangle(
+    const Point& p0,
+    const Point& p1,
+    Uint32 color
+    ) {
+	if (SDL_MUSTLOCK(screen)) { SDL_LockSurface(screen); }
+	this->draw_line(p0.x, p0.y, p1.x, p0.y, color);
+	this->draw_line(p1.x, p0.y, p1.x, p1.y, color);
+	this->draw_line(p0.x, p0.y, p0.x, p1.y, color);
+	this->draw_line(p0.x, p1.y, p1.x, p1.y, color);
+	if (SDL_MUSTLOCK(screen)) { SDL_UnlockSurface(screen); }
 }
 
 void OpenGLRenderDevice::blank_screen() {
