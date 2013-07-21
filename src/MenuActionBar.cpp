@@ -278,6 +278,7 @@ void MenuActionBar::logic() {
 
 void MenuActionBar::render() {
 
+  background.set_clip(0,0,window_area.w,window_area.h);
   background.set_dest(window_area);
   render_device->render(background);
 
