@@ -2,6 +2,7 @@
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Igor Paliychuk
 Copyright © 2013 Henrik Andersson
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -179,13 +180,12 @@ public:
 
 class ItemManager {
 private:
-	SDL_Surface *icons;
+	Renderable icons;
 
 	void loadItems();
 	void loadTypes();
 	void loadSets();
 	void loadAll();
-	void loadIcons();
 
 	SDL_Color color_normal;
 	SDL_Color color_low;
@@ -199,7 +199,7 @@ private:
 public:
 	ItemManager();
 	~ItemManager();
-	SDL_Surface* getIcons();
+	Renderable& getIcons() { return icons; }
 	void renderIcon(ItemStack stack, int x, int y, int size);
 	void playSound(int item, Point pos = Point(0,0));
 	TooltipData getTooltip(ItemStack stack, StatBlock *stats, int context);
