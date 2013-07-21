@@ -78,11 +78,10 @@ private:
 	StatBlock *stats;
 	std::vector<Power_Menu_Cell> power_cell;
 
-	SDL_Surface *background;
-	SDL_Surface *icons;
-	std::vector<SDL_Surface*> tree_surf;
-	SDL_Surface *powers_unlock;
-	SDL_Surface *overlay_disabled;
+	Renderable background;
+	Renderable powers_unlock;
+	Renderable overlay_disabled;
+	std::vector<Renderable> tree_surf;
 	WidgetButton *closeButton;
 	bool pressed;
 
@@ -111,7 +110,7 @@ private:
 	short id_by_powerIndex(short power_index);
 
 public:
-	MenuPowers(StatBlock *_stats, SDL_Surface *_icons);
+	MenuPowers(StatBlock *_stats);
 	~MenuPowers();
 	void update();
 	void logic();
