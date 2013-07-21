@@ -68,7 +68,8 @@ void OpenGLResourceManager::render_to_image_buffer(
 
 GLuint OpenGLResourceManager::create_texture(
     SDL_Surface *surface,
-    SDL_Rect *clip
+    SDL_Rect *clip,
+    float priority
     ) {
   if ( 0 == surface ) return 0;
 
@@ -130,6 +131,7 @@ GLuint OpenGLResourceManager::create_texture(
       GL_UNSIGNED_BYTE, 
       (void*)pixels
       );
+  glPrioritizeTextures(1,&texture,(GLclampf*)(&priority));
   SDL_UnlockSurface(surface);
 
   return texture;
