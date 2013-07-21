@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Igor Paliychuk
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -45,11 +46,10 @@ class MenuActionBar : public Menu {
 private:
 	void renderCooldowns();
 
-	SDL_Surface *background;
-	SDL_Surface *emptyslot;
-	SDL_Surface *icons;
-	SDL_Surface *disabled;
-	SDL_Surface *attention;
+	Renderable background;
+	Renderable emptyslot;
+	Renderable disabled;
+	Renderable attention;
 
 	StatBlock *hero;
 	SDL_Rect src;
@@ -59,7 +59,7 @@ private:
 
 public:
 
-	MenuActionBar(StatBlock *hero, SDL_Surface *icons);
+	MenuActionBar(StatBlock *hero);
 	~MenuActionBar();
 	void loadGraphics();
 	void renderAttention(int menu_id);
