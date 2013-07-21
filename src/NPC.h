@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2013 Henrik Andersson
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -58,7 +59,7 @@ public:
 	int direction;
 
 	// talker info
-	SDL_Surface *portrait;
+	Renderable portrait;
 	bool talker;
 
 	// vendor info

@@ -265,12 +265,16 @@ void MenuTalker::render() {
 	// show active portrait
 	string etype = npc->dialog[dialog_node][event_cursor].type;
 	if (etype == "him" || etype == "her") {
-		if (npc->portrait != NULL) {
+    Renderable& r = npc->portrait;
+		if (r.sprite != NULL) {
 			src.w = dest.w = portrait_he.w;
 			src.h = dest.h = portrait_he.h;
 			dest.x = offset_x + portrait_he.x;
 			dest.y = offset_y + portrait_he.y;
-			SDL_BlitSurface(npc->portrait, &src, screen, &dest);
+
+      r.set_clip(src);
+      r.set_dest(dest);
+      render_device->render(r);
 		}
 	}
 	else if (etype == "you") {
