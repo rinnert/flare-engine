@@ -146,37 +146,46 @@ int OpenGLRenderDevice::render(Renderable& r) {
 
   // If the Renderable has no texture, create a temporary one.
   // NOTE: this is *very* costly.  Ideally this should never happen.
-  if (0 == texture) { 
-    cerr << "OpenGLRenderDevice: creating temporary texture. This is bad." << endl;
+  if (0 == r.texture) { 
     texture = gl_resources->create_texture(r.sprite,&(r.src)); 
   }
 
-  // Because switching texture context can be expensive, only bind the texture
-  // if it's not currently bound.
-  // TODO: Can this responsibility be moved to client (front-end) code?  If so,
-  // it could help performance.
-  if (bound_texture != texture) { 
-    glBindTexture(GL_TEXTURE_2D, texture); 
-    bound_texture = texture;
-  }
 
   m_x0 = (float)(r.map_pos.x+r.offset.x);
   m_y0 = (float)(r.map_pos.y+r.offset.y);
   m_x1 = m_x0 + r.src.w;
   m_y1 = m_y0 + r.src.h;
 
-  // All coordinates are determined; render now.
-  glBegin(GL_QUADS);
-  glTexCoord2f(r.gl_src[0], r.gl_src[1]); glVertex2f(m_x0, m_y0);
-  glTexCoord2f(r.gl_src[2], r.gl_src[1]); glVertex2f(m_x1, m_y0);
-  glTexCoord2f(r.gl_src[2], r.gl_src[3]); glVertex2f(m_x1, m_y1);
-  glTexCoord2f(r.gl_src[0], r.gl_src[3]); glVertex2f(m_x0, m_y1);
-  glEnd();
-
-  // If the texture is temporary, get rid of it.
   if (0 == r.texture) { 
+    // If the texture is temporary it is already clipped.
+    glBindTexture(GL_TEXTURE_2D, texture); 
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f); glVertex2f(m_x0, m_y0);
+    glTexCoord2f(1.0f, 0.0f); glVertex2f(m_x1, m_y0);
+    glTexCoord2f(1.0f, 1.0f); glVertex2f(m_x1, m_y1);
+    glTexCoord2f(0.0f, 1.0f); glVertex2f(m_x0, m_y1);
+    glEnd();
+
+    // We own temporary texture, delete it when we are done.
     glDeleteTextures(1, &texture); 
     bound_texture = 0;
+  } else {
+    // Because switching texture context can be expensive, only bind the texture
+    // if it's not currently bound.
+    // TODO: Can this responsibility be moved to client (front-end) code?  If so,
+    // it could help performance.
+    if (bound_texture != texture) { 
+      glBindTexture(GL_TEXTURE_2D, texture); 
+      bound_texture = texture;
+    }
+
+    // Render with clipping provided by the Renderable.
+    glBegin(GL_QUADS);
+    glTexCoord2f(r.gl_src[0], r.gl_src[1]); glVertex2f(m_x0, m_y0);
+    glTexCoord2f(r.gl_src[2], r.gl_src[1]); glVertex2f(m_x1, m_y0);
+    glTexCoord2f(r.gl_src[2], r.gl_src[3]); glVertex2f(m_x1, m_y1);
+    glTexCoord2f(r.gl_src[0], r.gl_src[3]); glVertex2f(m_x0, m_y1);
+    glEnd();
   }
 
   return 0;
