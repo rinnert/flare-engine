@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Justin Jacobs
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -35,17 +36,13 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 
 using namespace std;
 
-MenuStatBar::MenuStatBar(std::string type) {
-
-	label = new WidgetLabel();
-
-	orientation = 0; // horizontal
-	custom_text_pos = false; // label will be placed in the middle of the bar
-	custom_string = "";
-
-	stat_cur = 0;
-	stat_max = 0;
-
+MenuStatBar::MenuStatBar(std::string type) 
+  : label(new WidgetLabel())
+  , stat_cur(0)
+  , stat_max(0)
+  , orientation(false)
+  , custom_text_pos(false)
+{
 	// Load config settings
 	FileParser infile;
 	if(infile.open("menus/"+type+".txt")) {
@@ -79,8 +76,8 @@ MenuStatBar::MenuStatBar(std::string type) {
 }
 
 void MenuStatBar::loadGraphics(std::string type) {
-	background = loadGraphicSurface("images/menus/bar_" + type + "_background.png");
-	bar = loadGraphicSurface("images/menus/bar_" + type + ".png");
+	background.set_graphics(loadGraphicSurface("images/menus/bar_" + type + "_background.png"));
+	bar.set_graphics(loadGraphicSurface("images/menus/bar_" + type + ".png"));
 }
 
 void MenuStatBar::update(int _stat_cur, int _stat_max, Point _mouse, std::string _custom_string) {
@@ -106,7 +103,9 @@ void MenuStatBar::render() {
 	src.y = 0;
 	src.w = bar_pos.w;
 	src.h = bar_pos.h;
-	SDL_BlitSurface(background, &src, screen, &dest);
+  background.set_clip(src);
+  background.set_dest(dest);
+  render_device->render(background);
 
 	// draw bar progress based on orientation
 	if (orientation == 0) {
@@ -117,8 +116,7 @@ void MenuStatBar::render() {
 		src.h = bar_pos.h;
 		dest.x = bar_dest.x;
 		dest.y = bar_dest.y;
-	}
-	else if (orientation == 1) {
+	} else if (orientation == 1) {
 		unsigned bar_length = (stat_max == 0) ? 0 : ((long)stat_cur * (long)bar_pos.h) / (long)stat_max;
 		src.x = 0;
 		src.y = bar_pos.h-bar_length;
@@ -127,7 +125,10 @@ void MenuStatBar::render() {
 		dest.x = bar_dest.x;
 		dest.y = bar_dest.y+src.y;
 	}
-	SDL_BlitSurface(bar, &src, screen, &dest);
+
+  bar.set_clip(src);
+  bar.set_dest(dest);
+  render_device->render(bar);
 
 	// if mouseover, draw text
 	if (!text_pos.hidden) {
@@ -149,7 +150,7 @@ void MenuStatBar::render() {
 }
 
 MenuStatBar::~MenuStatBar() {
-	SDL_FreeSurface(background);
-	SDL_FreeSurface(bar);
+	background.clear_graphics();
+	bar.clear_graphics();
 	delete label;
 }
