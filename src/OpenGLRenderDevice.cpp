@@ -146,7 +146,7 @@ int OpenGLRenderDevice::render(Renderable& r) {
 
   // If the Renderable has no texture, create a temporary one.
   // NOTE: this is *very* costly.  Ideally this should never happen.
-  // Temporay textures have the lowes priortiy.
+  // Temporary textures have the lowest priority.
   if (0 == r.texture) { 
     texture = gl_resources->create_texture(r.sprite,&(r.src),0.0f); 
   }
