@@ -42,7 +42,6 @@ using namespace std;
 MenuTalker::MenuTalker(MenuManager *_menu)
 	: Menu()
 	, menu(_menu)
-	, portrait(NULL)
 	, dialog_node(0)
 	, event_cursor(0)
 	, font_who("font_regular")
@@ -233,7 +232,15 @@ void MenuTalker::createBuffer() {
 	textbox->resize(line_size.y);
 	textbox->line_height = font->getLineHeight();
 	font->setFont(font_dialog);
-	font->render(line, text_offset.x, 0, JUSTIFY_LEFT, textbox->contents, text_pos.w - text_offset.x*2, color_normal);
+	font->render(
+      line, 
+      text_offset.x, 
+      0, 
+      JUSTIFY_LEFT, 
+      textbox->contents.sprite, 
+      text_pos.w - text_offset.x*2, 
+      color_normal
+      );
 
 }
 
@@ -267,12 +274,14 @@ void MenuTalker::render() {
 		}
 	}
 	else if (etype == "you") {
-		if (portrait != NULL) {
+		if (NULL != portrait.sprite) {
 			src.w = dest.w = portrait_you.w;
 			src.h = dest.h = portrait_you.h;
 			dest.x = offset_x + portrait_you.x;
 			dest.y = offset_y + portrait_you.y;
-			SDL_BlitSurface(portrait, &src, screen, &dest);
+      portrait.set_clip(src);
+      portrait.set_dest(dest);
+      render_device->render(portrait);
 		}
 	}
 
@@ -297,13 +306,13 @@ void MenuTalker::render() {
 void MenuTalker::setHero(const string& name, const string& portrait_filename) {
 	hero_name = name;
 
-	SDL_FreeSurface(portrait);
-	portrait = loadGraphicSurface("images/portraits/" + portrait_filename + ".png", "Couldn't load portrait");
+	portrait.clear_graphics();
+	portrait.set_graphics(loadGraphicSurface("images/portraits/" + portrait_filename + ".png", "Couldn't load portrait"));
 }
 
 MenuTalker::~MenuTalker() {
 	background.clear_graphics();
-	SDL_FreeSurface(portrait);
+	portrait.clear_graphics();
 	delete label_name;
 	delete textbox;
 	delete advanceButton;
