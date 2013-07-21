@@ -1,5 +1,6 @@
 /*
 Copyright © 2013 Henrik Andersson
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -66,7 +67,6 @@ MenuNPCActions::MenuNPCActions()
 	, is_empty(true)
 	, first_dialog_node(-1)
 	, current_action(-1)
-	, action_menu(NULL)
 	, vendor_label(msg->get("Trade"))
 	, cancel_label(msg->get("Cancel"))
 	, dialog_selected(false)
@@ -121,8 +121,7 @@ MenuNPCActions::MenuNPCActions()
 }
 
 void MenuNPCActions::update() {
-	if (action_menu)
-		SDL_FreeSurface(action_menu);
+  action_menu.clear_graphics();
 
 	/* get max width and height of action menu */
 	int w = 0, h = 0;
@@ -193,18 +192,21 @@ void MenuNPCActions::update() {
 	h += (MENU_BORDER*2);
 
 	/* render action menu surface */
-	action_menu = createAlphaSurface(w,h);
-	Uint32 bg = SDL_MapRGBA(action_menu->format,
+  SDL_Surface *surface;
+	surface = createAlphaSurface(w,h);
+	Uint32 bg = SDL_MapRGBA(surface->format,
 							background_color.r, background_color.g,
 							background_color.b, background_alpha);
-	SDL_FillRect(action_menu, NULL, bg);
+	SDL_FillRect(surface, NULL, bg);
 
 	for(size_t i=0; i<npc_actions.size(); i++) {
 		if (npc_actions[i].label) {
-			npc_actions[i].label->render(action_menu);
+			npc_actions[i].label->render(surface);
 		}
 	}
 
+  action_menu.set_graphics(surface);
+  action_menu.set_clip(0,0,surface->w,surface->h);
 }
 
 void MenuNPCActions::setNPC(NPC *pnpc) {
@@ -384,14 +386,13 @@ void MenuNPCActions::keyboardLogic() {
 
 void MenuNPCActions::render() {
 	if (!visible) return;
+	if (!action_menu.sprite) return;
 
-	if (!action_menu) return;
-
-	SDL_BlitSurface(action_menu, NULL, screen, &window_area);
-
+  action_menu.set_dest(window_area);
+  render_device->render(action_menu);
 }
 
 MenuNPCActions::~MenuNPCActions() {
-	SDL_FreeSurface(action_menu);
+	action_menu.clear_graphics();
 }
 
