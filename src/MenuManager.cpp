@@ -94,7 +94,7 @@ MenuManager::MenuManager(StatBlock *_stats)
 	menus.push_back(mp); // menus[1]
 	xp = new MenuStatBar("xp");
 	menus.push_back(xp); // menus[2]
-	effects = new MenuActiveEffects(icons);
+	effects = new MenuActiveEffects();
 	menus.push_back(effects); // menus[3]
 	hudlog = new MenuHUDLog();
 	menus.push_back(hudlog); // menus[4]
