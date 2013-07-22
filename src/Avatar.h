@@ -2,6 +2,7 @@
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Igor Paliychuk
 Copyright © 2013 Henrik Andersson
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -119,8 +120,8 @@ public:
 	StatBlock *charmed_stats;
 
 	virtual void resetActiveAnimation();
-	virtual Renderable getRender() { return Renderable(); }
-	void addRenders(std::vector<Renderable> &r);
+	virtual Renderable& getRender() { return dummy_renderable; }
+	void addRenders(std::vector<Renderable*>& r);
 
 	// vars
 	Hazard *haz;
@@ -131,6 +132,7 @@ public:
 	bool newLevelNotification;
 	bool respawn;
 	bool close_menus;
+  Renderable dummy_renderable;
 
 private:
 	void handlePower(int actionbar_power);

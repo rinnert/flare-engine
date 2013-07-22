@@ -2,6 +2,7 @@
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Stefan Beller
 Copyright © 2013 Henrik Andersson
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -206,31 +207,31 @@ void MapRenderer::logic() {
 
 }
 
-bool priocompare(const Renderable &r1, const Renderable &r2) {
-	return r1.prio < r2.prio;
+bool priocompare(const Renderable *r1, const Renderable *r2) {
+	return r1->prio < r2->prio;
 }
 
 /**
  * Sort in the same order as the tiles are drawn
  * Depends upon the map implementation
  */
-void calculatePriosIso(vector<Renderable> &r) {
-	for (vector<Renderable>::iterator it = r.begin(); it != r.end(); ++it) {
-		const unsigned tilex = it->map_pos.x >> TILE_SHIFT;
-		const unsigned tiley = it->map_pos.y >> TILE_SHIFT;
-		it->prio += (((uint64_t)(tilex + tiley)) << 48) + (((uint64_t)tilex) << 32) + ((it->map_pos.x + it->map_pos.y) << 16);
+void calculatePriosIso(vector<Renderable*> &r) {
+	for (vector<Renderable*>::iterator it = r.begin(); it != r.end(); ++it) {
+		const unsigned tilex = (*it)->map_pos.x >> TILE_SHIFT;
+		const unsigned tiley = (*it)->map_pos.y >> TILE_SHIFT;
+		(*it)->prio = (((uint64_t)(tilex + tiley)) << 48) + (((uint64_t)tilex) << 32) + (((*it)->map_pos.x + (*it)->map_pos.y) << 16);
 	}
 }
 
-void calculatePriosOrtho(vector<Renderable> &r) {
-	for (vector<Renderable>::iterator it = r.begin(); it != r.end(); ++it) {
-		const unsigned tilex = it->map_pos.x >> TILE_SHIFT;
-		const unsigned tiley = it->map_pos.y >> TILE_SHIFT;
-		it->prio += (((uint64_t)tiley) << 48) + (((uint64_t)tilex) << 32) + (it->map_pos.y << 16);
+void calculatePriosOrtho(vector<Renderable*> &r) {
+	for (vector<Renderable*>::iterator it = r.begin(); it != r.end(); ++it) {
+		const unsigned tilex = (*it)->map_pos.x >> TILE_SHIFT;
+		const unsigned tiley = (*it)->map_pos.y >> TILE_SHIFT;
+		(*it)->prio = (((uint64_t)tiley) << 48) + (((uint64_t)tilex) << 32) + ((*it)->map_pos.y << 16);
 	}
 }
 
-void MapRenderer::render(vector<Renderable> &r, vector<Renderable> &r_dead) {
+void MapRenderer::render(vector<Renderable*> &r, vector<Renderable*> &r_dead) {
 
 	if (shaky_cam_ticks == 0) {
 		shakycam.x = cam.x;
@@ -266,13 +267,15 @@ void MapRenderer::createBackgroundSurface() {
 	SDL_SetColorKey(backgroundsurface, 0, 0);
 }
 
-void MapRenderer::drawRenderable(vector<Renderable>::iterator r_cursor) {
-	if (r_cursor->sprite) {
-		SDL_Rect dest;
-		Point p = map_to_screen(r_cursor->map_pos.x, r_cursor->map_pos.y, shakycam.x, shakycam.y);
-		dest.x = p.x - r_cursor->offset.x;
-		dest.y = p.y - r_cursor->offset.y;
-		SDL_BlitSurface(r_cursor->sprite, &r_cursor->src, screen, &dest);
+void MapRenderer::drawRenderable(vector<Renderable*>::iterator r_cursor) {
+	if ((*r_cursor)->sprite) {
+		Point p = map_to_screen((*r_cursor)->map_pos.x, (*r_cursor)->map_pos.y, shakycam.x, shakycam.y);
+    //SDL_Rect dest;
+    //dest.x = p.x - (*r_cursor)->offset.x; 
+    //dest.y = p.y - (*r_cursor)->offset.y; 
+    //SDL_BlitSurface((*r_cursor)->sprite,&(*r_cursor)->src,screen,&dest);
+    (*r_cursor)->set_dest(p);
+    render_device->render(*(*r_cursor));
 	}
 }
 
@@ -337,13 +340,13 @@ void MapRenderer::renderIsoLayer(SDL_Surface *wheretorender, Point offset, const
 	}
 }
 
-void MapRenderer::renderIsoBackObjects(vector<Renderable> &r) {
-	vector<Renderable>::iterator it;
+void MapRenderer::renderIsoBackObjects(vector<Renderable*> &r) {
+	vector<Renderable*>::iterator it;
 	for (it = r.begin(); it != r.end(); ++it)
 		drawRenderable(it);
 }
 
-void MapRenderer::renderIsoFrontObjects(vector<Renderable> &r) {
+void MapRenderer::renderIsoFrontObjects(vector<Renderable*> &r) {
 	int_fast16_t i;
 	int_fast16_t j;
 	SDL_Rect dest;
@@ -351,14 +354,14 @@ void MapRenderer::renderIsoFrontObjects(vector<Renderable> &r) {
 	const int_fast16_t max_tiles_width =   (VIEW_W / TILE_W) + 2 * tset.max_size_x;
 	const int_fast16_t max_tiles_height = ((VIEW_H / TILE_H) + 2 * tset.max_size_y)*2;
 
-	vector<Renderable>::iterator r_cursor = r.begin();
-	vector<Renderable>::iterator r_end = r.end();
+	vector<Renderable*>::iterator r_cursor = r.begin();
+	vector<Renderable*>::iterator r_end = r.end();
 
 	// object layer
 	j = upperright.y / UNITS_PER_TILE - tset.max_size_y + tset.max_size_x;
 	i = upperright.x / UNITS_PER_TILE - tset.max_size_y - tset.max_size_x;
 
-	while (r_cursor != r_end && ((r_cursor->map_pos.x>>TILE_SHIFT) + (r_cursor->map_pos.y>>TILE_SHIFT) < i + j || (r_cursor->map_pos.x>>TILE_SHIFT) < i))
+	while (r_cursor != r_end && (((*r_cursor)->map_pos.x>>TILE_SHIFT) + ((*r_cursor)->map_pos.y>>TILE_SHIFT) < i + j || ((*r_cursor)->map_pos.x>>TILE_SHIFT) < i))
 		++r_cursor;
 
 	maprow *objectlayer = layers[index_objectlayer];
@@ -396,7 +399,7 @@ void MapRenderer::renderIsoFrontObjects(vector<Renderable> &r) {
 			}
 
 			// some renderable entities go in this layer
-			while (r_cursor != r_end && (r_cursor->map_pos.x>>TILE_SHIFT) == i && (r_cursor->map_pos.y>>TILE_SHIFT) == j) {
+			while (r_cursor != r_end && ((*r_cursor)->map_pos.x>>TILE_SHIFT) == i && ((*r_cursor)->map_pos.y>>TILE_SHIFT) == j) {
 				drawRenderable(r_cursor);
 				++r_cursor;
 			}
@@ -408,12 +411,12 @@ void MapRenderer::renderIsoFrontObjects(vector<Renderable> &r) {
 		else
 			j++;
 
-		while (r_cursor != r_end && ((r_cursor->map_pos.x>>TILE_SHIFT) + (r_cursor->map_pos.y>>TILE_SHIFT) < i + j || (r_cursor->map_pos.x>>TILE_SHIFT) <= i))
+		while (r_cursor != r_end && (((*r_cursor)->map_pos.x>>TILE_SHIFT) + ((*r_cursor)->map_pos.y>>TILE_SHIFT) < i + j || ((*r_cursor)->map_pos.x>>TILE_SHIFT) <= i))
 			++r_cursor;
 	}
 }
 
-void MapRenderer::renderIso(vector<Renderable> &r, vector<Renderable> &r_dead) {
+void MapRenderer::renderIso(vector<Renderable*> &r, vector<Renderable*> &r_dead) {
 	const Point nulloffset(0, 0);
 	if (ANIMATED_TILES) {
 		for (unsigned i = 0; i < index_objectlayer; ++i)
@@ -481,20 +484,20 @@ void MapRenderer::renderOrthoLayer(const unsigned short layerdata[256][256]) {
 	}
 }
 
-void MapRenderer::renderOrthoBackObjects(std::vector<Renderable> &r) {
+void MapRenderer::renderOrthoBackObjects(std::vector<Renderable*> &r) {
 	// some renderables are drawn above the background and below the objects
-	vector<Renderable>::iterator it;
+	vector<Renderable*>::iterator it;
 	for (it = r.begin(); it != r.end(); ++it)
 		drawRenderable(it);
 }
 
-void MapRenderer::renderOrthoFrontObjects(std::vector<Renderable> &r) {
+void MapRenderer::renderOrthoFrontObjects(std::vector<Renderable*> &r) {
 
 	short int i;
 	short int j;
 	SDL_Rect dest;
-	vector<Renderable>::iterator r_cursor = r.begin();
-	vector<Renderable>::iterator r_end = r.end();
+	vector<Renderable*>::iterator r_cursor = r.begin();
+	vector<Renderable*>::iterator r_end = r.end();
 
 	const Point upperright = screen_to_map(0, 0, shakycam.x, shakycam.y);
 
@@ -503,7 +506,7 @@ void MapRenderer::renderOrthoFrontObjects(std::vector<Renderable> &r) {
 	const short max_tiles_width =  min(w, static_cast<short int>(starti + (VIEW_W / TILE_W) + 2 * tset.max_size_x));
 	const short max_tiles_height = min(h, static_cast<short int>(startj + (VIEW_H / TILE_H) + 2 * tset.max_size_y));
 
-	while (r_cursor != r_end && (r_cursor->map_pos.y>>TILE_SHIFT) < startj)
+	while (r_cursor != r_end && ((*r_cursor)->map_pos.y>>TILE_SHIFT) < startj)
 		++r_cursor;
 
 	maprow *objectlayer = layers[index_objectlayer];
@@ -519,19 +522,19 @@ void MapRenderer::renderOrthoFrontObjects(std::vector<Renderable> &r) {
 			}
 			p.x += TILE_W;
 
-			while (r_cursor != r_end && (r_cursor->map_pos.y>>TILE_SHIFT) == j && (r_cursor->map_pos.x>>TILE_SHIFT) < i)
+			while (r_cursor != r_end && ((*r_cursor)->map_pos.y>>TILE_SHIFT) == j && ((*r_cursor)->map_pos.x>>TILE_SHIFT) < i)
 				++r_cursor;
 
 			// some renderable entities go in this layer
-			while (r_cursor != r_end && (r_cursor->map_pos.y>>TILE_SHIFT) == j && (r_cursor->map_pos.x>>TILE_SHIFT) == i)
+			while (r_cursor != r_end && ((*r_cursor)->map_pos.y>>TILE_SHIFT) == j && ((*r_cursor)->map_pos.x>>TILE_SHIFT) == i)
 				drawRenderable(r_cursor++);
 		}
-		while (r_cursor != r_end && (r_cursor->map_pos.y>>TILE_SHIFT) <= j)
+		while (r_cursor != r_end && ((*r_cursor)->map_pos.y>>TILE_SHIFT) <= j)
 			++r_cursor;
 	}
 }
 
-void MapRenderer::renderOrtho(vector<Renderable> &r, vector<Renderable> &r_dead) {
+void MapRenderer::renderOrtho(vector<Renderable*> &r, vector<Renderable*> &r_dead) {
 
 	unsigned index = 0;
 	while (index < index_objectlayer)

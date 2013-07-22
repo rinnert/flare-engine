@@ -3,6 +3,7 @@ Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Igor Paliychuk
 Copyright © 2012-2013 Henrik Andersson
 Copyright © 2012 Stefan Beller
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -908,8 +909,8 @@ void GameStatePlay::render() {
 
 	// Create a list of Renderables from all objects not already on the map.
 	// split the list into the beings alive (may move) and dead beings (must not move)
-	vector<Renderable> rens;
-	vector<Renderable> rens_dead;
+	rens.clear();
+	rens_dead.clear();
 
 	pc->addRenders(rens);
 

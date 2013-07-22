@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Igor Paliychuk
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -94,6 +95,8 @@ private:
 	SDL_Color color_normal;
 
 	std::vector<Title> titles;
+  std::vector<Renderable*> rens;
+  std::vector<Renderable*> rens_dead;
 
 public:
 	GameStatePlay();

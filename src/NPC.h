@@ -47,7 +47,7 @@ public:
 	void getDialogNodes(std::vector<int> &result);
 	std::string getDialogTopic(unsigned int dialog_node);
 	bool processDialog(unsigned int dialog_node, unsigned int& event_cursor);
-	virtual Renderable getRender();
+	virtual Renderable& getRender();
 
 	// general info
 	std::string name;
