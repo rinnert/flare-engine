@@ -192,6 +192,9 @@ static void cleanup() {
 	delete msg;
 	delete snd;
 
+  Renderable icons = loadIcons();
+  icons.clear_graphics();
+
 	SDL_FreeSurface(titlebar_icon);
 
 	Mix_CloseAudio();

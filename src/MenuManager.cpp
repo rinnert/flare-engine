@@ -1383,6 +1383,4 @@ MenuManager::~MenuManager() {
 	delete effects;
 	delete stash;
 	delete npc;
-
-	icons.clear_graphics();
 }
