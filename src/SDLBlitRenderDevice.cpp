@@ -108,6 +108,8 @@ SDL_Surface *SDLBlitRenderDevice::create_context(
 }
 
 int SDLBlitRenderDevice::render(Renderable& r) {
+  if (NULL == r.sprite) return -1;
+
   SDL_Rect dest;
 
   dest.x = r.map_pos.x + r.offset.x; 
