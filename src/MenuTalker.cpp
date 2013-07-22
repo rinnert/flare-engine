@@ -73,8 +73,8 @@ MenuTalker::MenuTalker(MenuManager *_menu)
 				dialog_pos.y = eatFirstInt(infile.val,',');
 				dialog_pos.w = eatFirstInt(infile.val,',');
 				dialog_pos.h = eatFirstInt(infile.val,',');
-        background.offset.x = dialog_pos.x;
-        background.offset.y = dialog_pos.y;
+        background.offset.x = -dialog_pos.x;
+        background.offset.y = -dialog_pos.y;
 			}
 			else if (infile.key == "dialogtext") {
 				text_pos.x = eatFirstInt(infile.val,',');

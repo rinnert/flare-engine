@@ -152,8 +152,8 @@ int OpenGLRenderDevice::render(Renderable& r) {
   }
 
 
-  m_x0 = (float)(r.map_pos.x+r.offset.x);
-  m_y0 = (float)(r.map_pos.y+r.offset.y);
+  m_x0 = (float)(r.map_pos.x-r.offset.x);
+  m_y0 = (float)(r.map_pos.y-r.offset.y);
   m_x1 = m_x0 + r.src.w;
   m_y1 = m_y0 + r.src.h;
 

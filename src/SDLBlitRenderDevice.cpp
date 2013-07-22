@@ -112,8 +112,8 @@ int SDLBlitRenderDevice::render(Renderable& r) {
 
   SDL_Rect dest;
 
-  dest.x = r.map_pos.x + r.offset.x; 
-  dest.y = r.map_pos.y + r.offset.y;
+  dest.x = r.map_pos.x - r.offset.x; 
+  dest.y = r.map_pos.y - r.offset.y;
 
   return SDL_BlitSurface(r.sprite, &r.src, screen, &dest);
 }
