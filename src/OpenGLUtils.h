@@ -27,6 +27,8 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 #include <SDL_image.h>
 #include <SDL_opengl.h>
 
+#include "Utils.h"
+
 /** Provide utilities for OpenGL rendering.
  *
  * @author Kurt Rinnert 
