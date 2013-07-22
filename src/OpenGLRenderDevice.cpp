@@ -75,8 +75,7 @@ SDL_Surface *OpenGLRenderDevice::create_context(
 
   Uint32 flags = 0;
   if (full_screen) { flags |= SDL_FULLSCREEN; }
-  flags |= SDL_HWSURFACE | SDL_HWACCEL;
-  flags |= SDL_GL_DOUBLEBUFFER | SDL_OPENGL;
+  flags |= SDL_OPENGL;
 
   SDL_Surface *view = SDL_SetVideoMode (width, height, 0, flags);
   if (view == NULL) {
@@ -125,9 +124,12 @@ SDL_Surface *OpenGLRenderDevice::create_context(
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
     if (!is_initialized) {
-      printf("GL_RENDERER   = %s\n", (char*)glGetString(GL_RENDERER));
-      printf("GL_VERSION    = %s\n", (char*)glGetString(GL_VERSION));
-      printf("GL_VENDOR     = %s\n", (char*)glGetString(GL_VENDOR));
+      printf("GL_RENDERER           = %s\n", (char*)glGetString(GL_RENDERER));
+      printf("GL_VERSION            = %s\n", (char*)glGetString(GL_VERSION));
+      printf("GL_VENDOR             = %s\n", (char*)glGetString(GL_VENDOR));
+      GLint max_texture_dim;
+      glGetIntegerv(GL_MAX_TEXTURE_SIZE,&max_texture_dim); 
+      printf("GL_MAX_TEXTURE_SIZE/4 = %d\n",max_texture_dim/4);
       //printf("GL_EXTENSIONS = %s\n", (char*)glGetString(GL_EXTENSIONS));
     }
   }
@@ -291,7 +293,6 @@ void OpenGLRenderDevice::blank_screen() {
 
 void OpenGLRenderDevice::commit_frame() {
   SDL_GL_SwapBuffers();
-  //glFinish();
   glFlush();
   return;
 }

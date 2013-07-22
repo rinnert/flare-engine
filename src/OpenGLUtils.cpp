@@ -47,12 +47,12 @@ void OpenGLResourceManager::render_to_image_buffer(
   if (image_buffer.size() < required_size) {
     image_buffer.resize(required_size);
     image_buffer_pixels = &(image_buffer[0]);
-    printf(
-        "OpenGLResourceManager: resisizing clipping buffer to %dx%dx%d.\n",
-        width,
-        height,
-        bpp
-        );
+    //printf(
+    //    "OpenGLResourceManager: resisizing clipping buffer to %dx%dx%d.\n",
+    //    width,
+    //    height,
+    //    bpp
+    //    );
   }
 
   char *src = NULL;

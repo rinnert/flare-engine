@@ -86,18 +86,19 @@ void Animation::setupUncompressed(Point _render_size, Point _render_offset, int 
 			f.offset.x = _render_offset.x;
 			f.offset.y = _render_offset.y;
       f.sprite = sprite; // remember we own the sprite! 
-#ifdef WITH_OPENGL
-      if(NULL != f.sprite) {
-        if (OPENGL) {
-          if (0 != f.texture) { glDeleteTextures(1,&f.texture); }
-          // animation textures have higher priority.
-          f.texture = gl_resources->create_texture(f.sprite,&f.src,0.75f);
-          // the texture is already a clip
-          f.gl_src[0] = f.gl_src[1] = 0.0f;  
-          f.gl_src[2] = f.gl_src[3] = 1.0f;  
-        }
-      }
-#endif // WITH_OPENGL
+// TODO: implement texture cache for animations
+//#ifdef WITH_OPENGL
+//      if(NULL != f.sprite) {
+//        if (OPENGL) {
+//          if (0 != f.texture) { glDeleteTextures(1,&f.texture); }
+//          // animation textures have higher priority.
+//          f.texture = gl_resources->create_texture(f.sprite,&f.src,0.75f);
+//          // the texture is already a clip
+//          f.gl_src[0] = f.gl_src[1] = 0.0f;  
+//          f.gl_src[2] = f.gl_src[3] = 1.0f;  
+//        }
+//      }
+//#endif // WITH_OPENGL
 		}
 	}
 }
@@ -148,18 +149,19 @@ void Animation::addFrame(	unsigned short index,
 	f.src = sdl_rect;
 	f.offset = _render_offset;
   f.sprite = sprite; // remember we own the sprite! 
-#ifdef WITH_OPENGL
-  if(NULL != f.sprite) {
-    if (OPENGL) {
-      if (0 != f.texture) { glDeleteTextures(1,&f.texture); }
-      // animation textures have higher priority.
-      f.texture = gl_resources->create_texture(f.sprite,&f.src,0.75f);
-      // the texture is already a clip
-      f.gl_src[0] = f.gl_src[1] = 0.0f;  
-      f.gl_src[2] = f.gl_src[3] = 1.0f;  
-    }
-  }
-#endif // WITH_OPENGL
+// TODO: implement texture cache for animations
+//#ifdef WITH_OPENGL
+//  if(NULL != f.sprite) {
+//    if (OPENGL) {
+//      //if (0 != f.texture) { glDeleteTextures(1,&f.texture); }
+//      // animation textures have higher priority.
+//      f.texture = gl_resources->create_texture(f.sprite,&f.src,0.75f);
+//      // the texture is already a clip
+//      f.gl_src[0] = f.gl_src[1] = 0.0f;  
+//      f.gl_src[2] = f.gl_src[3] = 1.0f;  
+//    }
+//  }
+//#endif // WITH_OPENGL
 }
 
 void Animation::advanceFrame() {

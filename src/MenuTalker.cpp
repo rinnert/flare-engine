@@ -52,6 +52,8 @@ MenuTalker::MenuTalker(MenuManager *_menu)
 	, advanceButton(new WidgetButton("images/menus/buttons/right.png"))
 	, closeButton(new WidgetButton("images/menus/buttons/button_x.png")) {
 
+  // TODO: find out why the texture caching leads to a black box below
+  // the dialog.
 	background.set_graphics(loadGraphicSurface("images/menus/dialog_box.png"));
 
 	// Load config settings
@@ -73,8 +75,8 @@ MenuTalker::MenuTalker(MenuManager *_menu)
 				dialog_pos.y = eatFirstInt(infile.val,',');
 				dialog_pos.w = eatFirstInt(infile.val,',');
 				dialog_pos.h = eatFirstInt(infile.val,',');
-        background.offset.x = -dialog_pos.x;
-        background.offset.y = -dialog_pos.y;
+        //background.offset.x = -dialog_pos.x;
+        //background.offset.y = -dialog_pos.y;
 			}
 			else if (infile.key == "dialogtext") {
 				text_pos.x = eatFirstInt(infile.val,',');
@@ -260,6 +262,8 @@ void MenuTalker::render() {
 	src.w = dest.w = dialog_pos.w;
 	src.h = dest.h = dialog_pos.h;
 
+  background.set_clip(src);
+  background.set_dest(dest);
 	render_device->render(background);
 
 	// show active portrait

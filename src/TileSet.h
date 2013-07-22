@@ -1,5 +1,6 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -28,6 +29,10 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 
 #include "CommonIncludes.h"
 #include "Utils.h"
+#ifdef WITH_OPENGL
+#include "OpenGLUtils.h"
+#endif // WITH_OPENGL
+
 
 /**
  * Describes a tile by its location \a src in the tileset sprite and
@@ -37,13 +42,17 @@ FLARE.  If not, see http://www.gnu.org/licenses/
  */
 class Tile_Def {
 public:
-	SDL_Rect src;
-	Point offset;
-	Tile_Def() {
-		src.x = src.y = src.w = src.h = 0;
-		offset.x = offset.y = 0;
-	}
+  Point offset;
+  Renderable tile;
+#ifdef WITH_OPENGL
+  std::vector<GLuint> textures;
+#endif // WITH_OPENGL
+	Tile_Def() {;}
+#ifdef WITH_OPENGL
+  ~Tile_Def();
+#endif // WITH_OPENGL
 };
+
 
 class Tile_Anim {
 public:

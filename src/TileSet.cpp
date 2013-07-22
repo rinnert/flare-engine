@@ -1,6 +1,7 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
 Copyright © 2012 Stefan Beller
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -31,6 +32,14 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 #include <cstdio>
 
 using namespace std;
+
+#ifdef WITH_OPENGL
+Tile_Def::~Tile_Def() {
+  for (unsigned int i=0; i<textures.size(); ++i) {
+    if (0 != textures[i]) { glDeleteTextures(1,&(textures[i])); }
+  }
+}
+#endif // WITH_OPENGL
 
 TileSet::TileSet() {
 	sprites = NULL;
@@ -63,6 +72,28 @@ void TileSet::loadGraphics(const std::string& filename) {
 
 	if (!sprites)
 		sprites = loadGraphicSurface("images/tilesets/" + filename);
+
+  for (unsigned int t=0; t<tiles.size(); ++t) {
+    Renderable& r = tiles[t].tile;
+    r.sprite = sprites;
+#ifdef WITH_OPENGL
+    if (OPENGL) {
+      SDL_Rect clip = r.src;
+      r.texture = gl_resources->create_texture(sprites,&clip,1.0f);
+      r.gl_src[0] = r.gl_src[1] = 0.0f;
+      r.gl_src[2] = r.gl_src[3] = 1.0f;
+      tiles[t].textures.push_back(r.texture);
+
+      if (t < anim.size()) {
+        for (unsigned int f=1; f<anim[t].frames; ++f) {
+          clip.x = anim[t].pos[f].x;
+          clip.y = anim[t].pos[f].y;
+          tiles[t].textures.push_back(gl_resources->create_texture(sprites,&clip,1.0f)); 
+        }
+      }
+    }
+#endif // WITH_OPENGL
+  } 
 }
 
 void TileSet::load(const std::string& filename) {
@@ -83,14 +114,14 @@ void TileSet::load(const std::string& filename) {
 				if (index >= tiles.size())
 					tiles.resize(index + 1);
 
-				tiles[index].src.x = eatFirstInt(infile.val, ',');
-				tiles[index].src.y = eatFirstInt(infile.val, ',');
-				tiles[index].src.w = eatFirstInt(infile.val, ',');
-				tiles[index].src.h = eatFirstInt(infile.val, ',');
+				tiles[index].tile.src.x = eatFirstInt(infile.val, ',');
+				tiles[index].tile.src.y = eatFirstInt(infile.val, ',');
+				tiles[index].tile.src.w = eatFirstInt(infile.val, ',');
+				tiles[index].tile.src.h = eatFirstInt(infile.val, ',');
 				tiles[index].offset.x = eatFirstInt(infile.val, ',');
 				tiles[index].offset.y = eatFirstInt(infile.val, ',');
-				max_size_x = std::max(max_size_x, (tiles[index].src.w / TILE_W) + 1);
-				max_size_y = std::max(max_size_y, (tiles[index].src.h / TILE_H) + 1);
+				max_size_x = std::max(max_size_x, (tiles[index].tile.src.w / TILE_W) + 1);
+				max_size_y = std::max(max_size_y, (tiles[index].tile.src.h / TILE_H) + 1);
 			}
 			else if (infile.key == "img") {
 				img = infile.val;
@@ -140,10 +171,15 @@ void TileSet::logic() {
 			if (!an.frames)
 				continue;
 			if (an.duration >= an.frame_duration[an.current_frame]) {
-				tiles[i].src.x = an.pos[an.current_frame].x;
-				tiles[i].src.y = an.pos[an.current_frame].y;
+				tiles[i].tile.src.x = an.pos[an.current_frame].x;
+				tiles[i].tile.src.y = an.pos[an.current_frame].y;
 				an.duration = 0;
 				an.current_frame = (an.current_frame + 1) % an.frames;
+#ifdef WITH_OPENGL
+        if (OPENGL) {
+          tiles[i].tile.texture = tiles[i].textures[an.current_frame];
+        }
+#endif // WITH_OPENGL
 			}
 			an.duration++;
 		}
