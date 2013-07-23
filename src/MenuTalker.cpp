@@ -52,8 +52,6 @@ MenuTalker::MenuTalker(MenuManager *_menu)
 	, advanceButton(new WidgetButton("images/menus/buttons/right.png"))
 	, closeButton(new WidgetButton("images/menus/buttons/button_x.png")) {
 
-  // TODO: find out why the texture caching leads to a black box below
-  // the dialog.
 	background.set_graphics(loadGraphicSurface("images/menus/dialog_box.png"));
 
 	// Load config settings
