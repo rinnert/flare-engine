@@ -169,8 +169,9 @@ int OpenGLRenderDevice::render(Renderable& r) {
     glTexCoord2f(0.0f, 1.0f); glVertex2f(m_x0, m_y1);
     glEnd();
 
-    // We own temporary texture, delete it when we are done.
-    glDeleteTextures(1, &texture); 
+    // We own temporary texture, add it to temporaries so it
+    // gets destroyed when we are done with this frame.
+    temporary_textures.push_back(texture);
     bound_texture = 0;
   } else {
     // Because switching texture context can be expensive, only bind the texture
@@ -225,6 +226,7 @@ void OpenGLRenderDevice::draw_line(
     int y1,
     Uint32 color
     ) {
+  // TODO: use OpenGL directly.
 	const int dx = abs(x1-x0);
 	const int dy = abs(y1-y0);
 	const int sx = x0 < x1 ? 1 : -1;
@@ -278,6 +280,7 @@ void OpenGLRenderDevice::draw_rectangle(
     const Point& p1,
     Uint32 color
     ) {
+  // TODO: use OpenGL directly.
 	if (SDL_MUSTLOCK(screen)) { SDL_LockSurface(screen); }
 	this->draw_line(p0.x, p0.y, p1.x, p0.y, color);
 	this->draw_line(p1.x, p0.y, p1.x, p1.y, color);
@@ -294,12 +297,20 @@ void OpenGLRenderDevice::blank_screen() {
 void OpenGLRenderDevice::commit_frame() {
   SDL_GL_SwapBuffers();
   glFlush();
+  destroy_temporaries();
   return;
 }
 
 void OpenGLRenderDevice::destroy_context() {
   // Nothing to be done; SDL_Quit() will handle it all
   // for this render device.
+  return;
+}
+
+void OpenGLRenderDevice::destroy_temporaries() {
+  // Destroy temporary textures.
+  glDeleteTextures(temporary_textures.size(),&(temporary_textures[0]));
+  temporary_textures.clear();
   return;
 }
 

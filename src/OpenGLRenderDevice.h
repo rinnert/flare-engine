@@ -21,6 +21,8 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 #ifndef OPENGLRENDERDEVICE_H
 #define OPENGLRENDERDEVICE_H
 
+#include <vector>
+
 #include "RenderDevice.h"
 
 /** Provide rendering device using OpenGL backend.
@@ -112,12 +114,20 @@ class OpenGLRenderDevice : public RenderDevice {
 
   private:
 
+    // Destroy all temporary (per frame) objects.
+    void destroy_temporaries();
+
+  private:
+
     // Keep track of the bound texture w/o calling into the
     // OpenGL state engine.
     GLuint bound_texture;
 
     // These are for keeping the render stack frame small.
     float m_x0,m_y0,m_x1,m_y1;
+
+    // List of temporary textures. Delete after the frame is rendered.
+    std::vector<GLuint> temporary_textures;
 };
 
 #endif // OPENGLRENDERDEVICE_H
