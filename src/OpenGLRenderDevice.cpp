@@ -226,13 +226,13 @@ void OpenGLRenderDevice::draw_line(
     int y1,
     Uint32 color
     ) {
-  // TODO: use OpenGL directly.
-	const int dx = abs(x1-x0);
-	const int dy = abs(y1-y0);
-	const int sx = x0 < x1 ? 1 : -1;
-	const int sy = y0 < y1 ? 1 : -1;
-	int err = dx-dy;
-
+//  // TODO: use OpenGL directly.
+//	const int dx = abs(x1-x0);
+//	const int dy = abs(y1-y0);
+//	const int sx = x0 < x1 ? 1 : -1;
+//	const int sy = y0 < y1 ? 1 : -1;
+//	int err = dx-dy;
+//
   Uint8 r,g,b;
   float gl_r,gl_g,gl_b;
 
@@ -241,28 +241,33 @@ void OpenGLRenderDevice::draw_line(
   gl_g = (float)g/255.0f;
   gl_b = (float)b/255.0f;
 
+	if (SDL_MUSTLOCK(screen)) { SDL_LockSurface(screen); }
   glDisable(GL_TEXTURE_2D);
   glColor3f(gl_r,gl_g,gl_b);
-  glBegin(GL_POINTS);
-	do {
-		//skip draw if outside screen
-		if (x0 > 0 && y0 > 0 && x0 < VIEW_W && y0 < VIEW_H) {
-      glVertex2f((float)x0,(float)y0);
-    }
-
-		int e2 = 2*err;
-		if (e2 > -dy) {
-			err = err - dy;
-			x0 = x0 + sx;
-		}
-		if (e2 <  dx) {
-			err = err + dx;
-			y0 = y0 + sy;
-		}
-	}
-	while(x0 != x1 || y0 != y1);
+  glLineWidth(1.0f); 
+  glBegin(GL_LINES);
+  glVertex2f((float)x0,(float)y0);
+  glVertex2f((float)x1,(float)y1);
+//	do {
+//		//skip draw if outside screen
+//		if (x0 > 0 && y0 > 0 && x0 < VIEW_W && y0 < VIEW_H) {
+//      glVertex2f((float)x0,(float)y0);
+//    }
+//
+//		int e2 = 2*err;
+//		if (e2 > -dy) {
+//			err = err - dy;
+//			x0 = x0 + sx;
+//		}
+//		if (e2 <  dx) {
+//			err = err + dx;
+//			y0 = y0 + sy;
+//		}
+//	}
+//	while(x0 != x1 || y0 != y1);
   glEnd();
   glEnable(GL_TEXTURE_2D);
+	if (SDL_MUSTLOCK(screen)) { SDL_UnlockSurface(screen); }
 }
 
 void OpenGLRenderDevice::draw_line(
@@ -270,9 +275,7 @@ void OpenGLRenderDevice::draw_line(
     const Point& p1,
     Uint32 color
     ) {
-	if (SDL_MUSTLOCK(screen)) { SDL_LockSurface(screen); }
 	this->draw_line(p0.x, p0.y, p1.x, p1.y, color);
-	if (SDL_MUSTLOCK(screen)) { SDL_UnlockSurface(screen); }
 }
 
 void OpenGLRenderDevice::draw_rectangle(
@@ -280,7 +283,6 @@ void OpenGLRenderDevice::draw_rectangle(
     const Point& p1,
     Uint32 color
     ) {
-  // TODO: use OpenGL directly.
 	if (SDL_MUSTLOCK(screen)) { SDL_LockSurface(screen); }
 	this->draw_line(p0.x, p0.y, p1.x, p0.y, color);
 	this->draw_line(p1.x, p0.y, p1.x, p1.y, color);
