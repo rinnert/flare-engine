@@ -92,8 +92,8 @@ void MenuActiveEffects::renderIcon(int icon_id, int index, int current, int max)
 			overlay.w = ICON_SIZE;
 			overlay.h = ICON_SIZE - overlay.y;
 
-      timer.set_clip(src);
       timer.set_clip(overlay);
+      timer.set_dest(pos);
       render_device->render(timer);
 		}
 	}
