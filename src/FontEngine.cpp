@@ -234,12 +234,12 @@ void FontEngine::render(const std::string& text, int x, int y, int justify, SDL_
     // preserve alpha transparency of text buffers
     if (ttf.sprite != NULL) SDL_gfxBlitRGBA(ttf.sprite, NULL, target, &dest_rect);
   } else if (target == screen) {
-    ttf.sprite = TTF_RenderUTF8_Blended(active_font->ttfont, text.c_str(), color);
-    if (ttf.sprite != NULL) {
-      ttf.set_clip(0,0,ttf.sprite->w,ttf.sprite->h);
-      ttf.set_dest(dest_rect); 
-      render_device->render(ttf); // implies throw-away texture!
-    }
+    render_device->render_text(
+        active_font->ttfont,
+        text,
+        color,
+        dest_rect
+        );
   } else {
     ttf.sprite = TTF_RenderUTF8_Solid(active_font->ttfont, text.c_str(), color);
     if (ttf.sprite != NULL) SDL_BlitSurface(ttf.sprite, NULL, target, &dest_rect);

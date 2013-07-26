@@ -186,6 +186,50 @@ int OpenGLRenderDevice::render(Renderable& r) {
   return 0;
 }
 
+int OpenGLRenderDevice::render_text(
+    TTF_Font *ttf_font,
+    const std::string& text,
+    SDL_Color color,
+    SDL_Rect& dest
+    )
+{
+  m_ttf_renderable.sprite = TTF_RenderUTF8_Blended(ttf_font, text.c_str(), color);
+  if (m_ttf_renderable.sprite != NULL) {
+    m_ttf_renderable.src.x = 0;
+    m_ttf_renderable.src.y = 0;
+    m_ttf_renderable.src.w = m_ttf_renderable.sprite->w;
+    m_ttf_renderable.src.h = m_ttf_renderable.sprite->h;
+
+    m_x0 = (float)(dest.x);
+    m_y0 = (float)(dest.y);
+    m_x1 = m_x0 + m_ttf_renderable.src.w;
+    m_y1 = m_y0 + m_ttf_renderable.src.h;
+
+    // We own the temporary texture, add it to temporaries so it
+    // gets destroyed when we are done with this frame.
+    GLuint texture = gl_resources->create_texture(
+        m_ttf_renderable.sprite,
+        &m_ttf_renderable.src,
+        0.0f); 
+    temporary_textures.push_back(texture);
+    bound_texture = 0;
+
+    glBindTexture(GL_TEXTURE_2D, texture); 
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f); glVertex2f(m_x0, m_y0);
+    glTexCoord2f(1.0f, 0.0f); glVertex2f(m_x1, m_y0);
+    glTexCoord2f(1.0f, 1.0f); glVertex2f(m_x1, m_y1);
+    glTexCoord2f(0.0f, 1.0f); glVertex2f(m_x0, m_y1);
+    glEnd();
+
+    SDL_FreeSurface(m_ttf_renderable.sprite);
+  } else {
+    return -1;
+  }
+
+  return 0;
+}
+
 void OpenGLRenderDevice::draw_pixel(
     int x,
     int y,

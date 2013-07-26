@@ -55,6 +55,15 @@ class SDLBlitRenderDevice : public RenderDevice {
      */ 
     virtual int render(Renderable& r); 
 
+    /** Render text to the screen. 
+     */ 
+    virtual int render_text(
+        TTF_Font *ttf_font,
+        const std::string& text,
+        SDL_Color color,
+        SDL_Rect& dest
+        ); 
+
     /** Draw pixel to screen. 
      */ 
     virtual void draw_pixel(
@@ -117,6 +126,7 @@ class SDLBlitRenderDevice : public RenderDevice {
     // These are for keeping the render stack frame small.
     SDL_Rect m_clip;
     SDL_Rect m_dest;
+    Renderable m_ttf_renderable;
 };
 
 #endif // SDLBLITRENDERDEVICE_H

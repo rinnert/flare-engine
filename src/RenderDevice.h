@@ -69,6 +69,15 @@ class RenderDevice {
      */ 
     virtual int render(Renderable& r) = 0; 
 
+    /** Render text to the screen. 
+     */ 
+    virtual int render_text(
+        TTF_Font *ttf_font,
+        const std::string& text,
+        SDL_Color color,
+        SDL_Rect& dest
+        ) = 0; 
+
     /** Draw pixel to screen. 
      */ 
     virtual void draw_pixel(

@@ -114,6 +114,35 @@ int SDLBlitRenderDevice::render(Renderable& r) {
   return SDL_BlitSurface(r.sprite, &m_clip, screen, &m_dest);
 }
 
+int SDLBlitRenderDevice::render_text(
+    TTF_Font *ttf_font,
+    const std::string& text,
+    SDL_Color color,
+    SDL_Rect& dest
+    )
+{
+  int ret = 0;
+  m_ttf_renderable.sprite = TTF_RenderUTF8_Blended(ttf_font, text.c_str(), color);
+  if (m_ttf_renderable.sprite != NULL) {
+    m_ttf_renderable.src.x = 0;
+    m_ttf_renderable.src.y = 0;
+    m_ttf_renderable.src.w = m_ttf_renderable.sprite->w;
+    m_ttf_renderable.src.h = m_ttf_renderable.sprite->h;
+    ret = SDL_BlitSurface(
+        m_ttf_renderable.sprite, 
+        &m_ttf_renderable.src, 
+        screen, 
+        &dest
+        );
+    SDL_FreeSurface(m_ttf_renderable.sprite);
+  } else {
+    ret = -1;
+  }
+
+  return ret;
+}
+
+
 
 void SDLBlitRenderDevice::draw_pixel(
     int x,

@@ -60,6 +60,15 @@ class OpenGLRenderDevice : public RenderDevice {
      */ 
     virtual int render(Renderable& r);
 
+    /** Render text to the screen. 
+     */ 
+    virtual int render_text(
+        TTF_Font *ttf_font,
+        const std::string& text,
+        SDL_Color color,
+        SDL_Rect& dest
+        ); 
+
     /** Draw pixel to screen. 
      */ 
     virtual void draw_pixel(
@@ -129,6 +138,7 @@ class OpenGLRenderDevice : public RenderDevice {
     // These are for keeping the render stack frame small.
     SDL_Rect m_clip;
     float m_x0,m_y0,m_x1,m_y1;
+    Renderable m_ttf_renderable;
 
     // List of temporary textures. Delete after the frame is rendered.
     std::vector<GLuint> temporary_textures;
