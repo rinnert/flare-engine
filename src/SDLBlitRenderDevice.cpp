@@ -108,14 +108,10 @@ SDL_Surface *SDLBlitRenderDevice::create_context(
 }
 
 int SDLBlitRenderDevice::render(Renderable& r) {
-  if (NULL == r.sprite) return -1;
+  if (NULL == r.sprite) { return -1; }
+  if ( !local_to_global(r) ) { return -1; } 
 
-  SDL_Rect dest;
-
-  dest.x = r.map_pos.x - r.offset.x; 
-  dest.y = r.map_pos.y - r.offset.y;
-
-  return SDL_BlitSurface(r.sprite, &r.src, screen, &dest);
+  return SDL_BlitSurface(r.sprite, &m_clip, screen, &m_dest);
 }
 
 
@@ -228,5 +224,36 @@ void SDLBlitRenderDevice::destroy_context() {
   // Nothing to be done; SDL_Quit() will handle it all
   // for this render device.
   return;
+}
+
+bool SDLBlitRenderDevice::local_to_global(Renderable& r)
+{
+  m_clip = r.src;
+
+  // Check whether we need to render.
+  // If so, compute the correct clipping.
+  if (r.local_frame.w) {
+    int left = r.src.x - r.offset.x; 
+    if (left > r.local_frame.w) { return false; }
+    int right = left + r.src.w;
+    if (right < 0) { return false; }
+    right = (right < r.local_frame.w ? right : r.local_frame.w);
+    m_clip.x = (left > 0 ? 0 : -left);
+    m_clip.w = right - left;
+  }
+  if (r.local_frame.h) {
+    int up = r.src.y - r.offset.y; 
+    if (up > r.local_frame.w) { return false; }
+    int down = up + r.src.h;
+    if (down < 0) { return false; }
+    down = (down < r.local_frame.w ? down : r.local_frame.h);
+    m_clip.y = (up > 0 ? 0 : -up);
+    m_clip.h = down - up;
+  }
+
+  m_dest.x = (float)(r.map_pos.x+r.local_frame.x-r.offset.x);
+  m_dest.y = (float)(r.map_pos.y+r.local_frame.y-r.offset.y);
+
+  return true;
 }
 

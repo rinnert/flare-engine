@@ -51,6 +51,7 @@ public:
 // message passing struct for various sprites rendered map inline
 struct Renderable {
 	SDL_Surface *sprite; // image to be used
+  SDL_Rect local_frame;
 	SDL_Rect src; // location on the sprite in pixel coordinates.  
 #ifdef WITH_OPENGL
   float gl_src[4]; // location on the sprite in texture coordinates. 
@@ -64,6 +65,7 @@ struct Renderable {
 
 	Renderable()
 		: sprite(0)
+		, local_frame(SDL_Rect())
 		, src(SDL_Rect())
 #ifdef WITH_OPENGL
     , texture(0)

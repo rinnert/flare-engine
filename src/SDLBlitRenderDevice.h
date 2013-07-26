@@ -107,6 +107,16 @@ class SDLBlitRenderDevice : public RenderDevice {
      */
     virtual void destroy_context(); 
 
+  private:
+
+    // Compute clipping and global position from local frame.
+    bool local_to_global(Renderable& r);
+
+  private:
+
+    // These are for keeping the render stack frame small.
+    SDL_Rect m_clip;
+    SDL_Rect m_dest;
 };
 
 #endif // SDLBLITRENDERDEVICE_H

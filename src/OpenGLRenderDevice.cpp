@@ -142,7 +142,8 @@ SDL_Surface *OpenGLRenderDevice::create_context(
 }
 
 int OpenGLRenderDevice::render(Renderable& r) {
-  if (NULL == r.sprite) return -1;
+  if (NULL == r.sprite) { return -1; }
+  if ( !local_to_global(r) ) { return -1; } 
 
   GLuint texture = r.texture;
 
@@ -150,16 +151,8 @@ int OpenGLRenderDevice::render(Renderable& r) {
   // NOTE: this is *very* costly.  Ideally this should never happen.
   // Temporary textures have the lowest priority.
   if (0 == r.texture) { 
-    texture = gl_resources->create_texture(r.sprite,&(r.src),0.0f); 
-  }
+    texture = gl_resources->create_texture(r.sprite,&m_clip,0.0f); 
 
-
-  m_x0 = (float)(r.map_pos.x-r.offset.x);
-  m_y0 = (float)(r.map_pos.y-r.offset.y);
-  m_x1 = m_x0 + r.src.w;
-  m_y1 = m_y0 + r.src.h;
-
-  if (0 == r.texture) { 
     // If the texture is temporary it is already clipped.
     glBindTexture(GL_TEXTURE_2D, texture); 
     glBegin(GL_QUADS);
@@ -169,15 +162,13 @@ int OpenGLRenderDevice::render(Renderable& r) {
     glTexCoord2f(0.0f, 1.0f); glVertex2f(m_x0, m_y1);
     glEnd();
 
-    // We own temporary texture, add it to temporaries so it
+    // We own the temporary texture, add it to temporaries so it
     // gets destroyed when we are done with this frame.
     temporary_textures.push_back(texture);
     bound_texture = 0;
   } else {
     // Because switching texture context can be expensive, only bind the texture
     // if it's not currently bound.
-    // TODO: Can this responsibility be moved to client (front-end) code?  If so,
-    // it could help performance.
     if (bound_texture != texture) { 
       glBindTexture(GL_TEXTURE_2D, texture); 
       bound_texture = texture;
@@ -226,13 +217,6 @@ void OpenGLRenderDevice::draw_line(
     int y1,
     Uint32 color
     ) {
-//  // TODO: use OpenGL directly.
-//	const int dx = abs(x1-x0);
-//	const int dy = abs(y1-y0);
-//	const int sx = x0 < x1 ? 1 : -1;
-//	const int sy = y0 < y1 ? 1 : -1;
-//	int err = dx-dy;
-//
   Uint8 r,g,b;
   float gl_r,gl_g,gl_b;
 
@@ -241,33 +225,14 @@ void OpenGLRenderDevice::draw_line(
   gl_g = (float)g/255.0f;
   gl_b = (float)b/255.0f;
 
-	if (SDL_MUSTLOCK(screen)) { SDL_LockSurface(screen); }
   glDisable(GL_TEXTURE_2D);
   glColor3f(gl_r,gl_g,gl_b);
   glLineWidth(1.0f); 
   glBegin(GL_LINES);
   glVertex2f((float)x0,(float)y0);
   glVertex2f((float)x1,(float)y1);
-//	do {
-//		//skip draw if outside screen
-//		if (x0 > 0 && y0 > 0 && x0 < VIEW_W && y0 < VIEW_H) {
-//      glVertex2f((float)x0,(float)y0);
-//    }
-//
-//		int e2 = 2*err;
-//		if (e2 > -dy) {
-//			err = err - dy;
-//			x0 = x0 + sx;
-//		}
-//		if (e2 <  dx) {
-//			err = err + dx;
-//			y0 = y0 + sy;
-//		}
-//	}
-//	while(x0 != x1 || y0 != y1);
   glEnd();
   glEnable(GL_TEXTURE_2D);
-	if (SDL_MUSTLOCK(screen)) { SDL_UnlockSurface(screen); }
 }
 
 void OpenGLRenderDevice::draw_line(
@@ -283,12 +248,10 @@ void OpenGLRenderDevice::draw_rectangle(
     const Point& p1,
     Uint32 color
     ) {
-	if (SDL_MUSTLOCK(screen)) { SDL_LockSurface(screen); }
 	this->draw_line(p0.x, p0.y, p1.x, p0.y, color);
 	this->draw_line(p1.x, p0.y, p1.x, p1.y, color);
 	this->draw_line(p0.x, p0.y, p0.x, p1.y, color);
 	this->draw_line(p0.x, p1.y, p1.x, p1.y, color);
-	if (SDL_MUSTLOCK(screen)) { SDL_UnlockSurface(screen); }
 }
 
 void OpenGLRenderDevice::blank_screen() {
@@ -314,6 +277,43 @@ void OpenGLRenderDevice::destroy_temporaries() {
   glDeleteTextures(temporary_textures.size(),&(temporary_textures[0]));
   temporary_textures.clear();
   return;
+}
+
+bool OpenGLRenderDevice::local_to_global(Renderable& r)
+{
+  m_clip = r.src;
+
+  // Check whether we need to render.
+  // If so, compute the correct clipping.
+  if (r.local_frame.w) {
+    int left = r.src.x - r.offset.x; 
+    if (left > r.local_frame.w) { return false; }
+    int right = left + r.src.w;
+    if (right < 0) { return false; }
+    right = (right < r.local_frame.w ? right : r.local_frame.w);
+    m_clip.x = (left > 0 ? 0 : -left);
+    m_clip.w = right - left;
+    r.gl_src[0] = ((float)left)/r.src.w;
+    r.gl_src[2] = ((float)right)/r.src.w;
+  }
+  if (r.local_frame.h) {
+    int up = r.src.y - r.offset.y; 
+    if (up > r.local_frame.w) { return false; }
+    int down = up + r.src.h;
+    if (down < 0) { return false; }
+    down = (down < r.local_frame.w ? down : r.local_frame.h);
+    m_clip.y = (up > 0 ? 0 : -up);
+    m_clip.h = down - up;
+    r.gl_src[1] = ((float)up)/r.src.h;
+    r.gl_src[3] = ((float)down)/r.src.h;
+  }
+
+  m_x0 = (float)(r.map_pos.x+r.local_frame.x-r.offset.x);
+  m_y0 = (float)(r.map_pos.y+r.local_frame.y-r.offset.y);
+  m_x1 = m_x0 + m_clip.w;
+  m_y1 = m_y0 + m_clip.h;
+
+  return true;
 }
 
 #endif // WITH_OPENGL

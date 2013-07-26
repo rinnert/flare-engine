@@ -117,6 +117,9 @@ class OpenGLRenderDevice : public RenderDevice {
     // Destroy all temporary (per frame) objects.
     void destroy_temporaries();
 
+    // Compute clipping and global position from local frame.
+    bool local_to_global(Renderable& r);
+
   private:
 
     // Keep track of the bound texture w/o calling into the
@@ -124,6 +127,7 @@ class OpenGLRenderDevice : public RenderDevice {
     GLuint bound_texture;
 
     // These are for keeping the render stack frame small.
+    SDL_Rect m_clip;
     float m_x0,m_y0,m_x1,m_y1;
 
     // List of temporary textures. Delete after the frame is rendered.
