@@ -251,8 +251,8 @@ bool SDLBlitRenderDevice::local_to_global(Renderable& r)
     m_clip.h = down - up;
   }
 
-  m_dest.x = (float)(r.map_pos.x+r.local_frame.x-r.offset.x);
-  m_dest.y = (float)(r.map_pos.y+r.local_frame.y-r.offset.y);
+  m_dest.x = r.map_pos.x+r.local_frame.x-r.offset.x;
+  m_dest.y = r.map_pos.y+r.local_frame.y-r.offset.y;
 
   return true;
 }
