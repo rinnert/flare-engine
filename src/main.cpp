@@ -192,8 +192,10 @@ static void cleanup() {
 	delete msg;
 	delete snd;
 
-  Renderable icons = loadIcons();
-  icons.clear_graphics();
+  if (NULL != icon_atlas) {
+    Renderable icons = loadIcons();
+    icons.clear_graphics();
+  }
 
 	SDL_FreeSurface(titlebar_icon);
 
