@@ -262,29 +262,36 @@ bool SDLBlitRenderDevice::local_to_global(Renderable& r)
 {
   m_clip = r.src;
 
+  int left = r.map_pos.x - r.offset.x;
+  int right = left + r.src.w;
+  int up = r.map_pos.y - r.offset.y;
+  int down = up + r.src.h;
+
   // Check whether we need to render.
   // If so, compute the correct clipping.
   if (r.local_frame.w) {
-    int left = r.src.x - r.offset.x; 
     if (left > r.local_frame.w) { return false; }
-    int right = left + r.src.w;
     if (right < 0) { return false; }
+    if (left < 0) {
+      m_clip.x = r.src.x - left;
+      left = 0;
+    };
     right = (right < r.local_frame.w ? right : r.local_frame.w);
-    m_clip.x = (left > 0 ? 0 : -left);
     m_clip.w = right - left;
   }
   if (r.local_frame.h) {
-    int up = r.src.y - r.offset.y; 
-    if (up > r.local_frame.w) { return false; }
-    int down = up + r.src.h;
+    if (up > r.local_frame.h) { return false; }
     if (down < 0) { return false; }
-    down = (down < r.local_frame.w ? down : r.local_frame.h);
-    m_clip.y = (up > 0 ? 0 : -up);
+    if (up < 0) {
+      m_clip.y = r.src.y - up;
+      up = 0;
+    };
+    down = (down < r.local_frame.h ? down : r.local_frame.h);
     m_clip.h = down - up;
   }
 
-  m_dest.x = r.map_pos.x+r.local_frame.x-r.offset.x;
-  m_dest.y = r.map_pos.y+r.local_frame.y-r.offset.y;
+  m_dest.x = left + r.local_frame.x;
+  m_dest.y = up + r.local_frame.y;
 
   return true;
 }
