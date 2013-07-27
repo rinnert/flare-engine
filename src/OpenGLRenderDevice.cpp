@@ -142,6 +142,9 @@ SDL_Surface *OpenGLRenderDevice::create_context(
 }
 
 int OpenGLRenderDevice::render(Renderable& r) {
+  // Drawing order is recalculated every frame.
+  r.prio = 0;
+
   if (NULL == r.sprite) { return -1; }
   if ( !local_to_global(r) ) { return -1; } 
 
