@@ -24,15 +24,16 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 #include "CommonIncludes.h"
 #include "WidgetSlot.h"
 #include "SharedResources.h"
-#include "SDL_gfxBlitFunc.h"
 #include "Settings.h"
 
 using namespace std;
 
 WidgetSlot::WidgetSlot(int _icon_id, int _ACTIVATE)
 	: Widget()
+  , label()
 	, icon_id(_icon_id)
 	, amount(1)
+	, last_amount(-1)
 	, max_amount(1)
 	, amount_str("")
 	, ACTIVATE(_ACTIVATE)
@@ -54,6 +55,8 @@ WidgetSlot::WidgetSlot(int _icon_id, int _ACTIVATE)
   slot_selected.set_clip(src);
 	slot_checked.set_graphics(loadGraphicSurface("images/menus/slot_checked.png"));
   slot_checked.set_clip(src);
+  local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
+  local_offset.x = local_offset.y = 0;
 }
 
 void WidgetSlot::activate() {
@@ -144,7 +147,7 @@ void WidgetSlot::setAmount(int _amount, int _max_amount) {
 	amount_str = abbreviateKilo(amount);
 }
 
-void WidgetSlot::render(SDL_Surface *target) {
+void WidgetSlot::render() {
 	SDL_Rect src;
 
 	if (icon_id != -1 && icons.sprite != NULL) {
@@ -155,60 +158,44 @@ void WidgetSlot::render(SDL_Surface *target) {
 		src.w = pos.w;
 		src.h = pos.h;
 
-    if (NULL == target || screen == target) {
-      icons.set_clip(src);
-      icons.set_dest(pos);
-      render_device->render(icons);
-    } else {
-      if (render_to_alpha)
-        SDL_gfxBlitRGBA(icons.sprite, &src, target, &pos);
-      else
-        SDL_BlitSurface(icons.sprite, &src, target, &pos);
-    }
+    icons.local_frame = local_frame;
+    icons.offset = local_offset;
+    icons.set_clip(src);
+    icons.set_dest(pos);
+    render_device->render(icons);
 
 		if (amount > 1 || max_amount > 1) {
-			stringstream ss;
-			ss << amount_str;
-
-			WidgetLabel label;
-			label.set(pos.x + 2, pos.y + 2, JUSTIFY_LEFT, VALIGN_TOP, ss.str(), font->getColor("item_normal"));
+      if (amount != last_amount) {
+        last_amount = amount;
+        stringstream ss;
+        ss << amount_str;
+        label.set(pos.x + 2, pos.y + 2, JUSTIFY_LEFT, VALIGN_TOP, ss.str(), font->getColor("item_normal"));
+      }
+      label.local_frame = local_frame;
+      label.local_offset = local_offset;
 			label.render();
 		}
 	}
-	renderSelection(target);
+	renderSelection();
 }
 
 /**
  * We can use this function if slot is grayed out to refresh selection frame
  */
-void WidgetSlot::renderSelection(SDL_Surface *target) {
+void WidgetSlot::renderSelection() {
 	if (in_focus) {
-    if (NULL == target || screen == target) {
-      if (checked) { 
-        slot_checked.set_dest(pos);
-        render_device->render(slot_checked);
-      } else {
-        slot_selected.set_dest(pos);
-        render_device->render(slot_selected);
-      }
+    if (checked) {
+      slot_checked.local_frame = local_frame; 
+      slot_checked.offset = local_offset; 
+      slot_checked.set_dest(pos);
+      render_device->render(slot_checked);
     } else {
-      SDL_Rect src;
-      src.x = src.y = 0;
-      src.w = src.h = ICON_SIZE;
-      if (render_to_alpha) {
-        if (checked)
-          SDL_gfxBlitRGBA(slot_checked.sprite, &src, target, &pos);
-        else
-          SDL_gfxBlitRGBA(slot_selected.sprite, &src, target, &pos);
-      }
-      else {
-        if (checked)
-          SDL_BlitSurface(slot_checked.sprite, &src, target, &pos);
-        else
-          SDL_BlitSurface(slot_selected.sprite, &src, target, &pos);
-      }
+      slot_selected.local_frame = local_frame; 
+      slot_selected.offset = local_offset; 
+      slot_selected.set_dest(pos);
+      render_device->render(slot_selected);
     }
-	}
+  }
 }
 
 WidgetSlot::~WidgetSlot() {

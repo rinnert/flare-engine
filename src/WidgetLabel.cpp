@@ -1,5 +1,6 @@
 /*
 Copyright © 2011-2012 Clint Bellanger
+Copyright © 2013 Kurt Rinnert
 
 This file is part of FLARE.
 
@@ -76,29 +77,19 @@ WidgetLabel::WidgetLabel()
 	bounds.x = bounds.y = 0;
 	bounds.w = bounds.h = 0;
 
+  local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
+  local_offset.x = local_offset.y = 0;
+
 	render_to_alpha = false;
 }
 
 /**
  * Draw the buffered string surface to the screen
  */
-void WidgetLabel::render(SDL_Surface *target) {
-  if (NULL == target || screen == target) { // Render to screen.
-    render_device->render(renderable);
-  } else { // Render to surface. Does this happen at all?
-    SDL_Rect dest;
-    dest.x = bounds.x;
-    dest.y = bounds.y;
-    dest.w = bounds.w;
-    dest.h = bounds.h;
-
-    if (renderable.sprite != NULL) {
-      if (render_to_alpha)
-        SDL_gfxBlitRGBA(renderable.sprite, NULL, target, &dest);
-      else
-        SDL_BlitSurface(renderable.sprite, NULL, target, &dest);
-    }
-  }
+void WidgetLabel::render() {
+  renderable.local_frame = local_frame;
+  renderable.offset = local_offset;
+  render_device->render(renderable);
 }
 
 void WidgetLabel::set(int _x, int _y, int _justify, int _valign, const string& _text, SDL_Color _color) {

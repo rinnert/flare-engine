@@ -49,6 +49,9 @@ WidgetSlider::WidgetSlider (const string  & fname)
 	pos_knob.w = sl.sprite->w / 8;
 	pos_knob.h = sl.sprite->h / 2;
 
+  local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
+  local_offset.x = local_offset.y = 0;
+
 	render_to_alpha = false;
 }
 
@@ -108,7 +111,7 @@ bool WidgetSlider::checkClick (int x, int y) {
 		int tmp = std::max(0, std::min(mouse.x - pos.x, static_cast<int>(pos.w)));
 
 		pos_knob.x = pos.x + tmp - (pos_knob.w/2);
-		assert(pos.w);
+    assert(pos.w);
 		value = minimum + (tmp*(maximum-minimum))/pos.w;
 
 		return true;
@@ -132,11 +135,7 @@ int WidgetSlider::getValue () const {
 }
 
 
-void WidgetSlider::render (SDL_Surface *target) {
-	if (target == NULL) {
-		target = screen;
-	}
-
+void WidgetSlider::render () {
 	SDL_Rect	base;
 	base.x = 0;
 	base.y = 0;
@@ -149,40 +148,37 @@ void WidgetSlider::render (SDL_Surface *target) {
 	knob.h = pos_knob.h;
 	knob.w = pos_knob.w;
 
-  if (NULL == target || screen == target) {
-    sl.set_clip(base);
-    sl.set_dest(pos);
-    render_device->render(sl);
-    sl.set_clip(knob);
-    sl.set_dest(pos_knob);
-    render_device->render(sl);
-  } else {
-    if (render_to_alpha) {
-      SDL_gfxBlitRGBA(sl.sprite, &base, target, &pos);
-      SDL_gfxBlitRGBA(sl.sprite, &knob, target, &pos_knob);
-    }
-    else {
-      SDL_BlitSurface(sl.sprite, &base, target, &pos);
-      SDL_BlitSurface(sl.sprite, &knob, target, &pos_knob);
-    }
-  }
+  sl.local_frame = local_frame;
+  sl.offset = local_offset;
+  sl.set_clip(base);
+  sl.set_dest(pos);
+  render_device->render(sl);
+  sl.set_clip(knob);
+  sl.set_dest(pos_knob);
+  render_device->render(sl);
 
 	if (in_focus) {
 		Point topLeft;
 		Point bottomRight;
 		Uint32 color;
 
-		topLeft.x = pos.x;
-		topLeft.y = pos.y;
-		bottomRight.x = pos.x + pos.w;
-		bottomRight.y = pos.y + pos.h;
-		color = SDL_MapRGB(target->format, 255,248,220);
+    topLeft.x = pos.x + local_frame.x - local_offset.x;
+    topLeft.y = pos.y + local_frame.y - local_offset.y;
+    bottomRight.x = topLeft.x + pos.w;
+    bottomRight.y = topLeft.y + pos.h;
+		color = SDL_MapRGB(screen->format, 255,248,220);
 
-    if (NULL == target || screen == target) {
-      render_device->draw_rectangle(topLeft, bottomRight, color);
-    } else {
-      drawRectangle(target, topLeft, bottomRight, color);
-    }
+    // Only draw rectangle if it fits in local frame
+    bool draw = true;
+    if (local_frame.w && 
+        (topLeft.x<local_frame.x || bottomRight.x>(local_frame.x+local_frame.w))) {
+      draw = false;
+    } 
+    if (local_frame.h && 
+        (topLeft.y<local_frame.y || bottomRight.y>(local_frame.y+local_frame.h))) {
+      draw = false;
+    } 
+    if (draw) { render_device->draw_rectangle(topLeft, bottomRight, color); }
 	}
 }
 

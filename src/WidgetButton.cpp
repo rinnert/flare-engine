@@ -45,6 +45,8 @@ WidgetButton::WidgetButton(const std::string& _fileName)
 	, hover(false) {
 	focusable = true;
 	pos.x = pos.y = pos.w = pos.h = 0;
+  local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
+  local_offset.x = local_offset.y = 0;
 	loadArt();
 }
 
@@ -116,7 +118,7 @@ bool WidgetButton::checkClick(int x, int y) {
 
 }
 
-void WidgetButton::render(SDL_Surface *target) {
+void WidgetButton::render() {
 	// the "button" surface contains button variations.
 	// choose which variation to display.
   int y;
@@ -131,28 +133,21 @@ void WidgetButton::render(SDL_Surface *target) {
 	else
 		y = BUTTON_GFX_NORMAL * pos.h;
 
+  buttons.local_frame = local_frame;
+  buttons.offset = local_offset;
   buttons.set_clip(
       buttons.src.x,
       y,
       buttons.src.w,
       buttons.src.h
       );
+  buttons.set_dest(pos);
+  render_device->render(buttons);
 
-  if (NULL==target || screen==target) { // render to screen
-    buttons.map_pos.x = pos.x;
-    buttons.map_pos.y = pos.y;
-    render_device->render(buttons);
-  } else {
-    // create a temporary rect so we don't modify pos
-    SDL_Rect offset = pos;
-
-    if (render_to_alpha)
-      SDL_gfxBlitRGBA(buttons.sprite, &buttons.src, target, &offset);
-    else
-      SDL_BlitSurface(buttons.sprite, &buttons.src, target, &offset);
-  }
-
-	wlabel.render(target);
+  // render label
+  wlabel.local_frame = local_frame;
+  wlabel.local_offset = local_offset;
+	wlabel.render();
 
 	// render the tooltip
 	// TODO move this to menu rendering
@@ -161,7 +156,7 @@ void WidgetButton::render(SDL_Surface *target) {
 			tip_buf.clear();
 			tip_buf = tip_new;
 		}
-		tip->render(tip_buf, inpt->mouse, STYLE_FLOAT, target);
+		tip->render(tip_buf, inpt->mouse, STYLE_FLOAT);
 	}
 }
 

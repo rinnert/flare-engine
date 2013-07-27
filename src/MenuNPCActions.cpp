@@ -24,7 +24,6 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 #include "Menu.h"
 #include "MenuNPCActions.h"
 #include "NPC.h"
-#include "SDL_gfxBlitFunc.h"
 #include "Settings.h"
 #include "SharedResources.h"
 #include "UtilsParsing.h"
@@ -118,10 +117,10 @@ MenuNPCActions::MenuNPCActions()
 		}
 		infile.close();
 	}
+
 }
 
 void MenuNPCActions::update() {
-  action_menu.clear_graphics();
 
 	/* get max width and height of action menu */
 	int w = 0, h = 0;
@@ -136,7 +135,7 @@ void MenuNPCActions::update() {
 
 		h += ITEM_SPACING;
 	}
-
+  
 	/* set action menu position */
 	window_area.x = VIEW_W_HALF - (w / 2);
 	window_area.y = max(40, VIEW_H_HALF - h - (int)(UNITS_PER_TILE*1.5));
@@ -191,22 +190,24 @@ void MenuNPCActions::update() {
 	w += (MENU_BORDER*2);
 	h += (MENU_BORDER*2);
 
-	/* render action menu surface */
-  SDL_Surface *surface;
-	surface = createAlphaSurface(w,h);
-	Uint32 bg = SDL_MapRGBA(surface->format,
-							background_color.r, background_color.g,
-							background_color.b, background_alpha);
-	SDL_FillRect(surface, NULL, bg);
+  int old_w = -1, old_h = -1;  
+  if (NULL != action_menu.sprite) { 
+    old_w = action_menu.sprite->w;
+    old_h = action_menu.sprite->h;
+  }
+  // create background surface if necessary
+  if ( old_w != w || old_h != h ) {
+    action_menu.clear_graphics();
+    SDL_Surface *surface;
+    surface = createAlphaSurface(w,h);
+    Uint32 bg = SDL_MapRGBA(surface->format,
+        background_color.r, background_color.g,
+        background_color.b, background_alpha);
+    SDL_FillRect(surface, NULL, bg);
+    action_menu.set_graphics(surface);
+    action_menu.set_clip(0,0,surface->w,surface->h);
+  }
 
-	for(size_t i=0; i<npc_actions.size(); i++) {
-		if (npc_actions[i].label) {
-			npc_actions[i].label->render(surface);
-		}
-	}
-
-  action_menu.set_graphics(surface);
-  action_menu.set_clip(0,0,surface->w,surface->h);
 }
 
 void MenuNPCActions::setNPC(NPC *pnpc) {
@@ -390,6 +391,13 @@ void MenuNPCActions::render() {
 
   action_menu.set_dest(window_area);
   render_device->render(action_menu);
+	for(size_t i=0; i<npc_actions.size(); i++) {
+		if (npc_actions[i].label) {
+      npc_actions[i].label->local_frame.x = window_area.x;
+      npc_actions[i].label->local_frame.y = window_area.y;
+			npc_actions[i].label->render();
+		}
+	}
 }
 
 MenuNPCActions::~MenuNPCActions() {

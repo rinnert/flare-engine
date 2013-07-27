@@ -49,7 +49,7 @@ public:
 	int checkClick(int x, int y);
 	void set();
 	int getValue();
-	void render(SDL_Surface *target = NULL);
+	void render();
 	void refresh(int x, int y, int h, int val, int max);
 
 	SDL_Rect pos_up;

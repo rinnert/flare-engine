@@ -26,7 +26,7 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 
 #include "CommonIncludes.h"
 #include "InputState.h"
-#include "Widget.h"
+#include "WidgetLabel.h"
 
 enum CLICK_TYPE {
 
@@ -38,12 +38,15 @@ enum CLICK_TYPE {
 class WidgetSlot : public Widget {
 private:
 
+  WidgetLabel label;
+
 	Renderable icons;	
 	Renderable slot_selected;
 	Renderable slot_checked;
 
 	int icon_id;		// current slot id
 	int amount;			// entries amount in slot
+	int last_amount;// last rendered entries amount in slot
 	int max_amount;		// if > 1 always display amount
 	std::string amount_str; // formatted display of amount
 	int ACTIVATE;
@@ -51,6 +54,7 @@ private:
 public:
 	WidgetSlot(int _icon_id = -1, int _ACTIVATE = ACCEPT);
 	~WidgetSlot();
+
 
 	void activate();
 	void deactivate();
@@ -62,8 +66,8 @@ public:
 	CLICK_TYPE checkClick(int x, int y);
 	void setIcon(int _icon_id);
 	void setAmount(int _amount, int _max_amount = 1);
-	void render(SDL_Surface *target = NULL);
-	void renderSelection(SDL_Surface *target = NULL);
+	void render();
+	void renderSelection();
 
 	bool enabled;
 	bool checked;

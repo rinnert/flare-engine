@@ -94,7 +94,7 @@ Point WidgetTooltip::calcPosition(STYLE style, Point pos, Point size) {
  * Tooltip position depends on the screen quadrant of the source.
  * Draw the buffered tooltip if it exists, else render the tooltip and buffer it
  */
-void WidgetTooltip::render(TooltipData &tip, Point pos, STYLE style, SDL_Surface *target) {
+void WidgetTooltip::render(TooltipData &tip, Point pos, STYLE style) {
 	if (tip.renderable.sprite == NULL) {
 		createBuffer(tip);
 	}
@@ -105,17 +105,9 @@ void WidgetTooltip::render(TooltipData &tip, Point pos, STYLE style, SDL_Surface
 
 	Point tip_pos = calcPosition(style, pos, size);
 
-  if (NULL == target || screen == target) {
-    tip.renderable.map_pos.x = tip_pos.x; 
-    tip.renderable.map_pos.y = tip_pos.y; 
-	  render_device->render(tip.renderable);
-  } else {
-    printf("WidgetTooltip::render(): target != screen.\n");
-    SDL_Rect dest;
-    dest.x = tip_pos.x;
-    dest.y = tip_pos.y;
-    SDL_BlitSurface(tip.renderable.sprite,NULL,target,&dest);
-  }
+  tip.renderable.map_pos.x = tip_pos.x; 
+  tip.renderable.map_pos.y = tip_pos.y; 
+  render_device->render(tip.renderable);
 }
 
 /**

@@ -41,6 +41,8 @@ WidgetScrollBox::WidgetScrollBox(int width, int height) {
 	line_height = 20;
 	resize(height);
 	tablist = TabList(VERTICAL);
+  local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
+  local_offset.x = local_offset.y = 0;
 }
 
 WidgetScrollBox::~WidgetScrollBox() {
@@ -58,6 +60,7 @@ void WidgetScrollBox::addChildWidget(Widget* child) {
 	if (find == children.end()) {
 		children.push_back(child);
 		tablist.add(child);
+    child->local_frame = pos;
 	}
 
 }
@@ -178,30 +181,31 @@ void WidgetScrollBox::refresh() {
       );
 }
 
-void WidgetScrollBox::render(SDL_Surface *target) {
-
-	for (unsigned i = 0; i < children.size(); i++) {
-		children[i]->render(contents.sprite);
-	}
+void WidgetScrollBox::render() {
 	SDL_Rect	src,dest;
 	dest = pos;
 	src.x = 0;
 	src.y = cursor;
-	src.w = contents.sprite->w;
+	src.w = pos.w;
 	src.h = pos.h;
 
-  if (NULL == target || screen == target) {
-    contents.set_clip(src);
-    contents.set_dest(dest);
-    render_device->render(contents); // implies throw-away texture!
-  } else {
-    if (render_to_alpha)
-      SDL_gfxBlitRGBA(contents.sprite, &src, target, &dest);
-    else
-      SDL_BlitSurface(contents.sprite, &src, target, &dest);
-  }
+  contents.local_frame = local_frame;
+  contents.offset = local_offset;
+  contents.set_clip(src);
+  contents.set_dest(dest);
+  render_device->render(contents); 
 
-	if (contents.sprite->h > pos.h) scrollbar->render(target);
+	for (unsigned i = 0; i < children.size(); i++) {
+    children[i]->local_frame = pos;
+    children[i]->local_offset.y = cursor;
+		children[i]->render();
+	}
+
+	if (contents.sprite->h > pos.h) {
+    scrollbar->local_frame = local_frame;
+    scrollbar->local_offset = local_offset;
+    scrollbar->render();
+  }
 	update = false;
 
 	if (in_focus) {
@@ -209,13 +213,23 @@ void WidgetScrollBox::render(SDL_Surface *target) {
 		Point bottomRight;
 		Uint32 color;
 
-		topLeft.x = dest.x;
-		topLeft.y = dest.y;
-		bottomRight.x = dest.x + dest.w;
-		bottomRight.y = dest.y + dest.h;
-		color = SDL_MapRGB(target->format, 255,248,220);
+		topLeft.x = dest.x + local_frame.x - local_offset.x;
+		topLeft.y = dest.y + local_frame.y - local_offset.y;
+		bottomRight.x = topLeft.x + dest.w;
+		bottomRight.y = topLeft.y + dest.h;
+		color = SDL_MapRGB(screen->format, 255,248,220);
 
-		drawRectangle(target, topLeft, bottomRight, color);
+    // Only draw rectangle if it fits in local frame
+    bool draw = true;
+    if (local_frame.w && 
+        (topLeft.x<local_frame.x || bottomRight.x>(local_frame.x+local_frame.w))) {
+      draw = false;
+    } 
+    if (local_frame.h && 
+        (topLeft.y<local_frame.y || bottomRight.y>(local_frame.y+local_frame.h))) {
+      draw = false;
+    } 
+    if (draw) { render_device->draw_rectangle(topLeft, bottomRight, color); }
 	}
 }
 

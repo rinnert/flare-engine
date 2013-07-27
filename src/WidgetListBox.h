@@ -76,7 +76,7 @@ public:
 	int getSize();
 	void scrollUp();
 	void scrollDown();
-	void render(SDL_Surface *target = NULL);
+	void render();
 	void refresh();
 
 	bool getNext();

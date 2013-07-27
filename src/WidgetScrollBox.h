@@ -42,7 +42,7 @@ public:
 	void logic(int x, int y);
 	void resize(int h);
 	void refresh();
-	void render(SDL_Surface *target = NULL);
+	void render();
 
 	Renderable contents;
 	bool update;
@@ -54,6 +54,7 @@ public:
 	bool getNext();
 	bool getPrev();
 	void activate();
+  int getCursor() { return cursor; }
 
 private:
 	void scroll(int amount);

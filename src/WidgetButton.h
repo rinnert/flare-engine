@@ -62,7 +62,7 @@ public:
 	void loadArt();
 	bool checkClick();
 	bool checkClick(int x, int y);
-	void render(SDL_Surface *target = NULL);
+	void render();
 	void refresh();
 
 	std::string label;

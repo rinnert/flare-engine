@@ -39,6 +39,9 @@ WidgetCheckBox::WidgetCheckBox (const string &fname)
 	pos.w = cb.sprite->w;
 	pos.h = cb.sprite->h / 2;
 
+  local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
+  local_offset.x = local_offset.y = 0;
+
   cb.set_clip(
       0,
       0,
@@ -103,38 +106,34 @@ bool WidgetCheckBox::isChecked () const {
 	return checked;
 }
 
-void WidgetCheckBox::render (SDL_Surface *target) {
+void WidgetCheckBox::render() {
+  cb.local_frame = local_frame;
+  cb.offset = local_offset;
+  cb.set_dest(pos);
+  render_device->render(cb);
 
-  if (NULL == target || screen == target) {
-    cb.set_dest(pos);
-    render_device->render(cb);
-  } else {
-    printf("WidgetCheckBox::render(): rendering to buffer...\n");
+  if (in_focus) {
+    Point topLeft;
+    Point bottomRight;
+    Uint32 color;
 
-    SDL_Rect    src;
-    src.x = 0;
-    src.y = checked ? pos.h : 0;
-    src.w = pos.w;
-    src.h = pos.h;
-
-    if (render_to_alpha)
-      SDL_gfxBlitRGBA(cb.sprite, &src, target, &pos);
-    else
-      SDL_BlitSurface(cb.sprite, &src, target, &pos);
-
-    if (in_focus) {
-      Point topLeft;
-      Point bottomRight;
-      Uint32 color;
-
-      topLeft.x = pos.x;
-      topLeft.y = pos.y;
-      bottomRight.x = pos.x + pos.w;
-      bottomRight.y = pos.y + pos.h;
-      color = SDL_MapRGB(target->format, 255,248,220);
-
-      drawRectangle(target, topLeft, bottomRight, color);
-    }
+    topLeft.x = pos.x + local_frame.x - local_offset.x;
+    topLeft.y = pos.y + local_frame.y - local_offset.y;
+    bottomRight.x = topLeft.x + pos.w;
+    bottomRight.y = topLeft.y + pos.h;
+    color = SDL_MapRGB(screen->format, 255,248,220);
+  
+    // Only draw rectangle if it fits in local frame
+    bool draw = true;
+    if (local_frame.w && 
+        (topLeft.x<local_frame.x || bottomRight.x>(local_frame.x+local_frame.w))) {
+      draw = false;
+    } 
+    if (local_frame.h && 
+        (topLeft.y<local_frame.y || bottomRight.y>(local_frame.y+local_frame.h))) {
+      draw = false;
+    } 
+    if (draw) { render_device->draw_rectangle(topLeft, bottomRight, color); }
   }
 }
 
