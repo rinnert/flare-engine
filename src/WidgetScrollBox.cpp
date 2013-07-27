@@ -97,8 +97,10 @@ void WidgetScrollBox::scrollUp() {
 
 Point WidgetScrollBox::input_assist(Point mouse) {
 	Point new_mouse;
-	new_mouse.x = mouse.x-pos.x;
-	new_mouse.y = mouse.y-pos.y+cursor;
+  if (mouse.x < pos.x || mouse.x > pos.x+pos.w) { new_mouse.x = -1; }
+  else { new_mouse.x = mouse.x-pos.x; }
+  if (mouse.y < pos.y || mouse.y > pos.y+pos.h) { new_mouse.y = -1; }
+  else { new_mouse.y = mouse.y-pos.y+cursor; }
 	return new_mouse;
 }
 
