@@ -219,7 +219,7 @@ void calculatePriosIso(vector<Renderable*> &r) {
 	for (vector<Renderable*>::iterator it = r.begin(); it != r.end(); ++it) {
 		const unsigned tilex = (*it)->map_pos.x >> TILE_SHIFT;
 		const unsigned tiley = (*it)->map_pos.y >> TILE_SHIFT;
-		(*it)->prio += (((uint64_t)(tilex + tiley)) << 48) + (((uint64_t)tilex) << 32) + (((*it)->map_pos.x + (*it)->map_pos.y) << 16);
+		(*it)->prio = (((uint64_t)(tilex + tiley)) << 48) + (((uint64_t)tilex) << 32) + (((*it)->map_pos.x + (*it)->map_pos.y) << 16);
 	}
 }
 
@@ -227,7 +227,7 @@ void calculatePriosOrtho(vector<Renderable*> &r) {
 	for (vector<Renderable*>::iterator it = r.begin(); it != r.end(); ++it) {
 		const unsigned tilex = (*it)->map_pos.x >> TILE_SHIFT;
 		const unsigned tiley = (*it)->map_pos.y >> TILE_SHIFT;
-		(*it)->prio += (((uint64_t)tiley) << 48) + (((uint64_t)tilex) << 32) + ((*it)->map_pos.y << 16);
+		(*it)->prio = (((uint64_t)tiley) << 48) + (((uint64_t)tilex) << 32) + ((*it)->map_pos.y << 16);
 	}
 }
 
