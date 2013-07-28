@@ -152,9 +152,8 @@ int OpenGLRenderDevice::render(Renderable& r) {
 
   // If the Renderable has no texture, create a temporary one.
   // NOTE: this is *very* costly.  Ideally this should never happen.
-  // Temporary textures have the lowest priority.
   if (0 == r.texture) { 
-    texture = gl_resources->create_texture(r.sprite,&m_clip,0.0f); 
+    texture = gl_resources->create_texture(r.sprite,&m_clip); 
 
     // If the texture is temporary it is already clipped.
     glBindTexture(GL_TEXTURE_2D, texture); 
@@ -212,8 +211,8 @@ int OpenGLRenderDevice::render_text(
     // gets destroyed when we are done with this frame.
     GLuint texture = gl_resources->create_texture(
         m_ttf_renderable.sprite,
-        &m_ttf_renderable.src,
-        0.0f); 
+        &m_ttf_renderable.src
+        ); 
     temporary_textures.push_back(texture);
     bound_texture = 0;
 

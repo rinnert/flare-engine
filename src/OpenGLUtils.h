@@ -62,8 +62,7 @@ class OpenGLResourceManager {
      */
     GLuint create_texture(
         SDL_Surface *surface=0,
-        SDL_Rect *clip=0,
-        float priority=0.5f
+        SDL_Rect *clip=0
         ); 
 
     /** Update a texture of a Renderable.
