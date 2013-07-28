@@ -24,7 +24,6 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 
 #include "WidgetLabel.h"
 #include "SharedResources.h"
-#include "SDL_gfxBlitFunc.h"
 #include "UtilsParsing.h"
 
 using namespace std;

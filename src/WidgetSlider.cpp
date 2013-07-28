@@ -21,7 +21,6 @@ FLARE.  If not, see http://www.gnu.org/licenses/
  */
 
 #include "CommonIncludes.h"
-#include "SDL_gfxBlitFunc.h"
 #include "SharedResources.h"
 #include "UtilsDebug.h"
 #include "Widget.h"

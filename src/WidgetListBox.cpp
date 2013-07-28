@@ -21,7 +21,6 @@ FLARE.  If not, see http://www.gnu.org/licenses/
  * class WidgetListBox
  */
 
-#include "SDL_gfxBlitFunc.h"
 #include "SharedResources.h"
 #include "WidgetLabel.h"
 #include "WidgetListBox.h"
