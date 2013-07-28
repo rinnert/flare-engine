@@ -192,9 +192,13 @@ void AnimationSet::load() {
 }
 
 AnimationSet::~AnimationSet() {
-	if (imagefile != "") imag->decreaseCount(imagefile);
-	for (unsigned i = 0; i < animations.size(); ++i)
-		delete animations[i];
+  int count = 0;
+	if (imagefile != "") { count = imag->decreaseCount(imagefile); };
+	for (unsigned i = 0; i < animations.size(); ++i) {
+    animations[i]->deleteTextures();
+    delete animations[i];
+  }
+  defaultAnimation->deleteTextures();
 	delete defaultAnimation;
 }
 

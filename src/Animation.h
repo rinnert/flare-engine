@@ -74,8 +74,10 @@ protected:
 public:
 	Animation(const std::string &_name, const std::string &_type, SDL_Surface *_sprite);
 
+//private:
 	// returns a copy of this:
 	Animation(const Animation&);
+public:
 
   ~Animation();
 
@@ -125,6 +127,9 @@ public:
 	void setActiveFrames(const std::vector<short> &_active_frames);
 
 	bool isCompleted();
+
+  void deleteTextures();
+
 };
 
 #endif

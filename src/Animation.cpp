@@ -70,35 +70,33 @@ Animation::Animation(const Animation& a)
 	, frames(a.frames)
 	, duration(a.duration)
 	, active_frames(a.active_frames)
-{}
+{;}
 
 void Animation::setupUncompressed(Point _render_size, Point _render_offset, int _position, int _frames, int _duration, unsigned short _maxkinds) {
+
 	setup(_frames, _duration, _maxkinds);
 
 	for (unsigned short i = 0 ; i < _frames; i++) {
 		int base_index = max_kinds*i;
 		for (unsigned short kind = 0 ; kind < max_kinds; kind++) {
-      Renderable f = frames[base_index + kind];
+      Renderable& f = frames[base_index + kind];
 			f.src.x = _render_size.x * (_position + i);
 			f.src.y = _render_size.y * kind;
 			f.src.w = _render_size.x;
 			f.src.h = _render_size.y;
 			f.offset.x = _render_offset.x;
 			f.offset.y = _render_offset.y;
-      f.sprite = sprite; // remember we own the sprite! 
-// TODO: implement texture cache for animations
-//#ifdef WITH_OPENGL
-//      if(NULL != f.sprite) {
-//        if (OPENGL) {
-//          if (0 != f.texture) { glDeleteTextures(1,&f.texture); }
-//          // animation textures have higher priority.
-//          f.texture = gl_resources->create_texture(f.sprite,&f.src,0.75f);
-//          // the texture is already a clip
-//          f.gl_src[0] = f.gl_src[1] = 0.0f;  
-//          f.gl_src[2] = f.gl_src[3] = 1.0f;  
-//        }
-//      }
-//#endif // WITH_OPENGL
+      f.sprite = sprite; // remember we don't own the sprite! 
+#ifdef WITH_OPENGL
+      if (OPENGL) {
+        if (NULL != f.sprite && 0 == f.texture) {
+          f.texture = gl_resources->create_texture(f.sprite,&f.src);
+          // the texture is already a clip
+          f.gl_src[0] = f.gl_src[1] = 0.0f;  
+          f.gl_src[2] = f.gl_src[3] = 1.0f;  
+        }
+      }
+#endif // WITH_OPENGL
 		}
 	}
 }
@@ -149,19 +147,16 @@ void Animation::addFrame(	unsigned short index,
 	f.src = sdl_rect;
 	f.offset = _render_offset;
   f.sprite = sprite; // remember we own the sprite! 
-// TODO: implement texture cache for animations
-//#ifdef WITH_OPENGL
-//  if(NULL != f.sprite) {
-//    if (OPENGL) {
-//      //if (0 != f.texture) { glDeleteTextures(1,&f.texture); }
-//      // animation textures have higher priority.
-//      f.texture = gl_resources->create_texture(f.sprite,&f.src,0.75f);
-//      // the texture is already a clip
-//      f.gl_src[0] = f.gl_src[1] = 0.0f;  
-//      f.gl_src[2] = f.gl_src[3] = 1.0f;  
-//    }
-//  }
-//#endif // WITH_OPENGL
+#ifdef WITH_OPENGL
+  if (OPENGL) {
+    if (NULL != f.sprite && 0 == f.texture) {
+      f.texture = gl_resources->create_texture(f.sprite,&f.src);
+      // the texture is already a clip
+      f.gl_src[0] = f.gl_src[1] = 0.0f;  
+      f.gl_src[2] = f.gl_src[3] = 1.0f;  
+    }
+  }
+#endif // WITH_OPENGL
 }
 
 void Animation::advanceFrame() {
@@ -282,13 +277,16 @@ bool Animation::isCompleted() {
 	return (type == PLAY_ONCE && times_played > 0);
 }
 
-Animation::~Animation() {
+void Animation::deleteTextures() {
 #ifdef WITH_OPENGL
-  if (OPENGL) {
-    for (unsigned int i; i<frames.size(); ++i) {
-      glDeleteTextures(1,&(frames[i].texture));
-    }
+  for (unsigned int i; i<frames.size(); ++i) {
+    gl_resources->free_texture(frames[i]);
   }
 #endif // WITH_OPENGL
 }
+
+Animation::~Animation() {
+  ;
+}
+
 
