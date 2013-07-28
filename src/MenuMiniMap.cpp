@@ -88,6 +88,9 @@ void MenuMiniMap::render(Point hero_pos) {
 void MenuMiniMap::prerender(MapCollision *collider, int map_w, int map_h) {
 	map_size.x = map_w;
 	map_size.y = map_h;
+#ifdef WITH_OPENGL
+  gl_resources->free_texture(map_surface);
+#endif // WITH_OPENGL
 	SDL_FillRect(map_surface.sprite, 0, SDL_MapRGBA(map_surface.sprite->format,0,0,0,0));
 
 	if (TILESET_ORIENTATION == TILESET_ISOMETRIC)
