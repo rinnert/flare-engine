@@ -35,9 +35,7 @@ using namespace std;
 
 #ifdef WITH_OPENGL
 Tile_Def::~Tile_Def() {
-  for (unsigned int i=0; i<textures.size(); ++i) {
-    if (0 != textures[i]) { glDeleteTextures(1,&(textures[i])); }
-  }
+  glDeleteTextures(textures.size(),&(textures[0]));
 }
 #endif // WITH_OPENGL
 
@@ -64,8 +62,10 @@ void TileSet::reset() {
 }
 
 void TileSet::loadGraphics(const std::string& filename) {
-	if (sprites)
+	if (sprites) {
 		SDL_FreeSurface(sprites);
+    tiles.clear();
+  }
 
 	if (!TEXTURE_QUALITY)
 		sprites = loadGraphicSurface("images/tilesets/noalpha/" + filename, "Couldn't load image", false, true);
@@ -79,7 +79,7 @@ void TileSet::loadGraphics(const std::string& filename) {
 #ifdef WITH_OPENGL
     if (OPENGL) {
       SDL_Rect clip = r.src;
-      r.texture = gl_resources->create_texture(sprites,&clip,1.0f);
+      r.texture = gl_resources->create_texture(sprites,&clip);
       r.gl_src[0] = r.gl_src[1] = 0.0f;
       r.gl_src[2] = r.gl_src[3] = 1.0f;
       tiles[t].textures.push_back(r.texture);
@@ -88,7 +88,7 @@ void TileSet::loadGraphics(const std::string& filename) {
         for (unsigned int f=1; f<anim[t].frames; ++f) {
           clip.x = anim[t].pos[f].x;
           clip.y = anim[t].pos[f].y;
-          tiles[t].textures.push_back(gl_resources->create_texture(sprites,&clip,1.0f)); 
+          tiles[t].textures.push_back(gl_resources->create_texture(sprites,&clip)); 
         }
       }
     }
