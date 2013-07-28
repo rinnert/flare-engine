@@ -58,27 +58,27 @@ SDL_Surface *ImageManager::getSurface(const std::string &name) {
 	return 0;
 }
 
-void ImageManager::increaseCount(const std::string &name) {
+int ImageManager::increaseCount(const std::string &name) {
 	vector<string>::iterator found = find(names.begin(), names.end(), name);
 	if (found != names.end()) {
 		int index = distance(names.begin(), found);
-		counts[index]++;
-	}
-	else {
+    return ++counts[index];
+	} else {
 		sprites.push_back(0);
 		names.push_back(name);
 		counts.push_back(1);
+    return 1;
 	}
 }
 
-void ImageManager::decreaseCount(const std::string &name) {
+int ImageManager::decreaseCount(const std::string &name) {
 	vector<string>::iterator found = find(names.begin(), names.end(), name);
 	if (found != names.end()) {
 		int index = distance(names.begin(), found);
-		counts[index]--;
-	}
-	else {
-		fprintf(stderr, "ImageManager::decreaseCount: Couldn't decrease image count: %s\n", name.c_str());
+		return --counts[index];
+	} else {
+		fprintf(stderr, "ImageManager::decreaseCount: Image not found: %s\n", name.c_str());
+    return 0;
 	}
 }
 

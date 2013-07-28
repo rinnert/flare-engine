@@ -51,12 +51,12 @@ public:
 	/**
 	 * Decreases the count for this image.
 	 */
-	void decreaseCount(const std::string &name);
+	int decreaseCount(const std::string &name);
 
 	/**
 	 * Increases the count for this image.
 	 */
-	void increaseCount(const std::string &name);
+	int increaseCount(const std::string &name);
 
 	/**
 	 * Removes all images with count equal zero.
