@@ -173,6 +173,7 @@ void WidgetScrollBox::refresh() {
       SDL_FillRect(contents.sprite,NULL,SDL_MapRGB(contents.sprite->format,bg.r,bg.g,bg.b));
       SDL_SetAlpha(contents.sprite, 0, SDL_ALPHA_OPAQUE);
     }
+    contents.set_graphics(contents.sprite);
 	}
 
 	scrollbar->refresh(
