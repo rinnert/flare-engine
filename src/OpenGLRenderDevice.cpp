@@ -153,6 +153,8 @@ int OpenGLRenderDevice::render(Renderable& r) {
   // If the Renderable has no texture, create a temporary one.
   // NOTE: this is *very* costly.  Ideally this should never happen.
   if (0 == r.texture) { 
+    printf("OpenGLRenderDevice::render(): creating temporary texture!\n");
+
     texture = gl_resources->create_texture(r.sprite,&m_clip); 
 
     // If the texture is temporary it is already clipped.
