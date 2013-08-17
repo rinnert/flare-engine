@@ -226,6 +226,7 @@ void MenuTalker::createBuffer() {
 	label_name->set(who);
 
 	line = npc->dialog[dialog_node][event_cursor].s;
+  std::cout << line << std::endl;
 
 	// render dialog text to the scrollbox buffer
 	Point line_size = font->calc_size(line,textbox->pos.w-(text_offset.x*2));
@@ -241,6 +242,7 @@ void MenuTalker::createBuffer() {
       text_pos.w - text_offset.x*2, 
       color_normal
       );
+	textbox->contents.set_graphics(textbox->contents.sprite);
 
 }
 
