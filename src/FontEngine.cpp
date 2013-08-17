@@ -230,10 +230,9 @@ void FontEngine::render(const std::string& text, int x, int y, int justify, SDL_
   // render and blit the text
   if (active_font->blend && target != screen) {
     ttf.sprite = TTF_RenderUTF8_Blended(active_font->ttfont, text.c_str(), color);
-
     // preserve alpha transparency of text buffers
     if (ttf.sprite != NULL) SDL_gfxBlitRGBA(ttf.sprite, NULL, target, &dest_rect);
-  } else if (target == screen) {
+  } else if (NULL == target) {
     render_device->render_text(
         active_font->ttfont,
         text,

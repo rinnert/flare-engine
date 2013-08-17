@@ -323,7 +323,7 @@ void MapRenderer::renderIsoLayer(SDL_Surface *wheretorender, Point offset, const
 				dest.y = p.y - tset.tiles[current_tile].offset.y + offset.y;
 				// no need to set w and h in dest, as it is ignored
 				// by SDL_BlitSurface
-        if (wheretorender == screen) {
+        if (NULL == wheretorender) {
           tset.tiles[current_tile].tile.set_dest(dest);
           render_device->render(tset.tiles[current_tile].tile);
         } else {
@@ -422,7 +422,7 @@ void MapRenderer::renderIso(vector<Renderable*> &r, vector<Renderable*> &r_dead)
 	const Point nulloffset(0, 0);
 	if (ANIMATED_TILES) {
 		for (unsigned i = 0; i < index_objectlayer; ++i)
-			renderIsoLayer(screen, nulloffset, layers[i]);
+			renderIsoLayer(NULL, nulloffset, layers[i]);
 	}
 	else {
 		if (abs(shakycam.x - backgroundsurfaceoffset.x) > movedistance_to_rerender * TILE_W
@@ -453,7 +453,7 @@ void MapRenderer::renderIso(vector<Renderable*> &r, vector<Renderable*> &r_dead)
 	renderIsoBackObjects(r_dead);
 	renderIsoFrontObjects(r);
 	for (unsigned i = index_objectlayer + 1; i < layers.size(); ++i)
-		renderIsoLayer(screen, nulloffset, layers[i]);
+		renderIsoLayer(NULL, nulloffset, layers[i]);
 
 	checkTooltip();
 }
