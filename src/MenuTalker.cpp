@@ -38,7 +38,6 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 
 using namespace std;
 
-
 MenuTalker::MenuTalker(MenuManager *_menu)
 	: Menu()
 	, menu(_menu)
@@ -226,7 +225,6 @@ void MenuTalker::createBuffer() {
 	label_name->set(who);
 
 	line = npc->dialog[dialog_node][event_cursor].s;
-	std::cout << line << std::endl;
 
 	// render dialog text to the scrollbox buffer
 	Point line_size = font->calc_size(line,textbox->pos.w-(text_offset.x*2));
