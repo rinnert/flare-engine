@@ -77,11 +77,12 @@ struct Renderable {
 	}
 
 #ifdef WITH_OPENGL
-	void set_graphics(SDL_Surface *s, GLuint t=0);
+	void set_graphics(SDL_Surface *s, SDL_Rect *texture_clip=0, GLuint t=0);
 #else // WITH_OPENGL
-	void set_graphics(SDL_Surface *s);
+	void set_graphics(SDL_Surface *s, SDL_Rect *texture_clip=0);
 #endif // WITH_OPENGL
 	void clear_graphics();
+	void clear_texture();
 	void set_clip(const SDL_Rect& clip);
 	void set_clip(
 		const int x,

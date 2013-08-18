@@ -26,9 +26,6 @@ FLARE.  If not, see http://www.gnu.org/licenses/
  * The intention with the class is to keep it as flexible as possible so that the animations
  * can be used not only for character animations but any animated in-game objects.
  */
-#ifdef WITH_OPENGL
-#include "OpenGLUtils.h"
-#endif // WITH_OPENGL
 #include "Settings.h"
 #include "SharedResources.h"
 
@@ -87,17 +84,7 @@ void Animation::setupUncompressed(Point _render_size, Point _render_offset, int 
 			f.src.h = _render_size.y;
 			f.offset.x = _render_offset.x;
 			f.offset.y = _render_offset.y;
-			f.sprite = sprite; // remember we don't own the sprite!
-#ifdef WITH_OPENGL
-			if (OPENGL) {
-				if (NULL != f.sprite && 0 == f.texture) {
-					f.texture = gl_resources->create_texture(f.sprite,&f.src);
-					// the texture is already a clip
-					f.gl_src[0] = f.gl_src[1] = 0.0f;
-					f.gl_src[2] = f.gl_src[3] = 1.0f;
-				}
-			}
-#endif // WITH_OPENGL
+			f.set_graphics(sprite,&f.src); // remember we own the sprite!
 		}
 	}
 }
@@ -147,17 +134,7 @@ void Animation::addFrame(	unsigned short index,
 	Renderable& f = frames[max_kinds*index+kind];
 	f.src = sdl_rect;
 	f.offset = _render_offset;
-	f.sprite = sprite; // remember we own the sprite!
-#ifdef WITH_OPENGL
-	if (OPENGL) {
-		if (NULL != f.sprite && 0 == f.texture) {
-			f.texture = gl_resources->create_texture(f.sprite,&f.src);
-			// the texture is already a clip
-			f.gl_src[0] = f.gl_src[1] = 0.0f;
-			f.gl_src[2] = f.gl_src[3] = 1.0f;
-		}
-	}
-#endif // WITH_OPENGL
+	f.set_graphics(sprite,&f.src); // remember we own the sprite!
 }
 
 void Animation::advanceFrame() {
@@ -279,11 +256,9 @@ bool Animation::isCompleted() {
 }
 
 void Animation::deleteTextures() {
-#ifdef WITH_OPENGL
 	for (unsigned int i; i<frames.size(); ++i) {
-		gl_resources->free_texture(frames[i]);
+		frames[i].clear_texture();
 	}
-#endif // WITH_OPENGL
 }
 
 Animation::~Animation() {

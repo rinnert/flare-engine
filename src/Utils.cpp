@@ -30,9 +30,9 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 using namespace std;
 
 #ifdef WITH_OPENGL
-void Renderable::set_graphics(SDL_Surface *s, GLuint t) {
+void Renderable::set_graphics(SDL_Surface *s, SDL_Rect *texture_clip, GLuint t) {
 #else // WITH_OPENGL
-void Renderable::set_graphics(SDL_Surface *s) {
+void Renderable::set_graphics(SDL_Surface *s, SDL_Rect *texture_clip) {
 #endif // WITH_OPENGL
 	// Set the graphics context of a Renderable.
 	//
@@ -46,11 +46,14 @@ void Renderable::set_graphics(SDL_Surface *s) {
 #ifdef WITH_OPENGL
 	if (OPENGL) {
 		if (0 == t) {
-			texture = gl_resources->create_texture(sprite);
+			texture = gl_resources->create_texture(sprite,texture_clip);
 		}
 		else {
 			texture = t;
 		}
+		// set the default clip
+		gl_src[0] = gl_src[1] = 0.0f;
+		gl_src[2] = gl_src[3] = 1.0f;
 	}
 #endif // WITH_OPENGL
 }
@@ -67,6 +70,18 @@ void Renderable::clear_graphics() {
 		SDL_FreeSurface(sprite);
 		sprite = NULL;
 	}
+#ifdef WITH_OPENGL
+	if (OPENGL && 0 != texture) {
+		glDeleteTextures(1,&texture);
+		texture = 0;
+	}
+#endif // WITH_OPENGL
+}
+
+void Renderable::clear_texture() {
+	// Clear only the texture of a Renderable.
+	//
+	// Do nothing if we compile and/or run in SDL blidt mode.
 #ifdef WITH_OPENGL
 	if (OPENGL && 0 != texture) {
 		glDeleteTextures(1,&texture);
