@@ -72,7 +72,7 @@ ConfigEntry config[] = {
 	{ "show_fps",         &typeid(SHOW_FPS),        "0",   &SHOW_FPS,        "show frames per second. 1 enable, 0 disable."},
 	{ "colorblind",       &typeid(COLORBLIND),      "0",   &COLORBLIND,      "enable colorblind tooltips. 1 enable, 0 disable"},
 #ifdef WITH_OPENGL
-  { "opengl",           &typeid(OPENGL),          "0",   &OPENGL,          "OpenGL rendering (experimental), allows for vsync. 1 enable, 0 disable."}
+	{ "opengl",           &typeid(OPENGL),          "0",   &OPENGL,          "OpenGL rendering (experimental), allows for vsync. 1 enable, 0 disable."}
 #endif // WITH_OPENGL
 
 };

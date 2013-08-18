@@ -42,14 +42,16 @@ FLARE.  If not, see http://www.gnu.org/licenses/
  */
 class Tile_Def {
 public:
-  Point offset;
-  Renderable tile;
+	Point offset;
+	Renderable tile;
 #ifdef WITH_OPENGL
-  std::vector<GLuint> textures;
+	std::vector<GLuint> textures;
 #endif // WITH_OPENGL
-	Tile_Def() {;}
+	Tile_Def() {
+		;
+	}
 #ifdef WITH_OPENGL
-  ~Tile_Def();
+	~Tile_Def();
 #endif // WITH_OPENGL
 };
 

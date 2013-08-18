@@ -195,9 +195,9 @@ void EnemyManager::handleSpawn() {
 		e->stats.summoned = true;
 		e->stats.summoned_power_index = espawn.summon_power_index;
 
-		if(espawn.summoner != NULL){
-            e->stats.summoner = espawn.summoner;
-            espawn.summoner->summons.push_back(&(e->stats));
+		if(espawn.summoner != NULL) {
+			e->stats.summoner = espawn.summoner;
+			espawn.summoner->summons.push_back(&(e->stats));
 		}
 
 		e->type = espawn.type;

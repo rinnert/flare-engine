@@ -47,8 +47,8 @@ public:
 	bool in_focus;
 	bool focusable;
 	SDL_Rect pos; // This is the position of the button within the screen
-  SDL_Rect local_frame; // Local reference frame is this is a daughter widget
-  Point local_offset; // Offset in local frame is this is a daughter widget
+	SDL_Rect local_frame; // Local reference frame is this is a daughter widget
+	Point local_offset; // Offset in local frame is this is a daughter widget
 };
 
 class TabList {

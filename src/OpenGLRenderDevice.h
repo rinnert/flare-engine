@@ -34,114 +34,114 @@ FLARE.  If not, see http://www.gnu.org/licenses/
  * As this is for the FLARE engine, the implementation use the the engine's
  * global settings context, which is included by the interface.
  *
- * @class OpenGLRenderDevice 
+ * @class OpenGLRenderDevice
  * @see RenderDevice
- * @author Kurt Rinnert 
+ * @author Kurt Rinnert
  * @date 2013-07-07
  *
  */
 class OpenGLRenderDevice : public RenderDevice {
 
-  public:
+public:
 
-    /** Initialize base class and report rendering device in use.
-     */
-    OpenGLRenderDevice();
+	/** Initialize base class and report rendering device in use.
+	 */
+	OpenGLRenderDevice();
 
-    /** Create context on startup.
-     */
-    virtual SDL_Surface *create_context(
-        int width, 
-        int height,
-        bool full_screen
-        );
+	/** Create context on startup.
+	 */
+	virtual SDL_Surface *create_context(
+		int width,
+		int height,
+		bool full_screen
+	);
 
-    /** Render surface to screen. 
-     */ 
-    virtual int render(Renderable& r);
+	/** Render surface to screen.
+	 */
+	virtual int render(Renderable& r);
 
-    /** Render text to the screen. 
-     */ 
-    virtual int render_text(
-        TTF_Font *ttf_font,
-        const std::string& text,
-        SDL_Color color,
-        SDL_Rect& dest
-        ); 
+	/** Render text to the screen.
+	 */
+	virtual int render_text(
+		TTF_Font *ttf_font,
+		const std::string& text,
+		SDL_Color color,
+		SDL_Rect& dest
+	);
 
-    /** Draw pixel to screen. 
-     */ 
-    virtual void draw_pixel(
-        int x,
-        int y,
-        Uint32 color
-        );
-    
-    /** Draw line to screen. 
-     *
-     *  Draw line connecting (x0,y0) and (x1,y1) to screen.
-     */ 
-    virtual void draw_line(
-        int x0,
-        int y0,
-        int x1,
-        int y1,
-        Uint32 color
-        );
+	/** Draw pixel to screen.
+	 */
+	virtual void draw_pixel(
+		int x,
+		int y,
+		Uint32 color
+	);
 
-    /** Draw line to screen. 
-     *
-     *  Draw line connecting p0 and p1 to screen.
-     */ 
-    virtual void draw_line(
-        const Point& p0,
-        const Point& p1,
-        Uint32 color
-        );
+	/** Draw line to screen.
+	 *
+	 *  Draw line connecting (x0,y0) and (x1,y1) to screen.
+	 */
+	virtual void draw_line(
+		int x0,
+		int y0,
+		int x1,
+		int y1,
+		Uint32 color
+	);
 
-    /** Draw rectangle to screen. 
-     *
-     *  Draw rectangle defined by p0 and p1 to screen.
-     */ 
-    virtual void draw_rectangle(
-        const Point& p0,
-        const Point& p1,
-        Uint32 color
-        );
+	/** Draw line to screen.
+	 *
+	 *  Draw line connecting p0 and p1 to screen.
+	 */
+	virtual void draw_line(
+		const Point& p0,
+		const Point& p1,
+		Uint32 color
+	);
 
-    /** Blank the screen.
-     */
-    virtual void blank_screen();
+	/** Draw rectangle to screen.
+	 *
+	 *  Draw rectangle defined by p0 and p1 to screen.
+	 */
+	virtual void draw_rectangle(
+		const Point& p0,
+		const Point& p1,
+		Uint32 color
+	);
 
-    /** Commit the next frame to dispay.
-     */
-    virtual void commit_frame();
+	/** Blank the screen.
+	 */
+	virtual void blank_screen();
 
-    /** Destroy context on exit.
-     */
-    virtual void destroy_context(); 
+	/** Commit the next frame to dispay.
+	 */
+	virtual void commit_frame();
 
-  private:
+	/** Destroy context on exit.
+	 */
+	virtual void destroy_context();
 
-    // Destroy all temporary (per frame) objects.
-    void destroy_temporaries();
+private:
 
-    // Compute clipping and global position from local frame.
-    bool local_to_global(Renderable& r);
+	// Destroy all temporary (per frame) objects.
+	void destroy_temporaries();
 
-  private:
+	// Compute clipping and global position from local frame.
+	bool local_to_global(Renderable& r);
 
-    // Keep track of the bound texture w/o calling into the
-    // OpenGL state engine.
-    GLuint bound_texture;
+private:
 
-    // These are for keeping the render stack frame small.
-    SDL_Rect m_clip;
-    float m_x0,m_y0,m_x1,m_y1;
-    Renderable m_ttf_renderable;
+	// Keep track of the bound texture w/o calling into the
+	// OpenGL state engine.
+	GLuint bound_texture;
 
-    // List of temporary textures. Delete after the frame is rendered.
-    std::vector<GLuint> temporary_textures;
+	// These are for keeping the render stack frame small.
+	SDL_Rect m_clip;
+	float m_x0,m_y0,m_x1,m_y1;
+	Renderable m_ttf_renderable;
+
+	// List of temporary textures. Delete after the frame is rendered.
+	std::vector<GLuint> temporary_textures;
 };
 
 #endif // OPENGLRENDERDEVICE_H

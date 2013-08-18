@@ -36,11 +36,10 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 
 using namespace std;
 
-MenuActiveEffects::MenuActiveEffects() 
-  : icons(loadIcons())
-  , stats(NULL)
-  , orientation(false) // horizontal 
-{
+MenuActiveEffects::MenuActiveEffects()
+	: icons(loadIcons())
+	, stats(NULL)
+	, orientation(false) { // horizontal
 	// Load config settings
 	FileParser infile;
 	if(infile.open("menus/activeeffects.txt")) {
@@ -82,9 +81,9 @@ void MenuActiveEffects::renderIcon(int icon_id, int index, int current, int max)
 		src.y = (icon_id / columns) * ICON_SIZE;
 		src.w = src.h = ICON_SIZE;
 
-    icons.set_clip(src);
-    icons.set_dest(pos);
-    render_device->render(icons);
+		icons.set_clip(src);
+		icons.set_dest(pos);
+		render_device->render(icons);
 
 		if (max > 0) {
 			overlay.x = 0;
@@ -92,9 +91,9 @@ void MenuActiveEffects::renderIcon(int icon_id, int index, int current, int max)
 			overlay.w = ICON_SIZE;
 			overlay.h = ICON_SIZE - overlay.y;
 
-      timer.set_clip(overlay);
-      timer.set_dest(pos);
-      render_device->render(timer);
+			timer.set_clip(overlay);
+			timer.set_dest(pos);
+			render_device->render(timer);
 		}
 	}
 }

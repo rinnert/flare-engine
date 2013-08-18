@@ -72,7 +72,7 @@ public:
 	int hero_stealth;
 
 	bool player_blocked;
-    int player_blocked_ticks;
+	int player_blocked_ticks;
 };
 
 

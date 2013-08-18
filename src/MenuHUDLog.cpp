@@ -73,8 +73,8 @@ void MenuHUDLog::render() {
 	for (int i = msg_age.size() - 1; i >= 0; i--) {
 		if (msg_age[i] > 0 && dest.y > 64) {
 			dest.y -= msg_buffer[i].sprite->h + paragraph_spacing;
-      msg_buffer[i].set_dest(dest);
-      render_device->render(msg_buffer[i]);
+			msg_buffer[i].set_dest(dest);
+			render_device->render(msg_buffer[i]);
 		}
 		else return; // no more new messages
 	}
@@ -100,19 +100,19 @@ void MenuHUDLog::add(const string& s) {
 	// render the log entry and store it in a buffer
 	font->setFont("font_regular");
 	Point size = font->calc_size(s, window_area.w);
-  SDL_Surface *surface = createAlphaSurface(size.x, size.y);
+	SDL_Surface *surface = createAlphaSurface(size.x, size.y);
 	font->renderShadowed(s, 0, 0, JUSTIFY_LEFT, surface, window_area.w, color_normal);
 	msg_buffer.push_back(Renderable());
-  Renderable& r = msg_buffer.back();
-  r.set_graphics(surface);
-  r.set_clip(0,0,r.sprite->w,r.sprite->h);
+	Renderable& r = msg_buffer.back();
+	r.set_graphics(surface);
+	r.set_clip(0,0,r.sprite->w,r.sprite->h);
 }
 
 /**
  * Remove the given message from the list
  */
 void MenuHUDLog::remove(int msg_index) {
-  msg_buffer.at(msg_index).clear_graphics();
+	msg_buffer.at(msg_index).clear_graphics();
 	msg_buffer.erase(msg_buffer.begin()+msg_index);
 	msg_age.erase(msg_age.begin()+msg_index);
 	log_msg.erase(log_msg.begin()+msg_index);
@@ -120,7 +120,7 @@ void MenuHUDLog::remove(int msg_index) {
 
 void MenuHUDLog::clear() {
 	for (unsigned i=0; i<msg_buffer.size(); i++) {
-    msg_buffer[i].clear_graphics();
+		msg_buffer[i].clear_graphics();
 	}
 	msg_buffer.clear();
 	msg_age.clear();
@@ -129,6 +129,6 @@ void MenuHUDLog::clear() {
 
 MenuHUDLog::~MenuHUDLog() {
 	for (unsigned i=0; i<msg_buffer.size(); i++) {
-    msg_buffer[i].clear_graphics();
+		msg_buffer[i].clear_graphics();
 	}
 }

@@ -56,20 +56,20 @@ protected:
 	unsigned short max_kinds;
 
 	short additional_data;  // additional state depending on type:
-							// if type == BACK_FORTH then it is 1 for advancing, and -1 for going back, 0 at the end
-							// if type == LOOPED, then it is the number of loops to be played.
-							// if type == PLAY_ONCE or NONE, this has no meaning.
+	// if type == BACK_FORTH then it is 1 for advancing, and -1 for going back, 0 at the end
+	// if type == LOOPED, then it is the number of loops to be played.
+	// if type == PLAY_ONCE or NONE, this has no meaning.
 
 	short times_played; // how often this animation was played (loop counter for type LOOPED)
 
 	// Frame data, all vectors must have the same length:
 	// These are indexed as 8*cur_frame_index + direction.
-  std::vector<Renderable> frames; // cached frames 
+	std::vector<Renderable> frames; // cached frames
 	std::vector<unsigned short> duration; // duration of each individual image
 
 	std::vector<short> active_frames;	// which of the visible diffferent frames are active?
-												// This should contain indexes of the gfx vector.
-												// Assume it is sorted, one index occurs at max once.
+	// This should contain indexes of the gfx vector.
+	// Assume it is sorted, one index occurs at max once.
 
 public:
 	Animation(const std::string &_name, const std::string &_type, SDL_Surface *_sprite);
@@ -79,7 +79,7 @@ public:
 	Animation(const Animation&);
 public:
 
-  ~Animation();
+	~Animation();
 
 	// Traditional way to create an animation.
 	// The frames are stored in a grid like fashion, so the individual frame
@@ -128,7 +128,7 @@ public:
 
 	bool isCompleted();
 
-  void deleteTextures();
+	void deleteTextures();
 
 };
 

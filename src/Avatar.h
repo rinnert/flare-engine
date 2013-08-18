@@ -57,8 +57,8 @@ public:
 	std::string gfx;
 	std::string type;
 	Layer_gfx()
-	 : gfx("")
-	 , type("")
+		: gfx("")
+		, type("")
 	{}
 };
 
@@ -84,7 +84,7 @@ private:
 	std::string last_transform;
 	int getUntransformPower();
 
-    //variables for patfinding
+	//variables for patfinding
 	vector<Point> path;
 	int path_frames_elapsed;
 	Point prev_target;
@@ -120,7 +120,9 @@ public:
 	StatBlock *charmed_stats;
 
 	virtual void resetActiveAnimation();
-	virtual Renderable& getRender() { return dummy_renderable; }
+	virtual Renderable& getRender() {
+		return dummy_renderable;
+	}
 	void addRenders(std::vector<Renderable*>& r);
 
 	// vars
@@ -132,7 +134,7 @@ public:
 	bool newLevelNotification;
 	bool respawn;
 	bool close_menus;
-  Renderable dummy_renderable;
+	Renderable dummy_renderable;
 
 private:
 	void handlePower(int actionbar_power);

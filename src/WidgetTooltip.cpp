@@ -105,9 +105,9 @@ void WidgetTooltip::render(TooltipData &tip, Point pos, STYLE style) {
 
 	Point tip_pos = calcPosition(style, pos, size);
 
-  tip.renderable.map_pos.x = tip_pos.x; 
-  tip.renderable.map_pos.y = tip_pos.y; 
-  render_device->render(tip.renderable);
+	tip.renderable.map_pos.x = tip_pos.x;
+	tip.renderable.map_pos.y = tip_pos.y;
+	render_device->render(tip.renderable);
 }
 
 /**
@@ -134,19 +134,19 @@ void WidgetTooltip::createBuffer(TooltipData &tip) {
 	Point size = font->calc_size(fulltext, width);
 
 	// WARNING: dynamic memory allocation. Be careful of memory leaks.
-  tip.renderable.clear_graphics();
-  SDL_Surface *surface = 
-    createAlphaSurface(size.x + margin+margin, size.y + margin+margin);
+	tip.renderable.clear_graphics();
+	SDL_Surface *surface =
+		createAlphaSurface(size.x + margin+margin, size.y + margin+margin);
 
 	// Currently tooltips are always opaque
-  SDL_SetAlpha(surface, 0, SDL_ALPHA_OPAQUE);
+	SDL_SetAlpha(surface, 0, SDL_ALPHA_OPAQUE);
 
-  // style the tooltip background
-  // currently this is plain black
-  SDL_FillRect(
-      surface
-      , NULL
-      , SDL_MapRGB(surface->format,0,0,0));
+	// style the tooltip background
+	// currently this is plain black
+	SDL_FillRect(
+		surface
+		, NULL
+		, SDL_MapRGB(surface->format,0,0,0));
 
 	int cursor_y = margin;
 
@@ -156,11 +156,11 @@ void WidgetTooltip::createBuffer(TooltipData &tip) {
 	}
 
 	tip.renderable.set_graphics(surface);
-  tip.renderable.set_clip(
-      0,
-      0,
-      tip.renderable.sprite->w,
-      tip.renderable.sprite->h
-      );
+	tip.renderable.set_clip(
+		0,
+		0,
+		tip.renderable.sprite->w,
+		tip.renderable.sprite->h
+	);
 }
 

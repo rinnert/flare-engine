@@ -42,7 +42,7 @@ public:
 	std::vector<std::string> lines;
 	std::vector<SDL_Color> colors;
 	SDL_Color default_color;
-  Renderable renderable;
+	Renderable renderable;
 
 	TooltipData();
 	~TooltipData();

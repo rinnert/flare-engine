@@ -331,7 +331,10 @@ public:
 
 	void handleNewMap(MapCollision *_collider);
 	bool activate(int power_index, StatBlock *src_stats, Point target);
-	const Power &getPower(unsigned id) 	{assert(id < powers.size()); return powers[id];}
+	const Power &getPower(unsigned id) 	{
+		assert(id < powers.size());
+		return powers[id];
+	}
 	bool canUsePower(unsigned id) const;
 	bool hasValidTarget(int power_index, StatBlock *src_stats, Point target);
 	bool spawn(const std::string& enemy_type, Point target);

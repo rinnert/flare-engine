@@ -56,8 +56,8 @@ public:
 	std::string id;
 	Point pos;
 	Map_NPC()
-	: id("")
-	, pos()
+		: id("")
+		, pos()
 	{}
 };
 
@@ -73,13 +73,12 @@ public:
 	bool keep_after_trigger; // if this event has been triggered once, should this event be kept? If so, this event can be triggered multiple times.
 
 	Map_Event()
-	 : type("")
-	 , components(std::vector<Event_Component>())
-	 , cooldown(0)
-	 , cooldown_ticks(0)
-	 , stats(NULL)
-	 , keep_after_trigger(true)
-	{
+		: type("")
+		, components(std::vector<Event_Component>())
+		, cooldown(0)
+		, cooldown_ticks(0)
+		, stats(NULL)
+		, keep_after_trigger(true) {
 		location.x = location.y = location.w = location.h = 0;
 		hotspot.x = hotspot.y = hotspot.w = hotspot.h = 0;
 	}
@@ -87,8 +86,7 @@ public:
 	// returns a pointer to the event component within the components list
 	// no need to free the pointer by caller
 	// NULL will be returned if no such event is found
-	Event_Component *getComponent(const std::string &_type)
-	{
+	Event_Component *getComponent(const std::string &_type) {
 		std::vector<Event_Component>::iterator it;
 		for (it = components.begin(); it != components.end(); ++it)
 			if (it->type == _type)
@@ -103,8 +101,7 @@ public:
 				it = components.erase(it);
 	}
 
-	~Map_Event()
-	{
+	~Map_Event() {
 		delete stats; // may be NULL, but delete can deal with null pointers.
 	}
 };
@@ -122,15 +119,14 @@ public:
 	StatBlock* summoner;
 
 	Map_Enemy(std::string _type="", Point _pos=Point())
-	 : type(_type)
-	 , pos(_pos)
-	 , direction(rand() % 8)
-	 , waypoints(std::queue<Point>())
-	 , wander(false)
-	 , hero_ally(false)
-	 , summon_power_index(0)
-	 , summoner(NULL)
-	{
+		: type(_type)
+		, pos(_pos)
+		, direction(rand() % 8)
+		, waypoints(std::queue<Point>())
+		, wander(false)
+		, hero_ally(false)
+		, summon_power_index(0)
+		, summoner(NULL) {
 		wander_area.x = 0;
 		wander_area.y = 0;
 		wander_area.w = 0;
@@ -138,8 +134,7 @@ public:
 	}
 };
 
-class Map
-{
+class Map {
 protected:
 	std::vector<maprow*> layers; // visible layers in maprenderer
 	std::vector<std::string> layernames;

@@ -112,7 +112,7 @@ void MapRenderer::push_enemy_group(Map_Group g) {
 	}
 	if (enemies_to_spawn)
 		fprintf(stderr, "Could not spawn all enemies in group at %s (x=%d,y=%d,w=%d,h=%d), %d missing\n",
-		filename.c_str(), g.pos.x, g.pos.y, g.area.x, g.area.y, enemies_to_spawn);
+				filename.c_str(), g.pos.x, g.pos.y, g.area.x, g.area.y, enemies_to_spawn);
 }
 
 /**
@@ -270,8 +270,8 @@ void MapRenderer::createBackgroundSurface() {
 void MapRenderer::drawRenderable(vector<Renderable*>::iterator r_cursor) {
 	if ((*r_cursor)->sprite) {
 		Point p = map_to_screen((*r_cursor)->map_pos.x, (*r_cursor)->map_pos.y, shakycam.x, shakycam.y);
-    (*r_cursor)->set_dest(p);
-    render_device->render(*(*r_cursor));
+		(*r_cursor)->set_dest(p);
+		render_device->render(*(*r_cursor));
 	}
 }
 
@@ -323,12 +323,13 @@ void MapRenderer::renderIsoLayer(SDL_Surface *wheretorender, Point offset, const
 				dest.y = p.y - tset.tiles[current_tile].offset.y + offset.y;
 				// no need to set w and h in dest, as it is ignored
 				// by SDL_BlitSurface
-        if (NULL == wheretorender) {
-          tset.tiles[current_tile].tile.set_dest(dest);
-          render_device->render(tset.tiles[current_tile].tile);
-        } else {
-				  SDL_BlitSurface(tset.sprites, &(tset.tiles[current_tile].tile.src), wheretorender, &dest);
-        }
+				if (NULL == wheretorender) {
+					tset.tiles[current_tile].tile.set_dest(dest);
+					render_device->render(tset.tiles[current_tile].tile);
+				}
+				else {
+					SDL_BlitSurface(tset.sprites, &(tset.tiles[current_tile].tile.src), wheretorender, &dest);
+				}
 			}
 		}
 		j += tiles_width;
@@ -396,8 +397,8 @@ void MapRenderer::renderIsoFrontObjects(vector<Renderable*> &r) {
 
 				dest.x = p.x - tset.tiles[current_tile].offset.x;
 				dest.y = p.y - tset.tiles[current_tile].offset.y;
-        tset.tiles[current_tile].tile.set_dest(dest);
-        render_device->render(tset.tiles[current_tile].tile);
+				tset.tiles[current_tile].tile.set_dest(dest);
+				render_device->render(tset.tiles[current_tile].tile);
 			}
 
 			// some renderable entities go in this layer
@@ -439,7 +440,7 @@ void MapRenderer::renderIso(vector<Renderable*> &r, vector<Renderable*> &r_dead)
 			SDL_FillRect(backgroundsurface, 0, 0);
 			Point off(VIEW_W_HALF, VIEW_H_HALF);
 			for (unsigned i = 0; i < index_objectlayer; ++i)
-					renderIsoLayer(backgroundsurface, off, layers[i]);
+				renderIsoLayer(backgroundsurface, off, layers[i]);
 		}
 		Point p = map_to_screen(shakycam.x, shakycam.y , backgroundsurfaceoffset.x, backgroundsurfaceoffset.y);
 		SDL_Rect src;
@@ -479,8 +480,8 @@ void MapRenderer::renderOrthoLayer(const unsigned short layerdata[256][256]) {
 				SDL_Rect dest;
 				dest.x = p.x - tset.tiles[current_tile].offset.x;
 				dest.y = p.y - tset.tiles[current_tile].offset.y;
-        tset.tiles[current_tile].tile.set_dest(dest);
-        render_device->render(tset.tiles[current_tile].tile);
+				tset.tiles[current_tile].tile.set_dest(dest);
+				render_device->render(tset.tiles[current_tile].tile);
 			}
 			p.x += TILE_W;
 		}
@@ -521,8 +522,8 @@ void MapRenderer::renderOrthoFrontObjects(std::vector<Renderable*> &r) {
 			if (const unsigned short current_tile = objectlayer[i][j]) {
 				dest.x = p.x - tset.tiles[current_tile].offset.x;
 				dest.y = p.y - tset.tiles[current_tile].offset.y;
-        tset.tiles[current_tile].tile.set_dest(dest);
-        render_device->render(tset.tiles[current_tile].tile);
+				tset.tiles[current_tile].tile.set_dest(dest);
+				render_device->render(tset.tiles[current_tile].tile);
 			}
 			p.x += TILE_W;
 

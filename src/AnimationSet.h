@@ -62,7 +62,9 @@ public:
 	 */
 	Animation *getAnimation();
 
-	const std::string &getName() { return name; }
+	const std::string &getName() {
+		return name;
+	}
 };
 
 #endif // __ANIMATION_SET__

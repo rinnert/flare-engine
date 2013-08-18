@@ -42,7 +42,7 @@ private:
 	int first_dialog_node;
 	size_t current_action;
 
-  Renderable action_menu;
+	Renderable action_menu;
 	SDL_Color topic_normal_color;
 	SDL_Color topic_hilight_color;
 	SDL_Color vendor_normal_color;

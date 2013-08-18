@@ -36,13 +36,12 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 
 using namespace std;
 
-MenuStatBar::MenuStatBar(std::string type) 
-  : label(new WidgetLabel())
-  , stat_cur(0)
-  , stat_max(0)
-  , orientation(false)
-  , custom_text_pos(false)
-{
+MenuStatBar::MenuStatBar(std::string type)
+	: label(new WidgetLabel())
+	, stat_cur(0)
+	, stat_max(0)
+	, orientation(false)
+	, custom_text_pos(false) {
 	// Load config settings
 	FileParser infile;
 	if(infile.open("menus/"+type+".txt")) {
@@ -103,9 +102,9 @@ void MenuStatBar::render() {
 	src.y = 0;
 	src.w = bar_pos.w;
 	src.h = bar_pos.h;
-  background.set_clip(src);
-  background.set_dest(dest);
-  render_device->render(background);
+	background.set_clip(src);
+	background.set_dest(dest);
+	render_device->render(background);
 
 	// draw bar progress based on orientation
 	if (orientation == 0) {
@@ -116,7 +115,8 @@ void MenuStatBar::render() {
 		src.h = bar_pos.h;
 		dest.x = bar_dest.x;
 		dest.y = bar_dest.y;
-	} else if (orientation == 1) {
+	}
+	else if (orientation == 1) {
 		unsigned bar_length = (stat_max == 0) ? 0 : ((long)stat_cur * (long)bar_pos.h) / (long)stat_max;
 		src.x = 0;
 		src.y = bar_pos.h-bar_length;
@@ -126,9 +126,9 @@ void MenuStatBar::render() {
 		dest.y = bar_dest.y+src.y;
 	}
 
-  bar.set_clip(src);
-  bar.set_dest(dest);
-  render_device->render(bar);
+	bar.set_clip(src);
+	bar.set_dest(dest);
+	render_device->render(bar);
 
 	// if mouseover, draw text
 	if (!text_pos.hidden) {

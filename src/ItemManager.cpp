@@ -66,7 +66,7 @@ static inline void shrinkVecToFit(std::vector<Ty_>& vec) {
 }
 
 ItemManager::ItemManager()
-  : icons(loadIcons())
+	: icons(loadIcons())
 	, color_normal(font->getColor("item_normal"))
 	, color_low(font->getColor("item_low"))
 	, color_high(font->getColor("item_high"))
@@ -208,7 +208,7 @@ void ItemManager::loadItems() {
 				items[id].abs_max = items[id].abs_min;
 		}
 		else if (infile.key == "req") {
-			// @ATTR req|[ [p:m:o:d], amount (integer) ]|Make item require specific stat level ex. req=p,6 will require hero to have level 6 in physical stats 
+			// @ATTR req|[ [p:m:o:d], amount (integer) ]|Make item require specific stat level ex. req=p,6 will require hero to have level 6 in physical stats
 			string s = infile.nextValue();
 			if (s == "p")
 				items[id].req_stat = REQUIRES_PHYS;
@@ -412,9 +412,9 @@ void ItemManager::renderIcon(ItemStack stack, int x, int y, int size) {
 		int columns = icons.sprite->w / ICON_SIZE;
 		src.x = (items[stack.item].icon % columns) * size;
 		src.y = (items[stack.item].icon / columns) * size;
-    icons.set_clip(src);
-    icons.set_dest(dest);
-    render_device->render(icons);
+		icons.set_clip(src);
+		icons.set_dest(dest);
+		render_device->render(icons);
 	}
 
 	if (stack.quantity > 1 || items[stack.item].max_quantity > 1) {

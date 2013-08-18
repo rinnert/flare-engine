@@ -59,7 +59,7 @@ private:
 	int justify;
 	int valign;
 	std::string font_style;
-  Renderable renderable;
+	Renderable renderable;
 
 public:
 	WidgetLabel();
@@ -74,7 +74,9 @@ public:
 	void setJustify(int _justify);
 
 	void set(const std::string& _text);
-	std::string get() {return text;}
+	std::string get() {
+		return text;
+	}
 
 	SDL_Rect bounds;
 };

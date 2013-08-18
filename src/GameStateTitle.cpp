@@ -33,14 +33,14 @@ GameStateTitle::GameStateTitle() : GameState() {
 	logo.set_graphics(loadGraphicSurface("images/menus/logo.png"));
 	// display logo centered
 	if (logo.sprite) {
-    logo.set_clip(
-        0,
-        0,
-        logo.sprite->w,
-        logo.sprite->h
-        );
+		logo.set_clip(
+			0,
+			0,
+			logo.sprite->w,
+			logo.sprite->h
+		);
 		logo.map_pos.x = VIEW_W_HALF - (logo.sprite->w/2);
-	  logo.map_pos.y = VIEW_H_HALF - (logo.sprite->h/2);
+		logo.map_pos.y = VIEW_H_HALF - (logo.sprite->h/2);
 	}
 
 	// set up buttons
@@ -127,8 +127,8 @@ void GameStateTitle::logic() {
 }
 
 void GameStateTitle::render() {
-  // display logo
-  render_device->render(logo);
+	// display logo
+	render_device->render(logo);
 
 	// display buttons
 	button_play->render();
@@ -146,5 +146,5 @@ GameStateTitle::~GameStateTitle() {
 	delete button_credits;
 	delete button_exit;
 	delete label_version;
-  logo.clear_graphics();
+	logo.clear_graphics();
 }

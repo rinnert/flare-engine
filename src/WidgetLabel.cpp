@@ -71,13 +71,12 @@ WidgetLabel::WidgetLabel()
 	, y_origin(0)
 	, justify(JUSTIFY_LEFT)
 	, valign(VALIGN_TOP)
-	, font_style("font_regular")
-{
+	, font_style("font_regular") {
 	bounds.x = bounds.y = 0;
 	bounds.w = bounds.h = 0;
 
-  local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
-  local_offset.x = local_offset.y = 0;
+	local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
+	local_offset.x = local_offset.y = 0;
 
 	render_to_alpha = false;
 }
@@ -86,9 +85,9 @@ WidgetLabel::WidgetLabel()
  * Draw the buffered string surface to the screen
  */
 void WidgetLabel::render() {
-  renderable.local_frame = local_frame;
-  renderable.offset = local_offset;
-  render_device->render(renderable);
+	renderable.local_frame = local_frame;
+	renderable.offset = local_offset;
+	render_device->render(renderable);
 }
 
 void WidgetLabel::set(int _x, int _y, int _justify, int _valign, const string& _text, SDL_Color _color) {
@@ -212,9 +211,9 @@ void WidgetLabel::applyOffsets() {
 	else if (valign == VALIGN_CENTER) {
 		bounds.y = y_origin - bounds.h/2;
 	}
-  
-  renderable.map_pos.x = bounds.x;
-  renderable.map_pos.y = bounds.y;
+
+	renderable.map_pos.x = bounds.x;
+	renderable.map_pos.y = bounds.y;
 }
 
 /**
@@ -233,19 +232,19 @@ void WidgetLabel::set(const string& _text) {
  * This function refreshes the buffer.
  */
 void WidgetLabel::refresh() {
-  renderable.clear_graphics();
+	renderable.clear_graphics();
 	SDL_Surface *surface = createAlphaSurface(bounds.w, bounds.h);
 	font->setFont(font_style);
 	font->renderShadowed(text, 0, 0, JUSTIFY_LEFT, surface, color);
 	renderable.set_graphics(surface);
-  renderable.set_clip(
-      0,
-      0,
-      renderable.sprite->w,
-      renderable.sprite->h
-      );
+	renderable.set_clip(
+		0,
+		0,
+		renderable.sprite->w,
+		renderable.sprite->h
+	);
 }
 
 WidgetLabel::~WidgetLabel() {
-  renderable.clear_graphics();
+	renderable.clear_graphics();
 }

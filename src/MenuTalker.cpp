@@ -73,8 +73,8 @@ MenuTalker::MenuTalker(MenuManager *_menu)
 				dialog_pos.y = eatFirstInt(infile.val,',');
 				dialog_pos.w = eatFirstInt(infile.val,',');
 				dialog_pos.h = eatFirstInt(infile.val,',');
-        //background.offset.x = -dialog_pos.x;
-        //background.offset.y = -dialog_pos.y;
+				//background.offset.x = -dialog_pos.x;
+				//background.offset.y = -dialog_pos.y;
 			}
 			else if (infile.key == "dialogtext") {
 				text_pos.x = eatFirstInt(infile.val,',');
@@ -226,7 +226,7 @@ void MenuTalker::createBuffer() {
 	label_name->set(who);
 
 	line = npc->dialog[dialog_node][event_cursor].s;
-  std::cout << line << std::endl;
+	std::cout << line << std::endl;
 
 	// render dialog text to the scrollbox buffer
 	Point line_size = font->calc_size(line,textbox->pos.w-(text_offset.x*2));
@@ -234,14 +234,14 @@ void MenuTalker::createBuffer() {
 	textbox->line_height = font->getLineHeight();
 	font->setFont(font_dialog);
 	font->render(
-      line, 
-      text_offset.x, 
-      0, 
-      JUSTIFY_LEFT, 
-      textbox->contents.sprite, 
-      text_pos.w - text_offset.x*2, 
-      color_normal
-      );
+		line,
+		text_offset.x,
+		0,
+		JUSTIFY_LEFT,
+		textbox->contents.sprite,
+		text_pos.w - text_offset.x*2,
+		color_normal
+	);
 	textbox->contents.set_graphics(textbox->contents.sprite);
 
 }
@@ -262,23 +262,23 @@ void MenuTalker::render() {
 	src.w = dest.w = dialog_pos.w;
 	src.h = dest.h = dialog_pos.h;
 
-  background.set_clip(src);
-  background.set_dest(dest);
+	background.set_clip(src);
+	background.set_dest(dest);
 	render_device->render(background);
 
 	// show active portrait
 	string etype = npc->dialog[dialog_node][event_cursor].type;
 	if (etype == "him" || etype == "her") {
-    Renderable& r = npc->portrait;
+		Renderable& r = npc->portrait;
 		if (r.sprite != NULL) {
 			src.w = dest.w = portrait_he.w;
 			src.h = dest.h = portrait_he.h;
 			dest.x = offset_x + portrait_he.x;
 			dest.y = offset_y + portrait_he.y;
 
-      r.set_clip(src);
-      r.set_dest(dest);
-      render_device->render(r);
+			r.set_clip(src);
+			r.set_dest(dest);
+			render_device->render(r);
 		}
 	}
 	else if (etype == "you") {
@@ -287,9 +287,9 @@ void MenuTalker::render() {
 			src.h = dest.h = portrait_you.h;
 			dest.x = offset_x + portrait_you.x;
 			dest.y = offset_y + portrait_you.y;
-      portrait.set_clip(src);
-      portrait.set_dest(dest);
-      render_device->render(portrait);
+			portrait.set_clip(src);
+			portrait.set_dest(dest);
+			render_device->render(portrait);
 		}
 	}
 

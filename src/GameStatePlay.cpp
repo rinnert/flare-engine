@@ -78,8 +78,8 @@ GameStatePlay::GameStatePlay()
 	// GameEngine scope variables
 
 	loading_bg.set_graphics(loadGraphicSurface("images/menus/confirm_bg.png"));
-  loading_bg.set_clip(0,0,loading_bg.sprite->w,loading_bg.sprite->h);
-  powers = new PowerManager();
+	loading_bg.set_clip(0,0,loading_bg.sprite->w,loading_bg.sprite->h);
+	powers = new PowerManager();
 	items = new ItemManager();
 	camp = new CampaignManager();
 	mapr = new MapRenderer();
@@ -88,7 +88,7 @@ GameStatePlay::GameStatePlay()
 	hazards = new HazardManager();
 	menu = new MenuManager(&pc->stats);
 	npcs = new NPCManager(&pc->stats);
-    quests = new QuestLog(menu->log);
+	quests = new QuestLog(menu->log);
 	enemyg = new EnemyGroupManager();
 	loot = new LootManager(&pc->stats);
 
@@ -952,14 +952,16 @@ void GameStatePlay::showLoading() {
 	dest.x = VIEW_W_HALF - loading_bg.sprite->w/2;
 	dest.y = VIEW_H_HALF - loading_bg.sprite->h/2;
 
-  loading_bg.set_dest(dest);
-  render_device->render(loading_bg);
+	loading_bg.set_dest(dest);
+	render_device->render(loading_bg);
 	loading->render();
 
-  render_device->commit_frame();
+	render_device->commit_frame();
 }
 
-Avatar *GameStatePlay::getAvatar() const { return pc; }
+Avatar *GameStatePlay::getAvatar() const {
+	return pc;
+}
 
 GameStatePlay::~GameStatePlay() {
 	delete quests;

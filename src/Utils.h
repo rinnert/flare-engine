@@ -51,11 +51,11 @@ public:
 // message passing struct for various sprites rendered map inline
 struct Renderable {
 	SDL_Surface *sprite; // image to be used
-  SDL_Rect local_frame;
-	SDL_Rect src; // location on the sprite in pixel coordinates.  
+	SDL_Rect local_frame;
+	SDL_Rect src; // location on the sprite in pixel coordinates.
 #ifdef WITH_OPENGL
-  float gl_src[4]; // location on the sprite in texture coordinates. 
-  GLuint texture;
+	float gl_src[4]; // location on the sprite in texture coordinates.
+	GLuint texture;
 #endif // WITH_OPENGL
 
 
@@ -68,29 +68,39 @@ struct Renderable {
 		, local_frame(SDL_Rect())
 		, src(SDL_Rect())
 #ifdef WITH_OPENGL
-    , texture(0)
+		, texture(0)
 #endif // WITH_OPENGL
 		, map_pos()
 		, offset()
-		, prio(0)
-	{;}
+		, prio(0) {
+		;
+	}
 
 #ifdef WITH_OPENGL
-  void set_graphics(SDL_Surface *s, GLuint t=0);
+	void set_graphics(SDL_Surface *s, GLuint t=0);
 #else // WITH_OPENGL
-  void set_graphics(SDL_Surface *s);
+	void set_graphics(SDL_Surface *s);
 #endif // WITH_OPENGL
-  void clear_graphics();
-  void set_clip(const SDL_Rect& clip);
-  void set_clip(
-      const int x,
-      const int y,
-      const int w,
-      const int h
-      );
-  void set_dest(const SDL_Rect& dest) { map_pos.x = dest.x; map_pos.y = dest.y; }
-  void set_dest(const Point& dest) { map_pos.x = dest.x; map_pos.y = dest.y; }
-  void set_dest(int x, int y) { map_pos.x = x; map_pos.y = y; }
+	void clear_graphics();
+	void set_clip(const SDL_Rect& clip);
+	void set_clip(
+		const int x,
+		const int y,
+		const int w,
+		const int h
+	);
+	void set_dest(const SDL_Rect& dest) {
+		map_pos.x = dest.x;
+		map_pos.y = dest.y;
+	}
+	void set_dest(const Point& dest) {
+		map_pos.x = dest.x;
+		map_pos.y = dest.y;
+	}
+	void set_dest(int x, int y) {
+		map_pos.x = x;
+		map_pos.y = y;
+	}
 };
 
 class Event_Component {

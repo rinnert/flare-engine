@@ -33,8 +33,8 @@ private:
 	Renderable activeTabSurface;
 	Renderable inactiveTabSurface;
 
-  std::vector<WidgetLabel> active_labels;
-  std::vector<WidgetLabel> inactive_labels;
+	std::vector<WidgetLabel> active_labels;
+	std::vector<WidgetLabel> inactive_labels;
 
 	std::string *titles;  /** Titles of the tabs. */
 	int activeTab;        /** Index of the currently active tab. */
@@ -61,9 +61,13 @@ public:
 	void setMainArea(int x, int y, int width, int height);
 
 	int getActiveTab();
-	void setActiveTab(int tab) { activeTab = tab; }
+	void setActiveTab(int tab) {
+		activeTab = tab;
+	}
 	SDL_Rect getContentArea();
-	int getTabHeight() { return activeTabSurface.sprite->h; }
+	int getTabHeight() {
+		return activeTabSurface.sprite->h;
+	}
 
 	void updateHeader();
 

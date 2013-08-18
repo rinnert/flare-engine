@@ -112,35 +112,35 @@ public:
 	int getSellPrice();
 
 	Item()
-	: name("")
-	, flavor("")
-	, level(0)
-	, set(0)
-	, quality(ITEM_QUALITY_NORMAL)
-	, type("other")
-	, icon(0)
-	, dmg_melee_min(0)
-	, dmg_melee_max(0)
-	, dmg_ranged_min(0)
-	, dmg_ranged_max(0)
-	, dmg_ment_min(0)
-	, dmg_ment_max(0)
-	, abs_min(0)
-	, abs_max(0)
-	, req_stat(0)
-	, req_val(0)
-	, sfx(0)
-	, gfx("")
-	, power(0)
-	, power_mod(0)
-	, power_desc("")
-	, price(0)
-	, price_sell(0)
-	, max_quantity(1)
-	, rand_loot(1)
-	, rand_vendor(1)
-	, pickup_status("")
-	, stepfx("")
+		: name("")
+		, flavor("")
+		, level(0)
+		, set(0)
+		, quality(ITEM_QUALITY_NORMAL)
+		, type("other")
+		, icon(0)
+		, dmg_melee_min(0)
+		, dmg_melee_max(0)
+		, dmg_ranged_min(0)
+		, dmg_ranged_max(0)
+		, dmg_ment_min(0)
+		, dmg_ment_max(0)
+		, abs_min(0)
+		, abs_max(0)
+		, req_stat(0)
+		, req_val(0)
+		, sfx(0)
+		, gfx("")
+		, power(0)
+		, power_mod(0)
+		, power_desc("")
+		, price(0)
+		, price_sell(0)
+		, max_quantity(1)
+		, rand_loot(1)
+		, rand_vendor(1)
+		, pickup_status("")
+		, stepfx("")
 	{}
 
 	~Item() {
@@ -155,8 +155,7 @@ public:
 	SDL_Color color;
 
 	ItemSet()
-	: name("")
-	{
+		: name("") {
 		color.r = 255;
 		color.g = 255;
 		color.b = 255;
@@ -199,7 +198,9 @@ private:
 public:
 	ItemManager();
 	~ItemManager();
-	Renderable& getIcons() { return icons; }
+	Renderable& getIcons() {
+		return icons;
+	}
 	void renderIcon(ItemStack stack, int x, int y, int size);
 	void playSound(int item, Point pos = Point(0,0));
 	TooltipData getTooltip(ItemStack stack, StatBlock *stats, int context);

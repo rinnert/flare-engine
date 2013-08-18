@@ -122,7 +122,9 @@ public:
 	ItemStack drop_stack;
 
 	bool isDragging();
-	bool requestingExit() { return done; }
+	bool requestingExit() {
+		return done;
+	}
 };
 
 #endif

@@ -69,8 +69,9 @@ Animation::Animation(const Animation& a)
 	, times_played(0)
 	, frames(a.frames)
 	, duration(a.duration)
-	, active_frames(a.active_frames)
-{;}
+	, active_frames(a.active_frames) {
+	;
+}
 
 void Animation::setupUncompressed(Point _render_size, Point _render_offset, int _position, int _frames, int _duration, unsigned short _maxkinds) {
 
@@ -79,23 +80,23 @@ void Animation::setupUncompressed(Point _render_size, Point _render_offset, int 
 	for (unsigned short i = 0 ; i < _frames; i++) {
 		int base_index = max_kinds*i;
 		for (unsigned short kind = 0 ; kind < max_kinds; kind++) {
-      Renderable& f = frames[base_index + kind];
+			Renderable& f = frames[base_index + kind];
 			f.src.x = _render_size.x * (_position + i);
 			f.src.y = _render_size.y * kind;
 			f.src.w = _render_size.x;
 			f.src.h = _render_size.y;
 			f.offset.x = _render_offset.x;
 			f.offset.y = _render_offset.y;
-      f.sprite = sprite; // remember we don't own the sprite! 
+			f.sprite = sprite; // remember we don't own the sprite!
 #ifdef WITH_OPENGL
-      if (OPENGL) {
-        if (NULL != f.sprite && 0 == f.texture) {
-          f.texture = gl_resources->create_texture(f.sprite,&f.src);
-          // the texture is already a clip
-          f.gl_src[0] = f.gl_src[1] = 0.0f;  
-          f.gl_src[2] = f.gl_src[3] = 1.0f;  
-        }
-      }
+			if (OPENGL) {
+				if (NULL != f.sprite && 0 == f.texture) {
+					f.texture = gl_resources->create_texture(f.sprite,&f.src);
+					// the texture is already a clip
+					f.gl_src[0] = f.gl_src[1] = 0.0f;
+					f.gl_src[2] = f.gl_src[3] = 1.0f;
+				}
+			}
 #endif // WITH_OPENGL
 		}
 	}
@@ -143,19 +144,19 @@ void Animation::addFrame(	unsigned short index,
 				name.c_str(), sdl_rect.x, sdl_rect.y, sdl_rect.w, sdl_rect.h, index, kind, max_kinds-1);
 		return;
 	}
-  Renderable& f = frames[max_kinds*index+kind];
+	Renderable& f = frames[max_kinds*index+kind];
 	f.src = sdl_rect;
 	f.offset = _render_offset;
-  f.sprite = sprite; // remember we own the sprite! 
+	f.sprite = sprite; // remember we own the sprite!
 #ifdef WITH_OPENGL
-  if (OPENGL) {
-    if (NULL != f.sprite && 0 == f.texture) {
-      f.texture = gl_resources->create_texture(f.sprite,&f.src);
-      // the texture is already a clip
-      f.gl_src[0] = f.gl_src[1] = 0.0f;  
-      f.gl_src[2] = f.gl_src[3] = 1.0f;  
-    }
-  }
+	if (OPENGL) {
+		if (NULL != f.sprite && 0 == f.texture) {
+			f.texture = gl_resources->create_texture(f.sprite,&f.src);
+			// the texture is already a clip
+			f.gl_src[0] = f.gl_src[1] = 0.0f;
+			f.gl_src[2] = f.gl_src[3] = 1.0f;
+		}
+	}
 #endif // WITH_OPENGL
 }
 
@@ -219,8 +220,8 @@ void Animation::advanceFrame() {
 }
 
 Renderable& Animation::getCurrentFrame(int kind) {
-  const int index = (max_kinds*cur_frame_index) + kind;
-  return frames[index];
+	const int index = (max_kinds*cur_frame_index) + kind;
+	return frames[index];
 }
 
 void Animation::reset() {
@@ -279,14 +280,14 @@ bool Animation::isCompleted() {
 
 void Animation::deleteTextures() {
 #ifdef WITH_OPENGL
-  for (unsigned int i; i<frames.size(); ++i) {
-    gl_resources->free_texture(frames[i]);
-  }
+	for (unsigned int i; i<frames.size(); ++i) {
+		gl_resources->free_texture(frames[i]);
+	}
 #endif // WITH_OPENGL
 }
 
 Animation::~Animation() {
-  ;
+	;
 }
 
 

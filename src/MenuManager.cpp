@@ -231,9 +231,9 @@ void MenuManager::renderIcon(int icon_id, int x, int y) {
 	src.x = (icon_id % columns) * ICON_SIZE;
 	src.y = (icon_id / columns) * ICON_SIZE;
 
-  icons.set_clip(src);
-  icons.set_dest(dest);
-  render_device->render(icons);
+	icons.set_clip(src);
+	icons.set_dest(dest);
+	render_device->render(icons);
 }
 
 void MenuManager::handleKeyboardNavigation() {
@@ -1138,7 +1138,8 @@ void MenuManager::dragAndDropWithKeyboard() {
 			if (drag_src == DRAG_SRC_POWERS) {
 				act->drop(dest_slot, drag_power, 0);
 				pow->slots[pow->tablist.getCurrent()]->checked = false;
-			} else if (drag_src == DRAG_SRC_INVENTORY) {
+			}
+			else if (drag_src == DRAG_SRC_INVENTORY) {
 				if (inv->tablist.getCurrent() < inv->getEquippedCount())
 					inv->inventory[EQUIPMENT].slots[inv->tablist.getCurrent()]->checked = false;
 				else

@@ -30,7 +30,7 @@ using namespace std;
 
 WidgetSlot::WidgetSlot(int _icon_id, int _ACTIVATE)
 	: Widget()
-  , label()
+	, label()
 	, icon_id(_icon_id)
 	, amount(1)
 	, last_amount(-1)
@@ -46,17 +46,17 @@ WidgetSlot::WidgetSlot(int _icon_id, int _ACTIVATE)
 	pos.w = ICON_SIZE;
 	pos.h = ICON_SIZE;
 
-  icons = loadIcons();
+	icons = loadIcons();
 
-  SDL_Rect src;
-  src.x = src.y = 0;
-  src.w = src.h = ICON_SIZE;
+	SDL_Rect src;
+	src.x = src.y = 0;
+	src.w = src.h = ICON_SIZE;
 	slot_selected.set_graphics(loadGraphicSurface("images/menus/slot_selected.png"));
-  slot_selected.set_clip(src);
+	slot_selected.set_clip(src);
 	slot_checked.set_graphics(loadGraphicSurface("images/menus/slot_checked.png"));
-  slot_checked.set_clip(src);
-  local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
-  local_offset.x = local_offset.y = 0;
+	slot_checked.set_clip(src);
+	local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
+	local_offset.x = local_offset.y = 0;
 }
 
 void WidgetSlot::activate() {
@@ -158,21 +158,21 @@ void WidgetSlot::render() {
 		src.w = pos.w;
 		src.h = pos.h;
 
-    icons.local_frame = local_frame;
-    icons.offset = local_offset;
-    icons.set_clip(src);
-    icons.set_dest(pos);
-    render_device->render(icons);
+		icons.local_frame = local_frame;
+		icons.offset = local_offset;
+		icons.set_clip(src);
+		icons.set_dest(pos);
+		render_device->render(icons);
 
 		if (amount > 1 || max_amount > 1) {
-      if (amount != last_amount) {
-        last_amount = amount;
-        stringstream ss;
-        ss << amount_str;
-        label.set(pos.x + 2, pos.y + 2, JUSTIFY_LEFT, VALIGN_TOP, ss.str(), font->getColor("item_normal"));
-      }
-      label.local_frame = local_frame;
-      label.local_offset = local_offset;
+			if (amount != last_amount) {
+				last_amount = amount;
+				stringstream ss;
+				ss << amount_str;
+				label.set(pos.x + 2, pos.y + 2, JUSTIFY_LEFT, VALIGN_TOP, ss.str(), font->getColor("item_normal"));
+			}
+			label.local_frame = local_frame;
+			label.local_offset = local_offset;
 			label.render();
 		}
 	}
@@ -184,18 +184,19 @@ void WidgetSlot::render() {
  */
 void WidgetSlot::renderSelection() {
 	if (in_focus) {
-    if (checked) {
-      slot_checked.local_frame = local_frame; 
-      slot_checked.offset = local_offset; 
-      slot_checked.set_dest(pos);
-      render_device->render(slot_checked);
-    } else {
-      slot_selected.local_frame = local_frame; 
-      slot_selected.offset = local_offset; 
-      slot_selected.set_dest(pos);
-      render_device->render(slot_selected);
-    }
-  }
+		if (checked) {
+			slot_checked.local_frame = local_frame;
+			slot_checked.offset = local_offset;
+			slot_checked.set_dest(pos);
+			render_device->render(slot_checked);
+		}
+		else {
+			slot_selected.local_frame = local_frame;
+			slot_selected.offset = local_offset;
+			slot_selected.set_dest(pos);
+			render_device->render(slot_selected);
+		}
+	}
 }
 
 WidgetSlot::~WidgetSlot() {

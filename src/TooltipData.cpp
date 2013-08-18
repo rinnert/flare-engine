@@ -19,13 +19,13 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 
 #include "TooltipData.h"
 
-TooltipData::TooltipData() 
-  : default_color(font->getColor("widget_normal")) {
-    ;
+TooltipData::TooltipData()
+	: default_color(font->getColor("widget_normal")) {
+	;
 }
 
 TooltipData::~TooltipData() {
-  clear();
+	clear();
 }
 
 
@@ -34,7 +34,7 @@ TooltipData::TooltipData(const TooltipData &tdSource) {
 	// DO NOT copy the buffered text render
 	// Allow the new copy to create its own buffer
 	// Otherwise the same buffer will be deleted twice, causing a mem error
-  renderable = Renderable();
+	renderable = Renderable();
 
 	lines.clear();
 	colors.clear();
@@ -60,7 +60,7 @@ TooltipData& TooltipData::operator= (const TooltipData &tdSource) {
 void TooltipData::clear() {
 	lines.clear();
 	colors.clear();
-  renderable.clear_graphics();
+	renderable.clear_graphics();
 }
 
 void TooltipData::addText(const std::string &text, SDL_Color color) {

@@ -38,8 +38,8 @@ WidgetInput::WidgetInput() {
 	pos.w = background.sprite->w;
 	pos.h = background.sprite->h/2;
 
-  local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
-  local_offset.x = local_offset.y = 0;
+	local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
+	local_offset.x = local_offset.y = 0;
 
 	cursor_frame = 0;
 
@@ -110,23 +110,25 @@ void WidgetInput::render() {
 	src.w = pos.w;
 	src.h = pos.h;
 
-  background.local_frame = local_frame;
-  background.offset = local_offset;
-  background.set_clip(src);
-  background.set_dest(pos);
-  render_device->render(background);
+	background.local_frame = local_frame;
+	background.offset = local_offset;
+	background.set_clip(src);
+	background.set_dest(pos);
+	render_device->render(background);
 
-  font->setFont("font_regular");
+	font->setFont("font_regular");
 
-  if (!inFocus) {
-    font->render(text, font_pos.x, font_pos.y, JUSTIFY_LEFT, screen, color_normal);
-  } else {
-    if (cursor_frame < MAX_FRAMES_PER_SEC) {
-      font->renderShadowed(text + "|", font_pos.x, font_pos.y, JUSTIFY_LEFT, screen, color_normal);
-    } else {
-      font->renderShadowed(text, font_pos.x, font_pos.y, JUSTIFY_LEFT, screen, color_normal);
-    }
-  }
+	if (!inFocus) {
+		font->render(text, font_pos.x, font_pos.y, JUSTIFY_LEFT, screen, color_normal);
+	}
+	else {
+		if (cursor_frame < MAX_FRAMES_PER_SEC) {
+			font->renderShadowed(text + "|", font_pos.x, font_pos.y, JUSTIFY_LEFT, screen, color_normal);
+		}
+		else {
+			font->renderShadowed(text, font_pos.x, font_pos.y, JUSTIFY_LEFT, screen, color_normal);
+		}
+	}
 }
 
 void WidgetInput::setPosition(int x, int y) {

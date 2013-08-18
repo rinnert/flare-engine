@@ -28,13 +28,13 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 
 #include "CommonIncludes.h"
 
-class Element{
+class Element {
 public:
 	std::string name;
 	std::string description;
 };
 
-class HeroClass{
+class HeroClass {
 public:
 	std::string name;
 	std::string description;
@@ -49,15 +49,14 @@ public:
 	std::vector<std::string> statuses;
 
 	HeroClass()
-	: name("")
-	, description("")
-	, currency(0)
-	, equipment("")
-	, physical(0)
-	, mental(0)
-	, offense(0)
-	, defense(0)
-	{
+		: name("")
+		, description("")
+		, currency(0)
+		, equipment("")
+		, physical(0)
+		, mental(0)
+		, offense(0)
+		, defense(0) {
 		for (int i=0; i<12; i++) {
 			hotkeys[i] = 0;
 		}

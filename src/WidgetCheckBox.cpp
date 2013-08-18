@@ -38,15 +38,15 @@ WidgetCheckBox::WidgetCheckBox (const string &fname)
 	pos.w = cb.sprite->w;
 	pos.h = cb.sprite->h / 2;
 
-  local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
-  local_offset.x = local_offset.y = 0;
+	local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
+	local_offset.x = local_offset.y = 0;
 
-  cb.set_clip(
-      0,
-      0,
-      pos.w,
-      pos.h
-      );
+	cb.set_clip(
+		0,
+		0,
+		pos.w,
+		pos.h
+	);
 	render_to_alpha = false;
 }
 
@@ -60,17 +60,17 @@ WidgetCheckBox::~WidgetCheckBox () {
 
 void WidgetCheckBox::Check () {
 	checked = true;
-  cb.set_clip(0,pos.h,pos.w,pos.h);
+	cb.set_clip(0,pos.h,pos.w,pos.h);
 }
 
 void WidgetCheckBox::unCheck () {
 	checked = false;
-  cb.set_clip(0,0,pos.w,pos.h);
+	cb.set_clip(0,0,pos.w,pos.h);
 }
 
 void WidgetCheckBox::toggleCheck () {
 	checked = !checked;
-  cb.set_clip(0,(checked ? pos.h : 0),pos.w,pos.h);
+	cb.set_clip(0,(checked ? pos.h : 0),pos.w,pos.h);
 }
 
 bool WidgetCheckBox::checkClick() {
@@ -106,33 +106,35 @@ bool WidgetCheckBox::isChecked () const {
 }
 
 void WidgetCheckBox::render() {
-  cb.local_frame = local_frame;
-  cb.offset = local_offset;
-  cb.set_dest(pos);
-  render_device->render(cb);
+	cb.local_frame = local_frame;
+	cb.offset = local_offset;
+	cb.set_dest(pos);
+	render_device->render(cb);
 
-  if (in_focus) {
-    Point topLeft;
-    Point bottomRight;
-    Uint32 color;
+	if (in_focus) {
+		Point topLeft;
+		Point bottomRight;
+		Uint32 color;
 
-    topLeft.x = pos.x + local_frame.x - local_offset.x;
-    topLeft.y = pos.y + local_frame.y - local_offset.y;
-    bottomRight.x = topLeft.x + pos.w;
-    bottomRight.y = topLeft.y + pos.h;
-    color = SDL_MapRGB(screen->format, 255,248,220);
-  
-    // Only draw rectangle if it fits in local frame
-    bool draw = true;
-    if (local_frame.w && 
-        (topLeft.x<local_frame.x || bottomRight.x>(local_frame.x+local_frame.w))) {
-      draw = false;
-    } 
-    if (local_frame.h && 
-        (topLeft.y<local_frame.y || bottomRight.y>(local_frame.y+local_frame.h))) {
-      draw = false;
-    } 
-    if (draw) { render_device->draw_rectangle(topLeft, bottomRight, color); }
-  }
+		topLeft.x = pos.x + local_frame.x - local_offset.x;
+		topLeft.y = pos.y + local_frame.y - local_offset.y;
+		bottomRight.x = topLeft.x + pos.w;
+		bottomRight.y = topLeft.y + pos.h;
+		color = SDL_MapRGB(screen->format, 255,248,220);
+
+		// Only draw rectangle if it fits in local frame
+		bool draw = true;
+		if (local_frame.w &&
+				(topLeft.x<local_frame.x || bottomRight.x>(local_frame.x+local_frame.w))) {
+			draw = false;
+		}
+		if (local_frame.h &&
+				(topLeft.y<local_frame.y || bottomRight.y>(local_frame.y+local_frame.h))) {
+			draw = false;
+		}
+		if (draw) {
+			render_device->draw_rectangle(topLeft, bottomRight, color);
+		}
+	}
 }
 

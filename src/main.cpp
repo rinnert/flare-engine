@@ -79,7 +79,7 @@ static void init() {
 	imag = new ImageManager();
 	inpt = new InputState();
 #ifdef WITH_OPENGL
-  gl_resources = new OpenGLResourceManager();
+	gl_resources = new OpenGLResourceManager();
 #endif // WITH_OPENGL
 
 	// Load tileset options (must be after ModManager is initialized)
@@ -95,13 +95,17 @@ static void init() {
 	// Create render Device and Rendering Context.
 
 #ifdef WITH_OPENGL
-  if (OPENGL) { render_device = new OpenGLRenderDevice(); }
-  else { render_device = new SDLBlitRenderDevice(); }
+	if (OPENGL) {
+		render_device = new OpenGLRenderDevice();
+	}
+	else {
+		render_device = new SDLBlitRenderDevice();
+	}
 #else // WITH_OPENGL
-  render_device = new SDLBlitRenderDevice();
+	render_device = new SDLBlitRenderDevice();
 #endif // WITH_OPENGL
 
-  screen = render_device->create_context(VIEW_W, VIEW_H, FULLSCREEN);
+	screen = render_device->create_context(VIEW_W, VIEW_H, FULLSCREEN);
 
 	if (screen == NULL) {
 
@@ -163,7 +167,7 @@ static void mainLoop (bool debug_event) {
 		gswitch->logic();
 
 		// black out
-    render_device->blank_screen();
+		render_device->blank_screen();
 
 		gswitch->render();
 
@@ -176,7 +180,7 @@ static void mainLoop (bool debug_event) {
 		gswitch->showFPS(1000 / (SDL_GetTicks() - prevTicks));
 		prevTicks = SDL_GetTicks();
 
-    render_device->commit_frame();
+		render_device->commit_frame();
 	}
 }
 
@@ -192,17 +196,17 @@ static void cleanup() {
 	delete msg;
 	delete snd;
 
-  if (NULL != icon_atlas) {
-    Renderable icons = loadIcons();
-    icons.clear_graphics();
-  }
+	if (NULL != icon_atlas) {
+		Renderable icons = loadIcons();
+		icons.clear_graphics();
+	}
 
 	SDL_FreeSurface(titlebar_icon);
 
 	Mix_CloseAudio();
-  
-  render_device->destroy_context();
-  delete render_device;
+
+	render_device->destroy_context();
+	delete render_device;
 
 	SDL_Quit();
 }

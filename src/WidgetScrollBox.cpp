@@ -40,8 +40,8 @@ WidgetScrollBox::WidgetScrollBox(int width, int height) {
 	line_height = 20;
 	resize(height);
 	tablist = TabList(VERTICAL);
-  local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
-  local_offset.x = local_offset.y = 0;
+	local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
+	local_offset.x = local_offset.y = 0;
 }
 
 WidgetScrollBox::~WidgetScrollBox() {
@@ -59,7 +59,7 @@ void WidgetScrollBox::addChildWidget(Widget* child) {
 	if (find == children.end()) {
 		children.push_back(child);
 		tablist.add(child);
-    child->local_frame = pos;
+		child->local_frame = pos;
 	}
 
 }
@@ -96,10 +96,18 @@ void WidgetScrollBox::scrollUp() {
 
 Point WidgetScrollBox::input_assist(Point mouse) {
 	Point new_mouse;
-  if (mouse.x < pos.x || mouse.x > pos.x+pos.w) { new_mouse.x = -1; }
-  else { new_mouse.x = mouse.x-pos.x; }
-  if (mouse.y < pos.y || mouse.y > pos.y+pos.h) { new_mouse.y = -1; }
-  else { new_mouse.y = mouse.y-pos.y+cursor; }
+	if (mouse.x < pos.x || mouse.x > pos.x+pos.w) {
+		new_mouse.x = -1;
+	}
+	else {
+		new_mouse.x = mouse.x-pos.x;
+	}
+	if (mouse.y < pos.y || mouse.y > pos.y+pos.h) {
+		new_mouse.y = -1;
+	}
+	else {
+		new_mouse.y = mouse.y-pos.y+cursor;
+	}
 	return new_mouse;
 }
 
@@ -178,10 +186,10 @@ void WidgetScrollBox::refresh() {
 	}
 
 	scrollbar->refresh(
-			pos.x+pos.w, pos.y, 
-			pos.h-scrollbar->pos_down.h, 
-			cursor, contents.sprite->h-pos.h-scrollbar->pos_knob.h
-			);
+		pos.x+pos.w, pos.y,
+		pos.h-scrollbar->pos_down.h,
+		cursor, contents.sprite->h-pos.h-scrollbar->pos_knob.h
+	);
 }
 
 void WidgetScrollBox::render() {
@@ -192,23 +200,23 @@ void WidgetScrollBox::render() {
 	src.w = pos.w;
 	src.h = pos.h;
 
-  contents.local_frame = local_frame;
-  contents.offset = local_offset;
-  contents.set_clip(src);
-  contents.set_dest(dest);
-  render_device->render(contents); 
+	contents.local_frame = local_frame;
+	contents.offset = local_offset;
+	contents.set_clip(src);
+	contents.set_dest(dest);
+	render_device->render(contents);
 
 	for (unsigned i = 0; i < children.size(); i++) {
-    children[i]->local_frame = pos;
-    children[i]->local_offset.y = cursor;
+		children[i]->local_frame = pos;
+		children[i]->local_offset.y = cursor;
 		children[i]->render();
 	}
 
 	if (contents.sprite->h > pos.h) {
-    scrollbar->local_frame = local_frame;
-    scrollbar->local_offset = local_offset;
-    scrollbar->render();
-  }
+		scrollbar->local_frame = local_frame;
+		scrollbar->local_offset = local_offset;
+		scrollbar->render();
+	}
 	update = false;
 
 	if (in_focus) {
@@ -222,17 +230,19 @@ void WidgetScrollBox::render() {
 		bottomRight.y = topLeft.y + dest.h;
 		color = SDL_MapRGB(screen->format, 255,248,220);
 
-    // Only draw rectangle if it fits in local frame
-    bool draw = true;
-    if (local_frame.w && 
-        (topLeft.x<local_frame.x || bottomRight.x>(local_frame.x+local_frame.w))) {
-      draw = false;
-    } 
-    if (local_frame.h && 
-        (topLeft.y<local_frame.y || bottomRight.y>(local_frame.y+local_frame.h))) {
-      draw = false;
-    } 
-    if (draw) { render_device->draw_rectangle(topLeft, bottomRight, color); }
+		// Only draw rectangle if it fits in local frame
+		bool draw = true;
+		if (local_frame.w &&
+				(topLeft.x<local_frame.x || bottomRight.x>(local_frame.x+local_frame.w))) {
+			draw = false;
+		}
+		if (local_frame.h &&
+				(topLeft.y<local_frame.y || bottomRight.y>(local_frame.y+local_frame.h))) {
+			draw = false;
+		}
+		if (draw) {
+			render_device->draw_rectangle(topLeft, bottomRight, color);
+		}
 	}
 }
 

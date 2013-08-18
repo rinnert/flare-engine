@@ -65,8 +65,8 @@ WidgetListBox::WidgetListBox(int amount, int height, const std::string& _fileNam
 	pos.w = listboxs.sprite->w;
 	pos.h = (listboxs.sprite->h / 3); // height of one item
 
-  local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
-  local_offset.x = local_offset.y = 0;
+	local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
+	local_offset.x = local_offset.y = 0;
 }
 
 bool WidgetListBox::checkClick() {
@@ -360,27 +360,27 @@ void WidgetListBox::render() {
 	src.w = pos.w;
 	src.h = pos.h;
 
-  listboxs.local_frame = local_frame;
-  listboxs.offset = local_offset;
+	listboxs.local_frame = local_frame;
+	listboxs.offset = local_offset;
 
-  for(int i=0; i<list_height; i++) {
-    if(i==0)
-      src.y = 0;
-    else if(i==list_height-1)
-      src.y = pos.h*2;
-    else
-      src.y = pos.h;
+	for(int i=0; i<list_height; i++) {
+		if(i==0)
+			src.y = 0;
+		else if(i==list_height-1)
+			src.y = pos.h*2;
+		else
+			src.y = pos.h;
 
-    listboxs.set_clip(src);
-    listboxs.set_dest(rows[i]);
-    render_device->render(listboxs);
+		listboxs.set_clip(src);
+		listboxs.set_dest(rows[i]);
+		render_device->render(listboxs);
 
-    if (i<list_amount) {
-      vlabels[i].local_frame = local_frame;
-      vlabels[i].local_offset = local_offset;
-      vlabels[i].render();
-    }
-  }
+		if (i<list_amount) {
+			vlabels[i].local_frame = local_frame;
+			vlabels[i].local_offset = local_offset;
+			vlabels[i].render();
+		}
+	}
 
 	if (in_focus) {
 		Point topLeft;
@@ -393,24 +393,26 @@ void WidgetListBox::render() {
 		bottomRight.y = rows[list_height - 1].y + rows[0].h + local_frame.y - local_offset.y;
 		color = SDL_MapRGB(screen->format, 255,248,220);
 
-    // Only draw rectangle if it fits in local frame
-    bool draw = true;
-    if (local_frame.w && 
-        (topLeft.x<local_frame.x || bottomRight.x>(local_frame.x+local_frame.w))) {
-      draw = false;
-    } 
-    if (local_frame.h && 
-        (topLeft.y<local_frame.y || bottomRight.y>(local_frame.y+local_frame.h))) {
-      draw = false;
-    } 
-    if (draw) { render_device->draw_rectangle(topLeft, bottomRight, color); }
+		// Only draw rectangle if it fits in local frame
+		bool draw = true;
+		if (local_frame.w &&
+				(topLeft.x<local_frame.x || bottomRight.x>(local_frame.x+local_frame.w))) {
+			draw = false;
+		}
+		if (local_frame.h &&
+				(topLeft.y<local_frame.y || bottomRight.y>(local_frame.y+local_frame.h))) {
+			draw = false;
+		}
+		if (draw) {
+			render_device->draw_rectangle(topLeft, bottomRight, color);
+		}
 	}
 
-	if (has_scroll_bar) { 
-    scrollbar->local_frame = local_frame;
-    scrollbar->local_offset = local_offset;
-    scrollbar->render(); 
-  }
+	if (has_scroll_bar) {
+		scrollbar->local_frame = local_frame;
+		scrollbar->local_offset = local_offset;
+		scrollbar->render();
+	}
 }
 
 /**

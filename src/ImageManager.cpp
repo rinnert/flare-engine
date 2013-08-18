@@ -62,12 +62,13 @@ int ImageManager::increaseCount(const std::string &name) {
 	vector<string>::iterator found = find(names.begin(), names.end(), name);
 	if (found != names.end()) {
 		int index = distance(names.begin(), found);
-    return ++counts[index];
-	} else {
+		return ++counts[index];
+	}
+	else {
 		sprites.push_back(0);
 		names.push_back(name);
 		counts.push_back(1);
-    return 1;
+		return 1;
 	}
 }
 
@@ -76,9 +77,10 @@ int ImageManager::decreaseCount(const std::string &name) {
 	if (found != names.end()) {
 		int index = distance(names.begin(), found);
 		return --counts[index];
-	} else {
+	}
+	else {
 		fprintf(stderr, "ImageManager::decreaseCount: Image not found: %s\n", name.c_str());
-    return 0;
+		return 0;
 	}
 }
 

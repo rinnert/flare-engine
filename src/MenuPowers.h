@@ -121,7 +121,9 @@ public:
 	int click(Point mouse);
 	bool unlockClick(Point mouse);
 	bool meetsUsageStats(unsigned powerid);
-	short getUnspent() { return points_left; }
+	short getUnspent() {
+		return points_left;
+	}
 
 	std::vector<WidgetSlot*> slots; // power slot Widgets
 

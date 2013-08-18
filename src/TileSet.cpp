@@ -35,7 +35,7 @@ using namespace std;
 
 #ifdef WITH_OPENGL
 Tile_Def::~Tile_Def() {
-  glDeleteTextures(textures.size(),&(textures[0]));
+	glDeleteTextures(textures.size(),&(textures[0]));
 }
 #endif // WITH_OPENGL
 
@@ -64,8 +64,8 @@ void TileSet::reset() {
 void TileSet::loadGraphics(const std::string& filename) {
 	if (sprites) {
 		SDL_FreeSurface(sprites);
-    tiles.clear();
-  }
+		tiles.clear();
+	}
 
 	if (!TEXTURE_QUALITY)
 		sprites = loadGraphicSurface("images/tilesets/noalpha/" + filename, "Couldn't load image", false, true);
@@ -73,27 +73,27 @@ void TileSet::loadGraphics(const std::string& filename) {
 	if (!sprites)
 		sprites = loadGraphicSurface("images/tilesets/" + filename);
 
-  for (unsigned int t=0; t<tiles.size(); ++t) {
-    Renderable& r = tiles[t].tile;
-    r.sprite = sprites;
+	for (unsigned int t=0; t<tiles.size(); ++t) {
+		Renderable& r = tiles[t].tile;
+		r.sprite = sprites;
 #ifdef WITH_OPENGL
-    if (OPENGL) {
-      SDL_Rect clip = r.src;
-      r.texture = gl_resources->create_texture(sprites,&clip);
-      r.gl_src[0] = r.gl_src[1] = 0.0f;
-      r.gl_src[2] = r.gl_src[3] = 1.0f;
-      tiles[t].textures.push_back(r.texture);
+		if (OPENGL) {
+			SDL_Rect clip = r.src;
+			r.texture = gl_resources->create_texture(sprites,&clip);
+			r.gl_src[0] = r.gl_src[1] = 0.0f;
+			r.gl_src[2] = r.gl_src[3] = 1.0f;
+			tiles[t].textures.push_back(r.texture);
 
-      if (t < anim.size()) {
-        for (unsigned int f=1; f<anim[t].frames; ++f) {
-          clip.x = anim[t].pos[f].x;
-          clip.y = anim[t].pos[f].y;
-          tiles[t].textures.push_back(gl_resources->create_texture(sprites,&clip)); 
-        }
-      }
-    }
+			if (t < anim.size()) {
+				for (unsigned int f=1; f<anim[t].frames; ++f) {
+					clip.x = anim[t].pos[f].x;
+					clip.y = anim[t].pos[f].y;
+					tiles[t].textures.push_back(gl_resources->create_texture(sprites,&clip));
+				}
+			}
+		}
 #endif // WITH_OPENGL
-  } 
+	}
 }
 
 void TileSet::load(const std::string& filename) {
@@ -176,9 +176,9 @@ void TileSet::logic() {
 				an.duration = 0;
 				an.current_frame = (an.current_frame + 1) % an.frames;
 #ifdef WITH_OPENGL
-        if (OPENGL) {
-          tiles[i].tile.texture = tiles[i].textures[an.current_frame];
-        }
+				if (OPENGL) {
+					tiles[i].tile.texture = tiles[i].textures[an.current_frame];
+				}
 #endif // WITH_OPENGL
 			}
 			an.duration++;

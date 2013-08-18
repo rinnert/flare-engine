@@ -54,7 +54,9 @@ public:
 	bool getNext();
 	bool getPrev();
 	void activate();
-  int getCursor() { return cursor; }
+	int getCursor() {
+		return cursor;
+	}
 
 private:
 	void scroll(int amount);

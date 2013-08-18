@@ -40,7 +40,7 @@ private:
 	void updateState();
 
 protected:
-    //variables for patfinding
+	//variables for patfinding
 	vector<Point> path;
 	Point prev_target;
 	bool collided;

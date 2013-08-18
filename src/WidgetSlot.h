@@ -38,9 +38,9 @@ enum CLICK_TYPE {
 class WidgetSlot : public Widget {
 private:
 
-  WidgetLabel label;
+	WidgetLabel label;
 
-	Renderable icons;	
+	Renderable icons;
 	Renderable slot_selected;
 	Renderable slot_checked;
 

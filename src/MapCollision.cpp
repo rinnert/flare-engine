@@ -131,11 +131,10 @@ bool MapCollision::is_valid_tile(int tile_x, int tile_y, MOVEMENTTYPE movement_t
 	// outside the map isn't valid
 	if (is_outside_map(tile_x,tile_y)) return false;
 
-	if(is_hero){
-        if(colmap[tile_x][tile_y] == BLOCKS_ENEMIES && !ENABLE_ALLY_COLLISION) return true;
+	if(is_hero) {
+		if(colmap[tile_x][tile_y] == BLOCKS_ENEMIES && !ENABLE_ALLY_COLLISION) return true;
 	}
-    else
-        if(colmap[tile_x][tile_y] == BLOCKS_ENEMIES) return false;
+	else if(colmap[tile_x][tile_y] == BLOCKS_ENEMIES) return false;
 
 	// occupied by an entity isn't valid
 	if (colmap[tile_x][tile_y] == BLOCKS_ENTITIES) return false;
@@ -355,20 +354,20 @@ bool MapCollision::compute_path(Point start_pos, Point end_pos, vector<Point> &p
 	AStarContainer open(map_size.x, limit);
 	AStarCloseContainer close(map_size.x, limit);
 
-    open.add(node);
+	open.add(node);
 
 	while (!open.isEmpty() && (unsigned)close.getSize() < limit) {
 		node = open.get_shortest_f();
 
 		current.x = node->getX();
 		current.y = node->getY();
-        close.add(node);
+		close.add(node);
 		open.remove(node);
 
 		if ( current.x == end.x && current.y == end.y)
 			break; //path found !
 
-        //limit evaluated nodes to the size of the map
+		//limit evaluated nodes to the size of the map
 		list<Point> neighbours = node->getNeighbours(map_size.x, map_size.y);
 
 		// for every neighbour of current node
@@ -380,10 +379,10 @@ bool MapCollision::compute_path(Point start_pos, Point end_pos, vector<Point> &p
 				continue;
 			// if nabour is already in close, skip it
 			if(close.exists(neighbour))
-                continue;
+				continue;
 
 			// if neighbour isn't inside open, add it as a new Node
-			if(!open.exists(neighbour)){
+			if(!open.exists(neighbour)) {
 				AStarNode* newNode = new AStarNode(neighbour.x,neighbour.y);
 				newNode->setActualCost(node->getActualCost()+(float)calcDist(current,neighbour));
 				newNode->setParent(current);
@@ -391,20 +390,20 @@ bool MapCollision::compute_path(Point start_pos, Point end_pos, vector<Point> &p
 				open.add(newNode);
 			}
 			// else, update it's cost if better
-			else{
-                AStarNode* i = open.get(neighbour.x, neighbour.y);
-                if (node->getActualCost()+(float)calcDist(current,neighbour) < i->getActualCost()) {
-                    Point pos(i->getX(), i->getY());
-                    Point parent_pos(node->getX(), node->getY());
-                    open.updateParent(pos, parent_pos, node->getActualCost()+(float)calcDist(current,neighbour));
-                }
+			else {
+				AStarNode* i = open.get(neighbour.x, neighbour.y);
+				if (node->getActualCost()+(float)calcDist(current,neighbour) < i->getActualCost()) {
+					Point pos(i->getX(), i->getY());
+					Point parent_pos(node->getX(), node->getY());
+					open.updateParent(pos, parent_pos, node->getActualCost()+(float)calcDist(current,neighbour));
+				}
 			}
 		}
 	}
 
 	if (current.x != end.x || current.y != end.y) {
 
-        //couldnt find the target so map a path to the closest node found
+		//couldnt find the target so map a path to the closest node found
 		node = close.get_shortest_h();
 		current.x = node->getX();
 		current.y = node->getY();

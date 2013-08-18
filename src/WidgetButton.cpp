@@ -44,8 +44,8 @@ WidgetButton::WidgetButton(const std::string& _fileName)
 	, hover(false) {
 	focusable = true;
 	pos.x = pos.y = pos.w = pos.h = 0;
-  local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
-  local_offset.x = local_offset.y = 0;
+	local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
+	local_offset.x = local_offset.y = 0;
 	loadArt();
 }
 
@@ -61,15 +61,15 @@ void WidgetButton::loadArt() {
 		exit(1); // or abort ??
 	}
 
-  buttons.set_graphics(surface);
-  buttons.set_clip(
-      0,
-      0,
-      buttons.sprite->w,
-      buttons.sprite->h/4
-      );
-  pos.w = buttons.sprite->w;
-  pos.h = buttons.sprite->h/4; // height of one button
+	buttons.set_graphics(surface);
+	buttons.set_clip(
+		0,
+		0,
+		buttons.sprite->w,
+		buttons.sprite->h/4
+	);
+	pos.w = buttons.sprite->w;
+	pos.h = buttons.sprite->h/4; // height of one button
 }
 
 bool WidgetButton::checkClick() {
@@ -120,7 +120,7 @@ bool WidgetButton::checkClick(int x, int y) {
 void WidgetButton::render() {
 	// the "button" surface contains button variations.
 	// choose which variation to display.
-  int y;
+	int y;
 	if (!enabled)
 		y = BUTTON_GFX_DISABLED * pos.h;
 	else if (pressed)
@@ -132,20 +132,20 @@ void WidgetButton::render() {
 	else
 		y = BUTTON_GFX_NORMAL * pos.h;
 
-  buttons.local_frame = local_frame;
-  buttons.offset = local_offset;
-  buttons.set_clip(
-      buttons.src.x,
-      y,
-      buttons.src.w,
-      buttons.src.h
-      );
-  buttons.set_dest(pos);
-  render_device->render(buttons);
+	buttons.local_frame = local_frame;
+	buttons.offset = local_offset;
+	buttons.set_clip(
+		buttons.src.x,
+		y,
+		buttons.src.w,
+		buttons.src.h
+	);
+	buttons.set_dest(pos);
+	render_device->render(buttons);
 
-  // render label
-  wlabel.local_frame = local_frame;
-  wlabel.local_offset = local_offset;
+	// render label
+	wlabel.local_frame = local_frame;
+	wlabel.local_offset = local_offset;
 	wlabel.render();
 
 	// render the tooltip
@@ -191,7 +191,7 @@ TooltipData WidgetButton::checkTooltip(Point mouse) {
 }
 
 WidgetButton::~WidgetButton() {
-  buttons.clear_graphics();
+	buttons.clear_graphics();
 	tip_buf.clear();
 	delete tip;
 }

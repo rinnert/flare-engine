@@ -34,82 +34,83 @@ void Renderable::set_graphics(SDL_Surface *s, GLuint t) {
 #else // WITH_OPENGL
 void Renderable::set_graphics(SDL_Surface *s) {
 #endif // WITH_OPENGL
-  // Set the graphics context of a Renderable.
-  //
-  // Initialize graphics resources. That is the SLD_surface buffer and the
-  // OpenGL texture (if applicable).
-  //
-  // It is important that, if the client owns the graphics resources,
-  // clear_graphics() method is called first in case this Renderable holds the
-  // last references to avoid resource leaks.
-  sprite = s;
+	// Set the graphics context of a Renderable.
+	//
+	// Initialize graphics resources. That is the SLD_surface buffer and the
+	// OpenGL texture (if applicable).
+	//
+	// It is important that, if the client owns the graphics resources,
+	// clear_graphics() method is called first in case this Renderable holds the
+	// last references to avoid resource leaks.
+	sprite = s;
 #ifdef WITH_OPENGL
-  if (OPENGL) {
-    if (0 == t) { 
-      texture = gl_resources->create_texture(sprite); 
-    } else {
-      texture = t;
-    }
-  } 
+	if (OPENGL) {
+		if (0 == t) {
+			texture = gl_resources->create_texture(sprite);
+		}
+		else {
+			texture = t;
+		}
+	}
 #endif // WITH_OPENGL
 }
 
 void Renderable::clear_graphics() {
-  // Clear the graphics context of a Renderable.
-  //
-  // Release graphics resources. That is the SLD_surface buffer and the OpenGL
-  // texture (if applicable).
-  //
-  // It is important that this method is only called by clients who own the
-  // graphics resources.
-  if (NULL != sprite) { 
-    SDL_FreeSurface(sprite); 
-    sprite = NULL;
-  }
+	// Clear the graphics context of a Renderable.
+	//
+	// Release graphics resources. That is the SLD_surface buffer and the OpenGL
+	// texture (if applicable).
+	//
+	// It is important that this method is only called by clients who own the
+	// graphics resources.
+	if (NULL != sprite) {
+		SDL_FreeSurface(sprite);
+		sprite = NULL;
+	}
 #ifdef WITH_OPENGL
-  if (OPENGL && 0 != texture) {
-    glDeleteTextures(1,&texture);
-    texture = 0;
-  } 
+	if (OPENGL && 0 != texture) {
+		glDeleteTextures(1,&texture);
+		texture = 0;
+	}
 #endif // WITH_OPENGL
 }
 
 void Renderable::set_clip(const SDL_Rect& clip) {
-  // Set the clipping rectangle.
-  //
-  // Set the clipping rectangle for the sprite and the
-  // OpenGL texture (if applicable).
-  src = clip;
+	// Set the clipping rectangle.
+	//
+	// Set the clipping rectangle for the sprite and the
+	// OpenGL texture (if applicable).
+	src = clip;
 #ifdef WITH_OPENGL
-  if (OPENGL) {
-    gl_src[0] = (float)clip.x/sprite->w;
-    gl_src[1] = (float)clip.y/sprite->h;
-    gl_src[2] = gl_src[0] + (float)clip.w/sprite->w;
-    gl_src[3] = gl_src[1] + (float)clip.h/sprite->h;
-  }
+	if (OPENGL) {
+		gl_src[0] = (float)clip.x/sprite->w;
+		gl_src[1] = (float)clip.y/sprite->h;
+		gl_src[2] = gl_src[0] + (float)clip.w/sprite->w;
+		gl_src[3] = gl_src[1] + (float)clip.h/sprite->h;
+	}
 #endif // WITH_OPENGL
 }
 
 void Renderable::set_clip(
-    const int x,
-    const int y,
-    const int w,
-    const int h) {
-  // Set the clipping rectangle.
-  //
-  // Set the clipping rectangle for the sprite and the
-  // OpenGL texture (if applicable).
-  src.x = x;
-  src.y = y;
-  src.w = w;
-  src.h = h;
+	const int x,
+	const int y,
+	const int w,
+	const int h) {
+	// Set the clipping rectangle.
+	//
+	// Set the clipping rectangle for the sprite and the
+	// OpenGL texture (if applicable).
+	src.x = x;
+	src.y = y;
+	src.w = w;
+	src.h = h;
 #ifdef WITH_OPENGL
-  if (OPENGL) {
-    gl_src[0] = (float)x/sprite->w;
-    gl_src[1] = (float)y/sprite->h;
-    gl_src[2] = gl_src[0] + (float)w/sprite->w;
-    gl_src[3] = gl_src[1] + (float)h/sprite->h;
-  }
+	if (OPENGL) {
+		gl_src[0] = (float)x/sprite->w;
+		gl_src[1] = (float)y/sprite->h;
+		gl_src[2] = gl_src[0] + (float)w/sprite->w;
+		gl_src[3] = gl_src[1] + (float)h/sprite->h;
+	}
 #endif // WITH_OPENGL
 }
 
@@ -433,7 +434,8 @@ SDL_Surface* createSurface(int width, int height) {
 
 	if(surface == NULL) {
 		fprintf(stderr, "CreateRGBSurface failed: %s\n", SDL_GetError());
-	} else {
+	}
+	else {
 
 		SDL_SetColorKey(surface, SDL_SRCCOLORKEY, SDL_MapRGB(surface->format,255,0,255));
 
@@ -621,18 +623,20 @@ std::string abbreviateKilo(int amount) {
 }
 
 Renderable loadIcons() {
-  if (NULL == icon_atlas) {
-    icon_atlas = loadGraphicSurface("images/icons/icons.png", "Couldn't load icons");
+	if (NULL == icon_atlas) {
+		icon_atlas = loadGraphicSurface("images/icons/icons.png", "Couldn't load icons");
 #ifdef WITH_OPENGL
-    if (OPENGL) { icon_texture_atlas = gl_resources->create_texture(icon_atlas); }
+		if (OPENGL) {
+			icon_texture_atlas = gl_resources->create_texture(icon_atlas);
+		}
 #endif // WITH_OPENGL
-  }
+	}
 
-  Renderable r;
-  r.sprite = icon_atlas;
+	Renderable r;
+	r.sprite = icon_atlas;
 #ifdef WITH_OPENGL
-  r.texture = icon_texture_atlas;
+	r.texture = icon_texture_atlas;
 #endif // WITH_OPENGL
-  
-  return r;
+
+	return r;
 }

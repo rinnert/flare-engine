@@ -55,12 +55,12 @@ GameStateConfig::GameStateConfig ()
 	, input_key(0)
 	, check_resolution(true) {
 	background.set_graphics(loadGraphicSurface("images/menus/config.png"));
-  background.set_clip(
-      0,
-      0,
-      background.sprite->w,
-      background.sprite->h
-      );
+	background.set_clip(
+		0,
+		0,
+		background.sprite->w,
+		background.sprite->h
+	);
 
 	init();
 	update();
@@ -1169,7 +1169,7 @@ void GameStateConfig::render () {
 	pos.x = (VIEW_W-FRAME_W)/2;
 	pos.y = (VIEW_H-FRAME_H)/2 + tabheight - tabheight/16;
 
-  background.set_dest(pos);
+	background.set_dest(pos);
 	render_device->render(background);
 
 	tabControl->render();
@@ -1185,13 +1185,13 @@ void GameStateConfig::render () {
 	if (active_tab == 4) {
 		if (input_scrollbox->update) {
 			input_scrollbox->refresh();
-    }
-    input_scrollbox->render();
-    for (unsigned int i = 0; i < 29; i++) {
-      settings_lb[i]->local_frame = input_scrollbox->pos;
-      settings_lb[i]->local_offset.y = input_scrollbox->getCursor();
-      settings_lb[i]->render();
-    }
+		}
+		input_scrollbox->render();
+		for (unsigned int i = 0; i < 29; i++) {
+			settings_lb[i]->local_frame = input_scrollbox->pos;
+			settings_lb[i]->local_offset.y = input_scrollbox->getCursor();
+			settings_lb[i]->render();
+		}
 	}
 
 	for (unsigned int i = 0; i < child_widget.size(); i++) {
@@ -1362,12 +1362,12 @@ void GameStateConfig::refreshFont() {
  * Tries to apply the selected video settings, reverting back to the old settings upon failure
  */
 bool GameStateConfig::applyVideoSettings(int width, int height) {
-  if (NULL == render_device->create_context(width, height, FULLSCREEN)) {
-    return false;
-  } 
+	if (NULL == render_device->create_context(width, height, FULLSCREEN)) {
+		return false;
+	}
 
-  resolution_confirm->visible = true;
-  return true;
+	resolution_confirm->visible = true;
+	return true;
 }
 
 /**

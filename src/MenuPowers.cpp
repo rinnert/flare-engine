@@ -39,9 +39,8 @@ FLARE.  If not, see http://www.gnu.org/licenses/
 
 using namespace std;
 
-MenuPowers::MenuPowers(StatBlock *_stats) 
-  : stats(_stats)
-{
+MenuPowers::MenuPowers(StatBlock *_stats)
+	: stats(_stats) {
 
 	int id;
 
@@ -216,7 +215,7 @@ void MenuPowers::loadGraphics() {
 		for (unsigned int i = 0; i < tree_image_files.size(); ++i) {
 			tree_surf.push_back(Renderable());
 			tree_surf.back().set_graphics(loadGraphicSurface("images/menus/" + tree_image_files[i]));
-    }
+		}
 	}
 	for (unsigned int i=0; i<slots.size(); i++) {
 
@@ -415,9 +414,9 @@ void MenuPowers::render() {
 	src.y = 0;
 	src.w = window_area.w;
 	src.h = window_area.h;
-  background.set_clip(src);
-  background.set_dest(dest);
-  render_device->render(background);
+	background.set_clip(src);
+	background.set_dest(dest);
+	render_device->render(background);
 
 	if (tabs_count > 1) {
 		tabControl->render();
@@ -425,19 +424,20 @@ void MenuPowers::render() {
 		for (int i=0; i<tabs_count; i++) {
 			if (active_tab == i) {
 				// power tree
-        Renderable& r = tree_surf[i];
-        r.set_clip(src);
-        r.set_dest(dest);
-        render_device->render(r);
+				Renderable& r = tree_surf[i];
+				r.set_clip(src);
+				r.set_dest(dest);
+				render_device->render(r);
 				// power icons
 				renderPowers(active_tab);
 			}
 		}
-	} else {
-    Renderable& r = tree_surf[0];
-    r.set_clip(src);
-    r.set_dest(dest);
-    render_device->render(r);
+	}
+	else {
+		Renderable& r = tree_surf[0];
+		r.set_clip(src);
+		r.set_dest(dest);
+		render_device->render(r);
 		renderPowers(0);
 	}
 
@@ -473,9 +473,9 @@ void MenuPowers::displayBuild(int power_id) {
 
 	for (unsigned i=0; i<power_cell.size(); i++) {
 		if (power_cell[i].id == power_id) {
-      powers_unlock.set_clip(src_unlock);
-      powers_unlock.set_dest(slots[i]->pos);
-      render_device->render(powers_unlock);
+			powers_unlock.set_clip(src_unlock);
+			powers_unlock.set_dest(slots[i]->pos);
+			render_device->render(powers_unlock);
 		}
 	}
 }
@@ -665,9 +665,9 @@ void MenuPowers::renderPowers(int tab_num) {
 		}
 		else {
 			if (NULL != overlay_disabled.sprite) {
-        overlay_disabled.set_clip(disabled_src);
-        overlay_disabled.set_dest(slots[i]->pos);
-        render_device->render(overlay_disabled);
+				overlay_disabled.set_clip(disabled_src);
+				overlay_disabled.set_dest(slots[i]->pos);
+				render_device->render(overlay_disabled);
 			}
 		}
 		slots[i]->renderSelection();

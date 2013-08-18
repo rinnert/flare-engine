@@ -42,8 +42,8 @@ WidgetScrollBar::WidgetScrollBar(const std::string& _fileName)
 	pos_up.w = pos_down.w  = pos_knob.w = scrollbars.sprite->w;
 	pos_up.h = pos_down.h = pos_knob.h = (scrollbars.sprite->h / 5); //height of one button
 
-  local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
-  local_offset.x = local_offset.y = 0;
+	local_frame.x = local_frame.y = local_frame.w = local_frame.h = 0;
+	local_offset.x = local_offset.y = 0;
 }
 
 void WidgetScrollBar::loadArt() {
@@ -132,13 +132,13 @@ void WidgetScrollBar::render() {
 	SDL_Rect src_up, src_down, src_knob;
 
 	src_up.x = 0;
-  src_up.y = (pressed_up ? pos_up.h : 0);
-  src_up.w = pos_up.w;
+	src_up.y = (pressed_up ? pos_up.h : 0);
+	src_up.w = pos_up.w;
 	src_up.h = pos_up.h;
 
 	src_down.x = 0;
-  src_down.y = (pressed_down ? pos_down.h*3 : pos_down.h*2);
-  src_down.w = pos_down.w;
+	src_down.y = (pressed_down ? pos_down.h*3 : pos_down.h*2);
+	src_down.w = pos_down.w;
 	src_down.h = pos_down.h;
 
 	src_knob.x = 0;
@@ -146,17 +146,17 @@ void WidgetScrollBar::render() {
 	src_knob.w = pos_knob.w;
 	src_knob.h = pos_knob.h;
 
-  scrollbars.local_frame = local_frame;
-  scrollbars.offset = local_offset;
-  scrollbars.set_clip(src_up);
-  scrollbars.set_dest(pos_up);
-  render_device->render(scrollbars);
-  scrollbars.set_clip(src_down);
-  scrollbars.set_dest(pos_down);
-  render_device->render(scrollbars);
-  scrollbars.set_clip(src_knob);
-  scrollbars.set_dest(pos_knob);
-  render_device->render(scrollbars);
+	scrollbars.local_frame = local_frame;
+	scrollbars.offset = local_offset;
+	scrollbars.set_clip(src_up);
+	scrollbars.set_dest(pos_up);
+	render_device->render(scrollbars);
+	scrollbars.set_clip(src_down);
+	scrollbars.set_dest(pos_down);
+	render_device->render(scrollbars);
+	scrollbars.set_clip(src_knob);
+	scrollbars.set_dest(pos_knob);
+	render_device->render(scrollbars);
 }
 
 /**

@@ -25,10 +25,9 @@ using namespace std;
  *
  * @param amount  Amount of tabs the control will have.
  */
-WidgetTabControl::WidgetTabControl(int amount) 
-  : active_labels(amount)
-  , inactive_labels(amount)
-{
+WidgetTabControl::WidgetTabControl(int amount)
+	: active_labels(amount)
+	, inactive_labels(amount) {
 
 	// Based on given amount:
 	tabsAmount = amount;
@@ -113,22 +112,22 @@ void WidgetTabControl::updateHeader() {
 
 		tabs[i].w = tabPadding.x + font->calc_width(titles[i]) + tabPadding.x;
 
-    active_labels[i].set(
-        tabs[i].x + tabPadding.x, 
-        tabs[i].y + tabs[i].h/2, 
-        JUSTIFY_LEFT, 
-        VALIGN_CENTER, 
-        titles[i], 
-        color_normal);
+		active_labels[i].set(
+			tabs[i].x + tabPadding.x,
+			tabs[i].y + tabs[i].h/2,
+			JUSTIFY_LEFT,
+			VALIGN_CENTER,
+			titles[i],
+			color_normal);
 
-    inactive_labels[i].set(
-        tabs[i].x + tabPadding.x, 
-        tabs[i].y + tabs[i].h/2, 
-        JUSTIFY_LEFT, 
-        VALIGN_CENTER, 
-        titles[i],
-        color_disabled);
-  }
+		inactive_labels[i].set(
+			tabs[i].x + tabPadding.x,
+			tabs[i].y + tabs[i].h/2,
+			JUSTIFY_LEFT,
+			VALIGN_CENTER,
+			titles[i],
+			color_disabled);
+	}
 }
 
 /**
@@ -193,37 +192,40 @@ void WidgetTabControl::renderTab(int number) {
 	src.w = tabs[i].w;
 	src.h = tabs[i].h;
 
-  if (i == activeTab) {
-    activeTabSurface.set_clip(src);
-    activeTabSurface.set_dest(dest);
-    render_device->render(activeTabSurface);
-  } else {
-    inactiveTabSurface.set_clip(src);
-    inactiveTabSurface.set_dest(dest);
-    render_device->render(inactiveTabSurface);
-  }
+	if (i == activeTab) {
+		activeTabSurface.set_clip(src);
+		activeTabSurface.set_dest(dest);
+		render_device->render(activeTabSurface);
+	}
+	else {
+		inactiveTabSurface.set_clip(src);
+		inactiveTabSurface.set_dest(dest);
+		render_device->render(inactiveTabSurface);
+	}
 
 	// Draw tab’s right edge.
 	src.x = activeTabSurface.sprite->w - tabPadding.x;
 	src.w = tabPadding.x;
 	dest.x = tabs[i].x + tabs[i].w - tabPadding.x;
 
-  if (i == activeTab) {
-    activeTabSurface.set_clip(src);
-    activeTabSurface.set_dest(dest);
-    render_device->render(activeTabSurface);
-  } else {
-    inactiveTabSurface.set_clip(src);
-    inactiveTabSurface.set_dest(dest);
-    render_device->render(inactiveTabSurface);
-  }
+	if (i == activeTab) {
+		activeTabSurface.set_clip(src);
+		activeTabSurface.set_dest(dest);
+		render_device->render(activeTabSurface);
+	}
+	else {
+		inactiveTabSurface.set_clip(src);
+		inactiveTabSurface.set_dest(dest);
+		render_device->render(inactiveTabSurface);
+	}
 
 	// Render labels
 	if (i == activeTab) {
-    active_labels[i].render();
-  } else {
-    inactive_labels[i].render();
-  }
+		active_labels[i].render();
+	}
+	else {
+		inactive_labels[i].render();
+	}
 }
 
 /**

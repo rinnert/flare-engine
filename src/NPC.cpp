@@ -416,7 +416,7 @@ NPC::~NPC() {
 		anim->decreaseCount(anim_name);
 	}
 
-  portrait.clear_graphics();
+	portrait.clear_graphics();
 	while (!vox_intro.empty()) {
 		snd->unload(vox_intro.back());
 		vox_intro.pop_back();

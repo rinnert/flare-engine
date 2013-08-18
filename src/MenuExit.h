@@ -46,7 +46,9 @@ public:
 	void logic();
 	virtual void render();
 
-	bool isExitRequested() { return exitClicked; }
+	bool isExitRequested() {
+		return exitClicked;
+	}
 };
 
 #endif
