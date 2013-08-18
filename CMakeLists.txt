@@ -48,6 +48,11 @@ EndIf(NOT IS_ABSOLUTE "${DATADIR}")
 
 # Detect missing dependencies
 
+if ("$ENV{WITH_SDL2}" STREQUAL "yes")
+	execute_process(COMMAND sdl2-config --cflags OUTPUT_VARIABLE SDL2_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+	execute_process(COMMAND sdl2-config --libs OUTPUT_VARIABLE SDL2_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWITH_SDL2 ${SDL2_CFLAGS}")
+else ("$ENV{WITH_SDL2}" STREQUAL "yes")
 Find_Package (SDL REQUIRED)
 If (NOT SDL_FOUND)
   Message (FATAL_ERROR "Couldn't find SDL development files. On Debian-based systems (such as Ubuntu) you should install the 'libsdl1.2-dev' package.")
@@ -75,22 +80,7 @@ If (NOT SDLTTF_FOUND)
 Else (NOT SDLTTF_FOUND)
   Include_Directories (${SDLTTF_INCLUDE_DIR})
 EndIf (NOT SDLTTF_FOUND)
-
-if ("$ENV{WITH_OPENGL}" STREQUAL "yes")
-	Find_Package (OpenGL)
-	Find_Package(GLUT)
-	If (OPENGL_FOUND AND GLUT_FOUND)
-	  Include_Directories (${OpenGL_INCLUDE_DIR})
-		Link_Directories(${OpenGL_LIBRARY_DIRS})
-		Add_Definitions(${OpenGL_DEFINITIONS})
-		Include_Directories(${GLUT_INCLUDE_DIRS})
-		Link_Directories(${GLUT_LIBRARY_DIRS})
-		Add_Definitions(${GLUT_DEFINITIONS})
-		Set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWITH_OPENGL")
-	Else (OPENGL_FOUND AND GLUT_FOUND)
-		Message (WARNING "Couldn't find OpenGL development files. OpenGL rendering will not be supported.")
-	EndIf (OPENGL_FOUND AND GLUT_FOUND)
-endif ("$ENV{WITH_OPENGL}" STREQUAL "yes")
+endif ("$ENV{WITH_SDL2}" STREQUAL "yes")
 
 # Sources
 
@@ -200,18 +190,16 @@ ENDIF (WIN32)
 
 Add_Executable (flare ${FLARE_SOURCES})
 
+if ("$ENV{WITH_SDL2}" STREQUAL "yes")
+	Target_Link_Libraries (flare ${CMAKE_LD_FLAGS} ${SDL2_LDFLAGS} -lSDL2_ttf -lSDL2_image -lSDL2_mixer)
+else ("$ENV{WITH_SDL2}" STREQUAL "yes")
 # libSDLMain comes with libSDL if needed on certain platforms
 If (NOT SDLMAIN_LIBRARY)
   Set (SDLMAIN_LIBRARY "")
 EndIf (NOT SDLMAIN_LIBRARY)
 
 Target_Link_Libraries (flare ${CMAKE_LD_FLAGS} ${SDL_LIBRARY} ${SDLMIXER_LIBRARY} ${SDLIMAGE_LIBRARY} ${SDLTTF_LIBRARY} ${SDLMAIN_LIBRARY})
-
-if ("$ENV{WITH_OPENGL}" STREQUAL "yes")
-	If (OPENGL_FOUND AND GLUT_FOUND)
-		Target_Link_Libraries (flare ${GLUT_LIBRARY} ${OPENGL_LIBRARY})
-	EndIf (OPENGL_FOUND AND GLUT_FOUND)
-endif ("$ENV{WITH_OPENGL}" STREQUAL "yes")
+endif ("$ENV{WITH_SDL2}" STREQUAL "yes")
 
 # installing to the proper places
 install(PROGRAMS
